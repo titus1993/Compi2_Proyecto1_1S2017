@@ -12,7 +12,8 @@ package Constante;
 public class Constante {
     //tipo de datos
     public static final String TId = "Id";
-    
+    public static final String TVerdadero = "true";
+    public static final String TFalso = "false";
     public static final String TEntero = "entero";
     public static final String TDecimal = "decimal";
     public static final String TCadena = "cadena";
@@ -45,6 +46,7 @@ public class Constante {
     public static final String TPor = "*";
     public static final String TDivision = "/";
     public static final String TModulo = "mod";
+    public static final String TRaiz = "sqrt";
     public static final String TPotenciaH = "pot";
     public static final String TPotenciaG = "^";
     public static final String TIgual = "=";
@@ -85,6 +87,7 @@ public class Constante {
     public static final String TEnd = "end";
     public static final String TIf = "if";
     public static final String TThen = "then";
+    public static final String TElse = "else";
     public static final String TCase = "case";
     
     public static final String TCalcular = "calcular";

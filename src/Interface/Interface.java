@@ -4,7 +4,6 @@
  * and open the template in the editor.
  */
 package Interface;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -27,7 +26,7 @@ public class Interface extends javax.swing.JFrame {
     public Interface() {
         initComponents();
         setLayout(new GridLayout());
-        IniciarComponentes();
+        IniciarComponentes();        
         //this.pack();
     }
 
