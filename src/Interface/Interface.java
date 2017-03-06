@@ -158,6 +158,11 @@ public class Interface extends javax.swing.JFrame {
         jMenu5.setText("Compilar");
 
         jMenuItem14.setText("Traducir");
+        jMenuItem14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem14ActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItem14);
 
         jMenuItem15.setText("Reportes");
@@ -237,12 +242,12 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
     private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        TitusTab tab = (TitusTab) ControlTab.getSelectedComponent();
-        if (tab != null) {
-            System.out.println(tab.Nombre);
-            ControlTab.remove(ControlTab.getSelectedIndex());
-        }
+        ControlTab.CerrarTab();
     }//GEN-LAST:event_jMenuItem8ActionPerformed
+
+    private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
+        ControlTab.Analizar();
+    }//GEN-LAST:event_jMenuItem14ActionPerformed
 
     /**
      * @param args the command line arguments

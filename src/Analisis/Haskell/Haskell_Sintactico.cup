@@ -1,0 +1,46 @@
+package Analisis.Haskell;
+
+import Constante.Constante;
+import java_cup.runtime.Symbol;
+//PARSER PARA EL ARCHIVO DE ESCENARIOS
+parser code
+{://Codigo visible
+
+    public void syntax_error(Symbol s){
+        System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+    }
+
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
+        System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+    }
+
+:}
+
+action code
+{://Codigo de acciones
+      
+:}
+
+terminal Id, Numero, Caracter, Cadena, SPACE, ENTER, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, Booleano;
+
+terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion, TAnd, TOr, TIgual, TCorchete_Abre, TCorchete_Cierra;
+
+terminal TLet, TCalcular, TSucc, TDecc, TMin, TMax;
+
+terminal TSum, TProduct, TRevers, TImpr, TPar, TAsc, TDesc, TLength, TAumento, TIndiceLista;
+
+terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa;
+
+nonterminal INICIO;
+
+precedence left TAnd, TOr;
+precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
+
+precedence left TMas, TMenos;
+precedence left TPor, TDivision, TModulo; 
+precedence right TPotencia, TRaiz; 
+
+start with INICIO;
+
+INICIO     ::= Numero TMas Numero   {: System.out.println("Esto es un numero"); :};
+

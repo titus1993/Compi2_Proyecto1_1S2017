@@ -24,4 +24,17 @@ public class TabControl extends JTabbedPane{
         this.addTab(tab.Nombre, null, tab);
     }
     
+    public void CerrarTab(){
+        TitusTab tab = (TitusTab) getSelectedComponent();
+        if (tab != null) {
+            System.out.println(tab.Nombre);
+            remove(getSelectedIndex());
+        }
+    }
+    public void Analizar(){
+        TitusTab tab = (TitusTab) getSelectedComponent();
+        if (tab != null) {
+            tab.Analizar();
+        }
+    }
 }
