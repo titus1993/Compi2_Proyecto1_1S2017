@@ -33,7 +33,7 @@ public class Constante {
     public static final String TPunto = ".";
     public static final String TDolar = "$";
     public static final String TComa = ",";
-    
+    public static final String TPuntoyComa = ";";
     
     //Visibilidad
     public static final String TPublico = "publico";

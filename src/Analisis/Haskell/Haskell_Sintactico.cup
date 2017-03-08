@@ -11,7 +11,7 @@ parser code
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+        //System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
     }
 
 :}
@@ -21,7 +21,7 @@ action code
       
 :}
 
-terminal Id, Numero, Caracter, Cadena, SPACE, ENTER, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, Booleano;
+terminal Id, Numero, Caracter, Cadena, SPACE, ENTER, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, TFalso, TVerdadero;
 
 terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion, TAnd, TOr, TIgual, TCorchete_Abre, TCorchete_Cierra;
 
@@ -29,9 +29,11 @@ terminal TLet, TCalcular, TSucc, TDecc, TMin, TMax;
 
 terminal TSum, TProduct, TRevers, TImpr, TPar, TAsc, TDesc, TLength, TAumento, TIndiceLista;
 
-terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa;
+terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa, TPuntoyComa;
 
-nonterminal INICIO;
+nonterminal INICIO, LISTA_FUNCION, FUNCION, LISTA_PARAMETROS, CUERPO, LISTA_SENTENCIAS, SENTENCIA, SENTENCIA_IF, EXP, LLAMADA_FUNCION;
+
+nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIMENSION, DIMENSION; 
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
@@ -40,7 +42,60 @@ precedence left TMas, TMenos;
 precedence left TPor, TDivision, TModulo; 
 precedence right TPotencia, TRaiz; 
 
+
+
 start with INICIO;
 
-INICIO     ::= Numero TMas Numero   {: System.out.println("Esto es un numero"); :};
+INICIO     ::=  LISTA_FUNCION; 
 
+
+LISTA_FUNCION ::= LISTA_FUNCION FUNCION
+                | FUNCION;
+
+
+
+FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd {: System.out.println("EXITO"); :}
+                | Id TIgual CUERPO TEnd {: System.out.println("EXITO"); :};
+
+LISTA_PARAMETROS ::=    LISTA_PARAMETROS TComa Id
+                        | Id;
+
+CUERPO ::=  LISTA_SENTENCIAS;
+
+
+LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
+                        | SENTENCIA;
+
+SENTENCIA ::=   SENTENCIA_IF
+                | LLAMADA_FUNCION
+                | DECLARACION_LISTA;
+
+SENTENCIA_IF ::=    TIf EXP TThen CUERPO TEnd
+                    | TIf EXP TThen CUERPO TElse CUERPO TEnd;
+
+EXP ::=     EXP TMas EXP
+            | EXP TMenos EXP
+            | EXP TPor EXP
+            | EXP TDivision EXP
+            | EXP TModulo EXP
+            | EXP TPotencia EXP
+            | EXP TRaiz EXP
+            | Numero
+            | Caracter;
+
+LLAMADA_FUNCION ::=     TDolar TDolar;
+
+DECLARACION_LISTA ::=   TLet Id TIgual MULTIDIMENSION;
+
+MULTIDIMENSION ::=   TCorchete_Abre DIMENSIONES TCorchete_Cierra;
+
+DIMENSIONES ::=   LISTA_EXP
+                  | LISTA_DIMENSION;
+
+LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
+                        | DIMENSION;
+
+DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
+
+LISTA_EXP ::=   LISTA_EXP TComa EXP
+                | EXP;

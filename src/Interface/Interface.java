@@ -34,35 +34,27 @@ public class Interface extends javax.swing.JFrame {
 
     }
 
-    private void IniciarComponentes() {
+    private void IniciarComponentes() {        
         IniciarSplitPane();
         PosicionarCentro();
+        TitusNotificaciones.Iniciar(ControlTab);
     }
 
     private void IniciarSplitPane() {
         ControlTab = new TabControl();
         ControlTab.setTabPlacement(JTabbedPane.NORTH);
-        JTextPane tab = new JTextPane();
+        
         splitpane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitpane.setLeftComponent(ControlTab);
 
         JPanel paneRight = new JPanel(new BorderLayout());
-        JTextPane Consola = new JTextPane();
-        Consola.setBackground(Color.black);
-        Consola.setForeground(Color.WHITE);        
-        Consola.setFont(new Font("", Font.PLAIN, 18));
-        Consola.setEditable(false);
-
-        JTextField Comando = new JTextField();
-        Comando.setBackground(Color.BLACK);
-        Comando.setForeground(Color.WHITE);
-        Comando.setFont(new Font("", Font.PLAIN, 18));
-
-        JScrollPane scrollRigth = new JScrollPane(Consola);       
+        
+        
+        JScrollPane scrollRigth = new JScrollPane(TitusNotificaciones.Consola);       
         
 
         paneRight.add(scrollRigth, BorderLayout.CENTER);
-        paneRight.add(Comando, BorderLayout.SOUTH);
+        paneRight.add(TitusNotificaciones.Comando, BorderLayout.SOUTH);
         splitpane.setRightComponent(paneRight);
         splitpane.setResizeWeight(0.70);
         this.add(splitpane, BorderLayout.CENTER);
