@@ -8,8 +8,6 @@ package Interface;
 import java.awt.BorderLayout;
 import java.io.BufferedReader;
 import java.io.StringReader;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
@@ -39,6 +37,7 @@ public class TitusTab extends JPanel {
         this.setLayout(new BorderLayout());
         TextBox = new JTextPane();
         JScrollPane pane = new JScrollPane(TextBox);
+        TextBox.setText("funcion x,y =  end");
         this.add(pane, BorderLayout.CENTER);
     }
 
@@ -48,11 +47,11 @@ public class TitusTab extends JPanel {
 
     public void AnalizarHaskell(){
         try {
-            System.out.println("Inicia Analisis");
+            TitusNotificaciones.ImprimirConsola("Inicia Analisis");
             Haskell_Lexico scan = new Haskell_Lexico(new BufferedReader(new StringReader(TextBox.getText())));
             Haskell_Sintactico parser = new Haskell_Sintactico(scan);
             parser.parse();
-            System.out.println("Finaliza la generación de C3D...");
+            TitusNotificaciones.ImprimirConsola("Finaliza");
         } catch (Exception ex) {
             Logger.getLogger(TitusTab.class.getName()).log(Level.SEVERE, null, ex);
         }

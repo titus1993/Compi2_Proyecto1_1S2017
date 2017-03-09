@@ -2,6 +2,7 @@ package Analisis.Haskell;
 
 import Constante.Constante;
 import java_cup.runtime.Symbol;
+import Interface.TitusNotificaciones;
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
 {://Codigo visible
@@ -21,7 +22,7 @@ action code
       
 :}
 
-terminal Id, Numero, Caracter, Cadena, SPACE, ENTER, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, TFalso, TVerdadero;
+terminal Id, Numero, Caracter, Cadena, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, TFalso, TVerdadero;
 
 terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion, TAnd, TOr, TIgual, TCorchete_Abre, TCorchete_Cierra;
 
@@ -29,11 +30,15 @@ terminal TLet, TCalcular, TSucc, TDecc, TMin, TMax;
 
 terminal TSum, TProduct, TRevers, TImpr, TPar, TAsc, TDesc, TLength, TAumento, TIndiceLista;
 
-terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa, TPuntoyComa;
+terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa, TPuntoyComa, TDosPuntos;
 
-nonterminal INICIO, LISTA_FUNCION, FUNCION, LISTA_PARAMETROS, CUERPO, LISTA_SENTENCIAS, SENTENCIA, SENTENCIA_IF, EXP, LLAMADA_FUNCION;
+nonterminal INICIO, LISTA_FUNCION, FUNCION, LISTA_PARAMETROS, CUERPO, LISTA_SENTENCIAS, SENTENCIA, SENTENCIA_IF, EXP, LLAMADA_METODO;
 
-nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIMENSION, DIMENSION; 
+nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIMENSION, DIMENSION, METODO, METODO_CALCULAR, METODO_SUCC, METODO_DECC; 
+
+nonterminal LIST, METODO_MIN, METODO_MAX, METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
+
+nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA;
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
@@ -54,24 +59,36 @@ LISTA_FUNCION ::= LISTA_FUNCION FUNCION
 
 
 
-FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd {: System.out.println("EXITO"); :}
+FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd {: TitusNotificaciones.ImprimirConsola("EXITO"); :}
                 | Id TIgual CUERPO TEnd {: System.out.println("EXITO"); :};
 
 LISTA_PARAMETROS ::=    LISTA_PARAMETROS TComa Id
                         | Id;
 
-CUERPO ::=  LISTA_SENTENCIAS;
+CUERPO ::=  LISTA_SENTENCIAS
+            | {:  :};
 
 
 LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
                         | SENTENCIA;
 
 SENTENCIA ::=   SENTENCIA_IF
-                | LLAMADA_FUNCION
+                | SENTENCIA_CASE
+                | LLAMADA_METODO
                 | DECLARACION_LISTA;
 
 SENTENCIA_IF ::=    TIf EXP TThen CUERPO TEnd
                     | TIf EXP TThen CUERPO TElse CUERPO TEnd;
+
+SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS;
+
+LISTA_CASOS ::=     LISTA_CASOS CASO
+                    |CASO;
+
+CASO ::=    VALOR TDosPuntos CUERPO TPuntoyComa;
+
+VALOR ::=   Numero
+            | Caracter;
 
 EXP ::=     EXP TMas EXP
             | EXP TMenos EXP
@@ -80,12 +97,62 @@ EXP ::=     EXP TMas EXP
             | EXP TModulo EXP
             | EXP TPotencia EXP
             | EXP TRaiz EXP
+            | EXP TMayor EXP
+            | EXP TMenor EXP
+            | EXP TMayorIgual EXP
+            | EXP TMenorIgual EXP
+            | EXP TIgualacion EXP
+            | EXP TDiferenciacion EXP
             | Numero
-            | Caracter;
+            | Caracter
+            | Id
+            | LLAMADA_METODO
+            | TParentesis_Abre EXP TParentesis_Cierra;
 
-LLAMADA_FUNCION ::=     TDolar TDolar;
+LLAMADA_METODO ::=     TDolar METODO TDolar;
 
-DECLARACION_LISTA ::=   TLet Id TIgual MULTIDIMENSION;
+METODO ::=  METODO_CALCULAR
+            | METODO_SUCC
+            | METODO_DECC
+            | METODO_MIN
+            | METODO_MAX
+            | METODO_CONCATENACION
+            | METODO_OPERACION_LISTAS
+            | METODO_INDICE
+            | METODO_CUALQUIERA;
+
+METODO_CUALQUIERA ::= Id TLlave_Abre LISTA_EXP TLlave_Cierra;
+ 
+
+METODO_CALCULAR ::=    TCalcular EXP;
+
+METODO_SUCC ::=    TSucc EXP;
+
+METODO_DECC ::=    TDecc EXP;
+
+METODO_MIN ::=  TMin LIST;
+
+METODO_MAX ::=  TMax LIST;
+
+METODO_CONCATENACION ::=    LIST TAumento LIST;
+
+METODO_INDICE ::=   Id TIndiceLista EXP;
+
+METODO_OPERACION_LISTAS ::=     TSum LIST
+                                | TProduct LIST
+                                | TRevers LIST
+                                | TImpr LIST
+                                | TPar LIST
+                                | TAsc LIST
+                                | TDesc LIST
+                                | TLength LIST;
+
+LIST ::=    Cadena
+            | Id
+            | MULTIDIMENSION;
+
+DECLARACION_LISTA ::=   TLet Id TIgual LIST
+                        | TLet Id TIgual METODO_CONCATENACION;
 
 MULTIDIMENSION ::=   TCorchete_Abre DIMENSIONES TCorchete_Cierra;
 

@@ -85,6 +85,7 @@ TLlave_Abre = "{"
 TLlave_Cierra = "}"
 TComa = ","
 TPuntoyComa = ";"
+TDosPuntos = ":";
     
 Id      = [A-Za-z][_0-9A-Za-z]*
 Numero = [0-9]+("."[0-9]+)?
@@ -155,8 +156,8 @@ ENTER   = [\ \n]
 {TLlave_Cierra}       { return new Symbol(sym.TLlave_Cierra, yyline, yycolumn, yytext()); }
 {TComa}               { return new Symbol(sym.TComa, yyline, yycolumn, yytext()); }
 {TPuntoyComa}         { return new Symbol(sym.TPuntoyComa, yyline, yycolumn, yytext()); }
-
-{Id}                  { System.out.println("id"); return new Symbol(sym.Id, yyline, yycolumn, yytext()); }
+{TDosPuntos}          { return new Symbol(sym.TPuntoyComa, yyline, yycolumn, yytext()); }
+{Id}                  { return new Symbol(sym.Id, yyline, yycolumn, yytext()); }
 {Numero}              { return new Symbol(sym.Numero, yyline, yycolumn, yytext()); }
 {Caracter}            { return new Symbol(sym.Caracter, yyline, yycolumn, yytext()); }
 {Cadena}              { return new Symbol(sym.Cadena, yyline, yycolumn, yytext()); }
