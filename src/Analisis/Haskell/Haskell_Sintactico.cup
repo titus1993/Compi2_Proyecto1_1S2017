@@ -103,13 +103,17 @@ EXP ::=     EXP TMas EXP
             | EXP TMenorIgual EXP
             | EXP TIgualacion EXP
             | EXP TDiferenciacion EXP
+            | EXP TAnd EXP
+            | EXP TOr EXP
+            | TVerdadero
+            | TFalso
             | Numero
             | Caracter
             | Id
             | LLAMADA_METODO
             | TParentesis_Abre EXP TParentesis_Cierra;
 
-LLAMADA_METODO ::=     TDolar METODO TDolar;
+LLAMADA_METODO ::= TDolar METODO TDolar;
 
 METODO ::=  METODO_CALCULAR
             | METODO_SUCC
