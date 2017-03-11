@@ -8,11 +8,11 @@ parser code
 {://Codigo visible
 
     public void syntax_error(Symbol s){
-        System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+        System.out.println("Error sintactico en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        //System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+        //System.out.println("Error sintactico en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
     }
 
 :}
@@ -77,8 +77,8 @@ SENTENCIA ::=   SENTENCIA_IF
                 | LLAMADA_METODO
                 | DECLARACION_LISTA;
 
-SENTENCIA_IF ::=    TIf EXP TThen CUERPO TEnd
-                    | TIf EXP TThen CUERPO TElse CUERPO TEnd;
+SENTENCIA_IF ::=    TIf LLAMADA_METODO TThen CUERPO TEnd
+                    | TIf LLAMADA_METODO TThen CUERPO TElse CUERPO TEnd;
 
 SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS;
 
@@ -105,11 +105,14 @@ EXP ::=     EXP TMas EXP
             | EXP TDiferenciacion EXP
             | EXP TAnd EXP
             | EXP TOr EXP
+            | TMenos EXP
             | TVerdadero
             | TFalso
             | Numero
             | Caracter
             | Id
+            | Cadena
+            | MULTIDIMENSION
             | LLAMADA_METODO
             | TParentesis_Abre EXP TParentesis_Cierra;
 
@@ -140,7 +143,7 @@ METODO_MAX ::=  TMax LIST;
 
 METODO_CONCATENACION ::=    LIST TAumento LIST;
 
-METODO_INDICE ::=   Id TIndiceLista EXP;
+METODO_INDICE ::=   Id TIndiceLista LLAMADA_METODO;
 
 METODO_OPERACION_LISTAS ::=     TSum LIST
                                 | TProduct LIST
@@ -168,5 +171,5 @@ LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
 
 DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
 
-LISTA_EXP ::=   LISTA_EXP TComa EXP
-                | EXP;
+LISTA_EXP ::=   LISTA_EXP TComa LLAMADA_METODO
+                | LLAMADA_METODO;

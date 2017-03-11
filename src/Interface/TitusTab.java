@@ -35,6 +35,8 @@ public class TitusTab extends JPanel {
 
     private void IniciarComponentes() {
         this.setLayout(new BorderLayout());
+        //TextLineNumber texto = new TextLineNumber(TextBox);
+        //pane.setRowHeaderView(texto);
         TextBox = new JTextPane();
         JScrollPane pane = new JScrollPane(TextBox);
         TextBox.setText("funcion x,y =  end");
@@ -49,6 +51,7 @@ public class TitusTab extends JPanel {
         try {
             TitusNotificaciones.ImprimirConsola("Inicia Analisis");
             Haskell_Lexico scan = new Haskell_Lexico(new BufferedReader(new StringReader(TextBox.getText())));
+            //scan.yyreset(new BufferedReader(new StringReader(TextBox.getText())));
             Haskell_Sintactico parser = new Haskell_Sintactico(scan);
             parser.parse();
             TitusNotificaciones.ImprimirConsola("Finaliza");
