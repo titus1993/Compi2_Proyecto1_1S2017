@@ -98,69 +98,69 @@ ENTER   = [\ \n]
 
 
 //Operaciones aritmeticas
-{TMas}                { return new Symbol(sym.TMas, yyline, yycolumn, yytext()); }
-{TMenos}              { return new Symbol(sym.TMenos, yyline, yycolumn, yytext()); }
-{TPor}                { return new Symbol(sym.TPor, yyline, yycolumn, yytext()); }
-{TDivision}           { return new Symbol(sym.TDivision, yyline, yycolumn, yytext()); }
-{TModulo}             { return new Symbol(sym.TModulo, yyline, yycolumn, yytext()); }
-{TPotencia}           { return new Symbol(sym.TPotencia, yyline, yycolumn, yytext()); }
-{TRaiz}               { return new Symbol(sym.TRaiz, yyline, yycolumn, yytext()); }
-{TDolar}              { return new Symbol(sym.TDolar, yyline, yycolumn, yytext()); }
-{TParentesis_Abre}    { return new Symbol(sym.TParentesis_Abre, yyline, yycolumn, yytext()); }
-{TParentesis_Cierra}  { return new Symbol(sym.TParentesis_Cierra, yyline, yycolumn, yytext()); }
-{TFalso}              { return new Symbol(sym.TFalso, yyline, yycolumn, yytext()); }
-{TVerdadero}          { return new Symbol(sym.TVerdadero, yyline, yycolumn, yytext()); }    
+{TMas}                { System.out.println(yytext()); return  new Symbol(sym.TMas, yyline, yycolumn, yytext()); }
+{TMenos}              { System.out.println(yytext()); return  new Symbol(sym.TMenos, yyline, yycolumn, yytext()); }
+{TPor}                { System.out.println(yytext()); return  new Symbol(sym.TPor, yyline, yycolumn, yytext()); }
+{TDivision}           { System.out.println(yytext()); return  new Symbol(sym.TDivision, yyline, yycolumn, yytext()); }
+{TModulo}             { System.out.println(yytext()); return  new Symbol(sym.TModulo, yyline, yycolumn, yytext()); }
+{TPotencia}           { System.out.println(yytext()); return  new Symbol(sym.TPotencia, yyline, yycolumn, yytext()); }
+{TRaiz}               { System.out.println(yytext()); return  new Symbol(sym.TRaiz, yyline, yycolumn, yytext()); }
+{TDolar}              { System.out.println(yytext()); return  new Symbol(sym.TDolar, yyline, yycolumn, yytext()); }
+{TParentesis_Abre}    { System.out.println(yytext()); return  new Symbol(sym.TParentesis_Abre, yyline, yycolumn, yytext()); }
+{TParentesis_Cierra}  { System.out.println(yytext()); return  new Symbol(sym.TParentesis_Cierra, yyline, yycolumn, yytext()); }
+{TFalso}              { System.out.println(yytext()); return  new Symbol(sym.TFalso, yyline, yycolumn, yytext()); }
+{TVerdadero}          { System.out.println(yytext()); return  new Symbol(sym.TVerdadero, yyline, yycolumn, yytext()); }    
 //Operaciones realcionales
-{TMayor}              { return new Symbol(sym.TMayor, yyline, yycolumn, yytext()); }
-{TMenor}              { return new Symbol(sym.TMenor, yyline, yycolumn, yytext()); }
-{TMayorIgual}         { return new Symbol(sym.TMayorIgual, yyline, yycolumn, yytext()); }
-{TMenorIgual}         { return new Symbol(sym.TMenorIgual, yyline, yycolumn, yytext()); }
-{TIgualacion}         { return new Symbol(sym.TIgualacion, yyline, yycolumn, yytext()); }
-{TDiferenciacion}     { return new Symbol(sym.TDiferenciacion, yyline, yycolumn, yytext()); }
+{TMayor}              { System.out.println(yytext()); return  new Symbol(sym.TMayor, yyline, yycolumn, yytext()); }
+{TMenor}              { System.out.println(yytext()); return  new Symbol(sym.TMenor, yyline, yycolumn, yytext()); }
+{TMayorIgual}         { System.out.println(yytext()); return  new Symbol(sym.TMayorIgual, yyline, yycolumn, yytext()); }
+{TMenorIgual}         { System.out.println(yytext()); return  new Symbol(sym.TMenorIgual, yyline, yycolumn, yytext()); }
+{TIgualacion}         { System.out.println(yytext()); return  new Symbol(sym.TIgualacion, yyline, yycolumn, yytext()); }
+{TDiferenciacion}     { System.out.println(yytext()); return  new Symbol(sym.TDiferenciacion, yyline, yycolumn, yytext()); }
 
 //operaciones condicionales
-{TAnd}                { return new Symbol(sym.TAnd, yyline, yycolumn, yytext()); }
-{TOr}                 { return new Symbol(sym.TOr, yyline, yycolumn, yytext()); }
+{TAnd}                { System.out.println(yytext()); return  new Symbol(sym.TAnd, yyline, yycolumn, yytext()); }
+{TOr}                 { System.out.println(yytext()); return  new Symbol(sym.TOr, yyline, yycolumn, yytext()); }
 
-{TIgual}              { return new Symbol(sym.TIgual, yyline, yycolumn, yytext()); }
-{TCorchete_Abre}      { return new Symbol(sym.TCorchete_Abre, yyline, yycolumn, yytext()); }
-{TCorchete_Cierra}    { return new Symbol(sym.TCorchete_Cierra, yyline, yycolumn, yytext()); }
+{TIgual}              { System.out.println(yytext()); return  new Symbol(sym.TIgual, yyline, yycolumn, yytext()); }
+{TCorchete_Abre}      { System.out.println(yytext()); return  new Symbol(sym.TCorchete_Abre, yyline, yycolumn, yytext()); }
+{TCorchete_Cierra}    { System.out.println(yytext()); return  new Symbol(sym.TCorchete_Cierra, yyline, yycolumn, yytext()); }
 
 //palabras reservadas
-{TLet}                { return new Symbol(sym.TLet, yyline, yycolumn, yytext()); }
-{TCalcular}           { return new Symbol(sym.TCalcular, yyline, yycolumn, yytext()); }
-{TSucc}               { return new Symbol(sym.TSucc, yyline, yycolumn, yytext()); }
-{TDecc}               { return new Symbol(sym.TDecc, yyline, yycolumn, yytext()); }
-{TMin}                { return new Symbol(sym.TMin, yyline, yycolumn, yytext()); }
-{TMax}                { return new Symbol(sym.TMax, yyline, yycolumn, yytext()); }
+{TLet}                { System.out.println(yytext()); return  new Symbol(sym.TLet, yyline, yycolumn, yytext()); }
+{TCalcular}           { System.out.println(yytext()); return  new Symbol(sym.TCalcular, yyline, yycolumn, yytext()); }
+{TSucc}               { System.out.println(yytext()); return  new Symbol(sym.TSucc, yyline, yycolumn, yytext()); }
+{TDecc}               { System.out.println(yytext()); return  new Symbol(sym.TDecc, yyline, yycolumn, yytext()); }
+{TMin}                { System.out.println(yytext()); return  new Symbol(sym.TMin, yyline, yycolumn, yytext()); }
+{TMax}                { System.out.println(yytext()); return  new Symbol(sym.TMax, yyline, yycolumn, yytext()); }
 
 //operaciones en lista
-{TSum}                { return new Symbol(sym.TSum, yyline, yycolumn, yytext()); }
-{TProduct}            { return new Symbol(sym.TProduct, yyline, yycolumn, yytext()); }
-{TRevers}             { return new Symbol(sym.TRevers, yyline, yycolumn, yytext()); }
-{TImpr}               { return new Symbol(sym.TImpr, yyline, yycolumn, yytext()); }
-{TPar}                { return new Symbol(sym.TPar, yyline, yycolumn, yytext()); }
-{TAsc}                { return new Symbol(sym.TAsc, yyline, yycolumn, yytext()); }
-{TDesc}               { return new Symbol(sym.TDesc, yyline, yycolumn, yytext()); }
-{TLength}             { return new Symbol(sym.TLength, yyline, yycolumn, yytext()); }
-{TAumento}            { return new Symbol(sym.TAumento, yyline, yycolumn, yytext()); }
-{TIndiceLista}        { return new Symbol(sym.TIndiceLista, yyline, yycolumn, yytext()); }
+{TSum}                { System.out.println(yytext()); return  new Symbol(sym.TSum, yyline, yycolumn, yytext()); }
+{TProduct}            { System.out.println(yytext()); return  new Symbol(sym.TProduct, yyline, yycolumn, yytext()); }
+{TRevers}             { System.out.println(yytext()); return  new Symbol(sym.TRevers, yyline, yycolumn, yytext()); }
+{TImpr}               { System.out.println(yytext()); return  new Symbol(sym.TImpr, yyline, yycolumn, yytext()); }
+{TPar}                { System.out.println(yytext()); return  new Symbol(sym.TPar, yyline, yycolumn, yytext()); }
+{TAsc}                { System.out.println(yytext()); return  new Symbol(sym.TAsc, yyline, yycolumn, yytext()); }
+{TDesc}               { System.out.println(yytext()); return  new Symbol(sym.TDesc, yyline, yycolumn, yytext()); }
+{TLength}             { System.out.println(yytext()); return  new Symbol(sym.TLength, yyline, yycolumn, yytext()); }
+{TAumento}            { System.out.println(yytext()); return  new Symbol(sym.TAumento, yyline, yycolumn, yytext()); }
+{TIndiceLista}        { System.out.println(yytext()); return  new Symbol(sym.TIndiceLista, yyline, yycolumn, yytext()); }
 
 //archivos Haskell
-{TEnd}                { return new Symbol(sym.TEnd, yyline, yycolumn, yytext()); }
-{TIf}                 { return new Symbol(sym.TIf, yyline, yycolumn, yytext()); }
-{TThen}               { return new Symbol(sym.TThen, yyline, yycolumn, yytext()); }
-{TElse}               { return new Symbol(sym.TElse, yyline, yycolumn, yytext()); }
-{TCase}               { return new Symbol(sym.TCase, yyline, yycolumn, yytext()); }
-{TLlave_Abre}         { return new Symbol(sym.TLlave_Abre, yyline, yycolumn, yytext()); }
-{TLlave_Cierra}       { return new Symbol(sym.TLlave_Cierra, yyline, yycolumn, yytext()); }
-{TComa}               { return new Symbol(sym.TComa, yyline, yycolumn, yytext()); }
-{TPuntoyComa}         { return new Symbol(sym.TPuntoyComa, yyline, yycolumn, yytext()); }
-{TDosPuntos}          { System.out.println(yytext());return new Symbol(sym.TDosPuntos, yyline, yycolumn, yytext()); }
-{Id}                  { return new Symbol(sym.Id, yyline, yycolumn, yytext()); }
-{Numero}              { return new Symbol(sym.Numero, yyline, yycolumn, yytext()); }
-{Caracter}            { return new Symbol(sym.Caracter, yyline, yycolumn, yytext()); }
-{Cadena}              { return new Symbol(sym.Cadena, yyline, yycolumn, yytext()); }
+{TEnd}                { System.out.println(yytext()); return  new Symbol(sym.TEnd, yyline, yycolumn, yytext()); }
+{TIf}                 { System.out.println(yytext()); return  new Symbol(sym.TIf, yyline, yycolumn, yytext()); }
+{TThen}               { System.out.println(yytext()); return  new Symbol(sym.TThen, yyline, yycolumn, yytext()); }
+{TElse}               { System.out.println(yytext()); return  new Symbol(sym.TElse, yyline, yycolumn, yytext()); }
+{TCase}               { System.out.println(yytext()); return  new Symbol(sym.TCase, yyline, yycolumn, yytext()); }
+{TLlave_Abre}         { System.out.println(yytext()); return  new Symbol(sym.TLlave_Abre, yyline, yycolumn, yytext()); }
+{TLlave_Cierra}       { System.out.println(yytext()); return  new Symbol(sym.TLlave_Cierra, yyline, yycolumn, yytext()); }
+{TComa}               { System.out.println(yytext()); return  new Symbol(sym.TComa, yyline, yycolumn, yytext()); }
+{TPuntoyComa}         { System.out.println(yytext()); return  new Symbol(sym.TPuntoyComa, yyline, yycolumn, yytext()); }
+":"          { System.out.println(yytext()); return  new Symbol(sym.TDosPuntos, yyline, yycolumn, yytext()); }
+{Id}                  { System.out.println(yytext()); return  new Symbol(sym.Id, yyline, yycolumn, yytext()); }
+{Numero}              { System.out.println(yytext()); return  new Symbol(sym.Numero, yyline, yycolumn, yytext()); }
+{Caracter}            { System.out.println(yytext()); return  new Symbol(sym.Caracter, yyline, yycolumn, yytext()); }
+{Cadena}              { System.out.println(yytext()); return  new Symbol(sym.Cadena, yyline, yycolumn, yytext()); }
 
 {SPACE}               {}
 {ENTER}               {}

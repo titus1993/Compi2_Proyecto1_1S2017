@@ -51,7 +51,7 @@ precedence right TPotencia, TRaiz;
 
 start with INICIO;
 
-INICIO     ::=  LISTA_FUNCION; 
+INICIO     ::=  LISTA_FUNCION {: TitusNotificaciones.ImprimirConsola("EXITO"); :}; 
 
 
 LISTA_FUNCION ::= LISTA_FUNCION FUNCION
@@ -59,8 +59,8 @@ LISTA_FUNCION ::= LISTA_FUNCION FUNCION
 
 
 
-FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd {: TitusNotificaciones.ImprimirConsola("EXITO"); :}
-                | Id TIgual CUERPO TEnd {: System.out.println("EXITO"); :};
+FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd 
+                | Id TIgual CUERPO TEnd ;
 
 LISTA_PARAMETROS ::=    LISTA_PARAMETROS TComa Id
                         | Id;
@@ -80,7 +80,7 @@ SENTENCIA ::=   SENTENCIA_IF
 SENTENCIA_IF ::=    TIf LLAMADA_METODO TThen CUERPO TEnd
                     | TIf LLAMADA_METODO TThen CUERPO TElse CUERPO TEnd;
 
-SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS;
+SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS TEnd;
 
 LISTA_CASOS ::=     LISTA_CASOS CASO
                     |CASO;
