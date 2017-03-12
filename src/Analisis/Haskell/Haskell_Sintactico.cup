@@ -8,11 +8,11 @@ parser code
 {://Codigo visible
 
     public void syntax_error(Symbol s){
-        System.out.println("Error sintactico en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+        System.out.println("Error sintactico en la Línea " + (s.left) +" Columna "+s.right+ ". Lexema "+s.value + " no reconocido." );
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
-        //System.out.println("Error sintactico en la Línea " + (s.right+1) +" Columna "+s.left+ ". Lexema "+s.value + " no reconocido." );
+        //System.out.println("Error sintactico en la Línea " + (s.left) +" Columna "+s.right+ ". Lexema "+s.value + " no reconocido." );
     }
 
 :}
@@ -38,7 +38,7 @@ nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIM
 
 nonterminal LIST, METODO_MIN, METODO_MAX, METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
 
-nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA;
+nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LLAMADA_LISTA, LOGICO, RELACIONAL;
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
@@ -65,8 +65,7 @@ FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd
 LISTA_PARAMETROS ::=    LISTA_PARAMETROS TComa Id
                         | Id;
 
-CUERPO ::=  LISTA_SENTENCIAS
-            | {:  :};
+CUERPO ::=  LISTA_SENTENCIAS;
 
 
 LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
@@ -77,8 +76,8 @@ SENTENCIA ::=   SENTENCIA_IF
                 | LLAMADA_METODO
                 | DECLARACION_LISTA;
 
-SENTENCIA_IF ::=    TIf LLAMADA_METODO TThen CUERPO TEnd
-                    | TIf LLAMADA_METODO TThen CUERPO TElse CUERPO TEnd;
+SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TEnd
+                    | TIf LOGICO TThen CUERPO TElse CUERPO TEnd;
 
 SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS TEnd;
 
@@ -90,33 +89,39 @@ CASO ::=    VALOR TDosPuntos CUERPO TPuntoyComa;
 VALOR ::=   Numero
             | Caracter;
 
+LOGICO ::=  LOGICO TAnd LOGICO
+            | LOGICO TOr LOGICO
+            | RELACIONAL;
+
+RELACIONAL ::=  RELACIONAL TMayor RELACIONAL
+                | RELACIONAL TMenor RELACIONAL
+                | RELACIONAL TMayorIgual RELACIONAL
+                | RELACIONAL TMenorIgual RELACIONAL
+                | RELACIONAL TIgualacion RELACIONAL
+                | RELACIONAL TDiferenciacion RELACIONAL
+                | EXP
+                | Cadena
+                | LLAMADA_LISTA
+                | Caracter;
+
 EXP ::=     EXP TMas EXP
             | EXP TMenos EXP
             | EXP TPor EXP
             | EXP TDivision EXP
             | EXP TModulo EXP
             | EXP TPotencia EXP
-            | EXP TRaiz EXP
-            | EXP TMayor EXP
-            | EXP TMenor EXP
-            | EXP TMayorIgual EXP
-            | EXP TMenorIgual EXP
-            | EXP TIgualacion EXP
-            | EXP TDiferenciacion EXP
-            | EXP TAnd EXP
-            | EXP TOr EXP
+            | EXP TRaiz EXP          
             | TMenos EXP
             | TVerdadero
             | TFalso
             | Numero
-            | Caracter
             | Id
-            | Cadena
-            | MULTIDIMENSION
             | LLAMADA_METODO
-            | TParentesis_Abre EXP TParentesis_Cierra;
+            | TParentesis_Abre LOGICO TParentesis_Cierra;
 
 LLAMADA_METODO ::= TDolar METODO TDolar;
+
+LLAMADA_LISTA ::= MULTIDIMENSION;
 
 METODO ::=  METODO_CALCULAR
             | METODO_SUCC
@@ -130,7 +135,6 @@ METODO ::=  METODO_CALCULAR
 
 METODO_CUALQUIERA ::= Id TLlave_Abre LISTA_EXP TLlave_Cierra;
  
-
 METODO_CALCULAR ::=    TCalcular EXP;
 
 METODO_SUCC ::=    TSucc EXP;
@@ -143,7 +147,7 @@ METODO_MAX ::=  TMax LIST;
 
 METODO_CONCATENACION ::=    LIST TAumento LIST;
 
-METODO_INDICE ::=   Id TIndiceLista LLAMADA_METODO;
+METODO_INDICE ::=   LIST TIndiceLista LLAMADA_METODO;
 
 METODO_OPERACION_LISTAS ::=     TSum LIST
                                 | TProduct LIST
@@ -171,5 +175,5 @@ LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
 
 DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
 
-LISTA_EXP ::=   LISTA_EXP TComa LLAMADA_METODO
-                | LLAMADA_METODO;
+LISTA_EXP ::=   LISTA_EXP TComa EXP
+                | EXP;

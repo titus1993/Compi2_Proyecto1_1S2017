@@ -165,6 +165,6 @@ ENTER   = [\ \n]
 {SPACE}               {}
 {ENTER}               {}
 . {
-        String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline+1)+" y columna: "+yycolumn;
+        String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline)+" y columna: "+yycolumn;
         System.out.println(errLex);
 }
