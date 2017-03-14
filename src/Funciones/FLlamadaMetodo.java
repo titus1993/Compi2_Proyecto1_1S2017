@@ -13,14 +13,17 @@ import java.util.ArrayList;
  */
 public class FLlamadaMetodo {
     public String Nombre;
+    public int Fila, Columna;
     public ArrayList<FNodoExpresion> Parametros = new ArrayList<>();
     
-    public FLlamadaMetodo(String nombre){
+    public FLlamadaMetodo(String nombre, ArrayList<FNodoExpresion> parametros, int fila, int columna){
         this.Nombre = nombre;
+        this.Parametros = parametros;
+        this.Fila  = fila;
+        this.Columna = columna;
     }
     
     public void InsertarParametro(FNodoExpresion parametro){
-        Parametros.add(parametro);
-        
+        Parametros.add(parametro);        
     }
 }

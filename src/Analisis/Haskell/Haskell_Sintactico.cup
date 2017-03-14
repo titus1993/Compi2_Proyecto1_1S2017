@@ -38,15 +38,17 @@ terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa, TPun
 
 nonterminal INICIO, LISTA_FUNCION, FUNCION, LISTA_PARAMETROS, CUERPO, LISTA_SENTENCIAS, SENTENCIA, SENTENCIA_IF, EXP, LLAMADA_METODO;
 
-nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIMENSION, DIMENSION, METODO, METODO_CALCULAR, METODO_SUCC, METODO_DECC; 
+nonterminal DECLARACION_LISTA, ARREGLO, LISTA_EXP, METODO; 
 
-nonterminal LIST, METODO_MIN, METODO_MAX, METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
+nonterminal METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
 
-nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LOGICO, RELACIONAL, MAS_CONCATENACION, VALOR_ARREGLO, METODO_LISTA, VALOR_LISTA;
+nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LOGICO, RELACIONAL, METODO_LISTA;
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
 
+precedence left TIndiceLista;
+precedence left TAumento;
 precedence left TMas, TMenos;
 precedence left TPor, TDivision, TModulo; 
 precedence right TPotencia, TRaiz; 
@@ -77,9 +79,10 @@ LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
 
 SENTENCIA ::=   SENTENCIA_IF
                 | SENTENCIA_CASE
-                | LLAMADA_METODO
-                | DECLARACION_LISTA
-                | METODO_LISTA;
+                | EXP
+                | DECLARACION_LISTA;
+
+DECLARACION_LISTA ::=   TLet Id TIgual EXP;
 
 SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TElse CUERPO TEnd;
 
@@ -92,8 +95,8 @@ LISTA_CASOS ::=     LISTA_CASOS CASO
 
 CASO ::=    VALOR TDosPuntos CUERPO TPuntoyComa;
 
-VALOR ::=   Numero
-            | Caracter;
+VALOR ::=   Numero:t  {: RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); :}
+            | Caracter:t  {: RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t); :};
 
 LOGICO ::=  LOGICO:izq TAnd:t LOGICO:der    {:
                                                 RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAnd, Constante.TAnd, tleft, tright, null);
@@ -145,12 +148,12 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
             | EXP:izq TPotencia:t EXP:der {:
                                     RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TPotenciaH, Constante.TPotenciaH, tleft, tright, null); 
                                 :}
-            | EXP:izq TRaiz:t EXP:der {:
-                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TRaiz, Constante.TRaiz, tleft, tright, null); 
-                            :}         
-            | TMenos:t EXP:der    {:
-                                RESULT = new FNodoExpresion(null, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null); 
-                            :}
+            | EXP:izq TRaiz:t EXP:der   {:
+                                            RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TRaiz, Constante.TRaiz, tleft, tright, null); 
+                                        :}         
+            | TMenos:t EXP:der  {:
+                                    RESULT = new FNodoExpresion(null, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null); 
+                                :}
             | Numero:t      {:
                                 RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); 
                             :}
@@ -162,85 +165,115 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                                 :}
             | TParentesis_Abre LOGICO:t TParentesis_Cierra  {:
                                                                 RESULT = t; 
-                                                            :};
+                                                            :}
+            | Cadena:t  {:
+                            RESULT =  new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, tleft, tright, new FArreglo(t.toString(), tleft, tright));
+                        :}
+            | ARREGLO:t     {:
+                                RESULT =  t;
+                            :}
+            | Caracter:t    {:
+                                RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t);
+                            :}
+            | EXP:izq TAumento:t EXP:der    {:
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAumento, Constante.TAumento, tleft, tright, null); 
+                                            :}
+            | EXP:izq TIndiceLista:t EXP:der    {:
+                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TIndiceLista, Constante.TIndiceLista, tleft, tright, null); 
+                                                :}
+            ;
 
-LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :};
+LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :}
+                    |METODO_LISTA:t     {: RESULT = t; :};
 
 METODO_LISTA ::=    METODO_CONCATENACION:t {: RESULT = t; :}
                     | METODO_INDICE:t {: RESULT = t; :};
 
-METODO ::=   METODO_CALCULAR:t    {: RESULT = t; :}
-            | METODO_SUCC:t   {: RESULT = t; :}
-            | METODO_DECC:t   {: RESULT = t; :}
-            | METODO_MIN:t    {: RESULT = t; :}
-            | METODO_MAX:t    {: RESULT = t; :}
-            | METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
+METODO ::=  METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
             | METODO_CUALQUIERA:t {: RESULT = t; :};
 
-METODO_CUALQUIERA ::= Id TLlave_Abre LISTA_EXP TLlave_Cierra;
- 
-METODO_CALCULAR ::=     TCalcular EXP
-                        | TCalcular METODO_LISTA;
+METODO_CUALQUIERA ::= Id:t TLlave_Abre LISTA_EXP:lista TLlave_Cierra    {:
+                                                                            RESULT = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)lista, tleft, tright);
+                                                                        :};
 
-METODO_SUCC ::=    TSucc EXP
-                    | TSucc METODO_LISTA;
+METODO_OPERACION_LISTAS ::=     TSum:t EXP:exp  {:
+                                                    ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                    aux.add((FNodoExpresion)exp);
+                                                    RESULT = new FLlamadaMetodo(Constante.TSum, aux, tleft, tright);
+                                                :}
+                                | TProduct:t EXP:exp    {:
+                                                            ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                            aux.add((FNodoExpresion)exp);
+                                                            RESULT = new FLlamadaMetodo(Constante.TProduct, aux, tleft, tright);
+                                                        :}
+                                | TRevers:t EXP:exp     {:
+                                                            ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                            aux.add((FNodoExpresion)exp);
+                                                            RESULT = new FLlamadaMetodo(Constante.TRevers, aux, tleft, tright);
+                                                        :}
+                                | TImpr:t EXP:exp   {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TImpr, aux, tleft, tright);
+                                                    :}
+                                | TPar:t EXP:exp    {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TPar, aux, tleft, tright);
+                                                    :}
+                                | TAsc:t EXP:exp    {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TAsc, aux, tleft, tright);
+                                                    :}
+                                | TDesc:t EXP:exp   {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TDesc, aux, tleft, tright);
+                                                    :}
+                                | TLength:t EXP:exp     {:
+                                                            ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                            aux.add((FNodoExpresion)exp);
+                                                            RESULT = new FLlamadaMetodo(Constante.TLength, aux, tleft, tright);
+                                                        :}
+                                | TDecc:t EXP:exp   {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TDecc, aux, tleft, tright);
+                                                    :}
+                                | TSucc:t EXP:exp   {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TSucc, aux, tleft, tright);
+                                                    :}
+                                | TMax:t EXP:exp    {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TMax, aux, tleft, tright);
+                                                    :}
+                                | TMin:t EXP:exp    {:
+                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                        aux.add((FNodoExpresion)exp);
+                                                        RESULT = new FLlamadaMetodo(Constante.TMin, aux, tleft, tright);
+                                                    :}
+                                | TCalcular:t EXP:exp   {:
+                                                            ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                            aux.add((FNodoExpresion)exp);
+                                                            RESULT = new FLlamadaMetodo(Constante.TCalcular, aux, tleft, tright);
+                                                        :};
 
-METODO_DECC ::=    TDecc EXP
-                    | TDecc METODO_LISTA;
 
-METODO_MIN ::=  TMin VALOR_LISTA;
+ARREGLO ::= TCorchete_Abre:t LISTA_EXP:arreglo TCorchete_Cierra   {:
+                                                                    RESULT = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, tleft, tright, new FArreglo((ArrayList<FNodoExpresion>)arreglo));
+                                                                :};
 
-METODO_MAX ::=  TMax VALOR_LISTA;
-
-METODO_CONCATENACION ::=    LIST TAumento LIST MAS_CONCATENACION;
-
-MAS_CONCATENACION ::=   TAumento LIST MAS_CONCATENACION
-                        |;
-
-METODO_INDICE ::=   Id TIndiceLista EXP TIndiceLista EXP
-                    | Id TIndiceLista EXP;
-
-
-METODO_OPERACION_LISTAS ::=     TSum VALOR_LISTA
-                                | TProduct VALOR_LISTA
-                                | TRevers VALOR_LISTA
-                                | TImpr VALOR_LISTA
-                                | TPar VALOR_LISTA
-                                | TAsc VALOR_LISTA
-                                | TDesc VALOR_LISTA
-                                | TLength VALOR_LISTA;
-VALOR_LISTA::=METODO_CONCATENACION
-    | LIST
-    | METODO_INDICE;
-
-LIST ::=    Cadena
-            | Id
-            | MULTIDIMENSION
-            | LLAMADA_METODO;
-
-DECLARACION_LISTA ::=   TLet Id TIgual VALOR_LISTA;
-
-MULTIDIMENSION ::=   TCorchete_Abre DIMENSIONES TCorchete_Cierra;
-
-DIMENSIONES ::=   LISTA_EXP
-                  | LISTA_DIMENSION;
-
-LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
-                        | DIMENSION;
-
-DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
-
-LISTA_EXP ::=   LISTA_EXP:listaaux TComa VALOR_ARREGLO:exp     {:
+LISTA_EXP ::=   LISTA_EXP:listaaux TComa EXP:exp     {:
                                                                 ArrayList<FNodoExpresion> lista = (ArrayList<FNodoExpresion>)listaaux;
                                                                 lista.add((FNodoExpresion)exp);
                                                                 RESULT = lista;
                                                             :}
-                | VALOR_ARREGLO:t   {:
+                | EXP:t   {:
                                         ArrayList<FNodoExpresion> lista = new ArrayList<>();
                                         lista.add((FNodoExpresion)t);
                                         RESULT = lista; 
                                     :};
-
-VALOR_ARREGLO ::=   EXP:exp {: RESULT = exp; :}
-                    | Caracter:t {: RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t); :}
-                    | METODO_INDICE;

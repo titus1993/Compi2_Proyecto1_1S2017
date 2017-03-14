@@ -20,6 +20,7 @@ public class FNodoExpresion {
     public boolean Bool;
     public char Caracter;
     public FLlamadaMetodo Metodo;
+    public FArreglo Arreglo;
 
     public FNodoExpresion(FNodoExpresion izq, FNodoExpresion der, String tipo, String nombre, int fila, int columna, Object valor) {
         this.Izquierda = izq;
@@ -35,7 +36,7 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TCaracter:
-                this.Caracter = (char)valor;
+                this.Caracter = valor.toString().charAt(1);
                 break;
                 
             case Constante.TCadena:
@@ -48,6 +49,10 @@ public class FNodoExpresion {
                 
             case Constante.TMetodo:
                 this.Metodo = (FLlamadaMetodo)valor;
+                break;
+                
+            case Constante.TArreglo:
+                this.Arreglo = (FArreglo)valor;
                 break;
             
         }

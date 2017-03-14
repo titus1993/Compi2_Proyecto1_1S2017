@@ -11,7 +11,8 @@ package Constante;
  */
 public class Constante {
     public static final String TMetodo = "Metodo";
-    public static final String TVariable = "Variable";
+    public static final String TVariable = "Variable";    
+    public static final String TArreglo = "Arreglo";
     //tipo de datos
     public static final String TId = "Id";
     public static final String TVerdadero = "true";
@@ -120,7 +121,6 @@ public class Constante {
     
     public static final String TContinuar = "continuar";
     public static final String TTerminar = "terminar";
-    public static final String TArreglo = "arreglo";
     public static final String TGraficarFuncion = "graphikar_funcion";
     public static final String TDatos = "datos";
     public static final String TColumna = "columna";
