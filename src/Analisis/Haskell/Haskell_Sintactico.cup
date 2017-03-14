@@ -5,6 +5,8 @@ import Funciones.*;
 import Ejecucion.*;
 import java_cup.runtime.Symbol;
 import Interface.TitusNotificaciones;
+import java.util.ArrayList;
+
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
 {://Codigo visible
@@ -97,7 +99,7 @@ LOGICO ::=  LOGICO:izq TAnd:t LOGICO:der    {:
                                                 RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAnd, Constante.TAnd, tleft, tright, null);
                                             :}
             | LOGICO:izq TOr:t LOGICO:der   {:
-                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMas, Constante.TMas, tleft, tright, null);
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TOr, Constante.TOr, tleft, tright, null);
                                             :}
             | RELACIONAL:t  {:
                                 RESULT = t;
@@ -153,25 +155,27 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                                 RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); 
                             :}
             | Id:t  {:
-                        RESULT = new FNodoExpresion(null, null, Constante.TVariable, t, tleft, tright, null); 
+                        RESULT = new FNodoExpresion(null, null, Constante.TVariable, t.toString(), tleft, tright, null); 
                     :}
-            | LLAMADA_METODO:t
+            | LLAMADA_METODO:t  {:
+                                    RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, t); 
+                                :}
             | TParentesis_Abre LOGICO:t TParentesis_Cierra  {:
                                                                 RESULT = t; 
                                                             :};
 
-LLAMADA_METODO ::= TDolar METODO TDolar;
+LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :};
 
-METODO_LISTA ::=    METODO_CONCATENACION
-                    | METODO_INDICE;
+METODO_LISTA ::=    METODO_CONCATENACION:t {: RESULT = t; :}
+                    | METODO_INDICE:t {: RESULT = t; :};
 
-METODO ::=   METODO_CALCULAR
-            | METODO_SUCC
-            | METODO_DECC
-            | METODO_MIN
-            | METODO_MAX
-            | METODO_OPERACION_LISTAS
-            | METODO_CUALQUIERA;
+METODO ::=   METODO_CALCULAR:t    {: RESULT = t; :}
+            | METODO_SUCC:t   {: RESULT = t; :}
+            | METODO_DECC:t   {: RESULT = t; :}
+            | METODO_MIN:t    {: RESULT = t; :}
+            | METODO_MAX:t    {: RESULT = t; :}
+            | METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
+            | METODO_CUALQUIERA:t {: RESULT = t; :};
 
 METODO_CUALQUIERA ::= Id TLlave_Abre LISTA_EXP TLlave_Cierra;
  
@@ -226,9 +230,17 @@ LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
 
 DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
 
-LISTA_EXP ::=   LISTA_EXP TComa VALOR_ARREGLO
-                | VALOR_ARREGLO;
+LISTA_EXP ::=   LISTA_EXP:listaaux TComa VALOR_ARREGLO:exp     {:
+                                                                ArrayList<FNodoExpresion> lista = (ArrayList<FNodoExpresion>)listaaux;
+                                                                lista.add((FNodoExpresion)exp);
+                                                                RESULT = lista;
+                                                            :}
+                | VALOR_ARREGLO:t   {:
+                                        ArrayList<FNodoExpresion> lista = new ArrayList<>();
+                                        lista.add((FNodoExpresion)t);
+                                        RESULT = lista; 
+                                    :};
 
-VALOR_ARREGLO ::=   EXP
-                    | Caracter
+VALOR_ARREGLO ::=   EXP:exp {: RESULT = exp; :}
+                    | Caracter:t {: RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t); :}
                     | METODO_INDICE;
