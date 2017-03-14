@@ -1,6 +1,8 @@
 package Analisis.Haskell;
 
 import Constante.Constante;
+import Funciones.*;
+import Ejecucion.*;
 import java_cup.runtime.Symbol;
 import Interface.TitusNotificaciones;
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
@@ -22,7 +24,7 @@ action code
       
 :}
 
-terminal Id, Numero, Caracter, Cadena, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra, TFalso, TVerdadero;
+terminal Id, Numero, Caracter, Cadena, TMas, TMenos, TPor, TDivision, TModulo, TPotencia, TRaiz, TDolar, TParentesis_Abre, TParentesis_Cierra;
 
 terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion, TAnd, TOr, TIgual, TCorchete_Abre, TCorchete_Cierra;
 
@@ -38,7 +40,7 @@ nonterminal DECLARACION_LISTA, MULTIDIMENSION, DIMENSIONES, LISTA_EXP, LISTA_DIM
 
 nonterminal LIST, METODO_MIN, METODO_MAX, METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
 
-nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LLAMADA_LISTA, LOGICO, RELACIONAL;
+nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LOGICO, RELACIONAL, MAS_CONCATENACION, VALOR_ARREGLO, METODO_LISTA, VALOR_LISTA;
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
@@ -74,12 +76,14 @@ LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
 SENTENCIA ::=   SENTENCIA_IF
                 | SENTENCIA_CASE
                 | LLAMADA_METODO
-                | DECLARACION_LISTA;
+                | DECLARACION_LISTA
+                | METODO_LISTA;
 
-SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TEnd
-                    | TIf LOGICO TThen CUERPO TElse CUERPO TEnd;
+SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TElse CUERPO TEnd;
 
-SENTENCIA_CASE ::=  TCase EXP LISTA_CASOS TEnd;
+SENTENCIA_CASE ::=  TCase:t EXP:exp LISTA_CASOS TEnd  {:
+                                                        TablaVariables.InsertarVariable(new Variable(Constante.TVacio, "prueba", Constante.TVariable, tleft, tright, null, (FNodoExpresion)exp));
+                                                    :};
 
 LISTA_CASOS ::=     LISTA_CASOS CASO
                     |CASO;
@@ -89,81 +93,128 @@ CASO ::=    VALOR TDosPuntos CUERPO TPuntoyComa;
 VALOR ::=   Numero
             | Caracter;
 
-LOGICO ::=  LOGICO TAnd LOGICO
-            | LOGICO TOr LOGICO
-            | RELACIONAL;
+LOGICO ::=  LOGICO:izq TAnd:t LOGICO:der    {:
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAnd, Constante.TAnd, tleft, tright, null);
+                                            :}
+            | LOGICO:izq TOr:t LOGICO:der   {:
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMas, Constante.TMas, tleft, tright, null);
+                                            :}
+            | RELACIONAL:t  {:
+                                RESULT = t;
+                            :};
 
-RELACIONAL ::=  RELACIONAL TMayor RELACIONAL
-                | RELACIONAL TMenor RELACIONAL
-                | RELACIONAL TMayorIgual RELACIONAL
-                | RELACIONAL TMenorIgual RELACIONAL
-                | RELACIONAL TIgualacion RELACIONAL
-                | RELACIONAL TDiferenciacion RELACIONAL
-                | EXP
-                | Cadena
-                | LLAMADA_LISTA
-                | Caracter;
+RELACIONAL ::=  RELACIONAL:izq TMayor:t RELACIONAL:der      {:
+                                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMayor, Constante.TMayor, tleft, tright, null);
+                                                            :}
+                | RELACIONAL:izq TMenor:t RELACIONAL:der    {:
+                                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenor, Constante.TMenor, tleft, tright, null);
+                                                            :}
+                | RELACIONAL:izq TMayorIgual:t RELACIONAL:der   {:
+                                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMayorIgual, Constante.TMayorIgual, tleft, tright, null);
+                                                                :}
+                | RELACIONAL:izq TMenorIgual:t RELACIONAL:der   {:
+                                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenorIgual, Constante.TMenorIgual, tleft, tright, null);
+                                                                :}
+                | RELACIONAL:izq TIgualacion:t RELACIONAL:der   {:
+                                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TIgualacion, Constante.TIgualacion, tleft, tright, null);
+                                                                :}
+                | RELACIONAL:izq TDiferenciacion:t RELACIONAL:der   {:
+                                                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TDiferenciacion, Constante.TDiferenciacion, tleft, tright, null);
+                                                                    :}
+                | EXP:t     {:
+                                RESULT = t;
+                            :};
 
-EXP ::=     EXP TMas EXP
-            | EXP TMenos EXP
-            | EXP TPor EXP
-            | EXP TDivision EXP
-            | EXP TModulo EXP
-            | EXP TPotencia EXP
-            | EXP TRaiz EXP          
-            | TMenos EXP
-            | TVerdadero
-            | TFalso
-            | Numero
-            | Id
-            | LLAMADA_METODO
-            | TParentesis_Abre LOGICO TParentesis_Cierra;
+EXP ::=     EXP:izq TMas:t EXP:der  {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMas, Constante.TMas, tleft, tright, null);                                    
+                                    :}
+            | EXP:izq TMenos:t EXP:der    {:
+                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null);                                    
+                                :}
+            | EXP:izq TPor:t EXP:der  {:
+                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TPor, Constante.TPor, tleft, tright, null); 
+                            :}
+            | EXP:izq TDivision:t EXP:der {:
+                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TDivision, Constante.TDivision, tleft, tright, null); 
+                                :}
+            | EXP:izq TModulo:t EXP:der   {:
+                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TModulo, Constante.TModulo, tleft, tright, null); 
+                                :}
+            | EXP:izq TPotencia:t EXP:der {:
+                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TPotenciaH, Constante.TPotenciaH, tleft, tright, null); 
+                                :}
+            | EXP:izq TRaiz:t EXP:der {:
+                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TRaiz, Constante.TRaiz, tleft, tright, null); 
+                            :}         
+            | TMenos:t EXP:der    {:
+                                RESULT = new FNodoExpresion(null, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null); 
+                            :}
+            | Numero:t      {:
+                                RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); 
+                            :}
+            | Id:t  {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TVariable, t, tleft, tright, null); 
+                    :}
+            | LLAMADA_METODO:t
+            | TParentesis_Abre LOGICO:t TParentesis_Cierra  {:
+                                                                RESULT = t; 
+                                                            :};
 
 LLAMADA_METODO ::= TDolar METODO TDolar;
 
-LLAMADA_LISTA ::= MULTIDIMENSION;
+METODO_LISTA ::=    METODO_CONCATENACION
+                    | METODO_INDICE;
 
-METODO ::=  METODO_CALCULAR
+METODO ::=   METODO_CALCULAR
             | METODO_SUCC
             | METODO_DECC
             | METODO_MIN
             | METODO_MAX
-            | METODO_CONCATENACION
             | METODO_OPERACION_LISTAS
-            | METODO_INDICE
             | METODO_CUALQUIERA;
 
 METODO_CUALQUIERA ::= Id TLlave_Abre LISTA_EXP TLlave_Cierra;
  
-METODO_CALCULAR ::=    TCalcular EXP;
+METODO_CALCULAR ::=     TCalcular EXP
+                        | TCalcular METODO_LISTA;
 
-METODO_SUCC ::=    TSucc EXP;
+METODO_SUCC ::=    TSucc EXP
+                    | TSucc METODO_LISTA;
 
-METODO_DECC ::=    TDecc EXP;
+METODO_DECC ::=    TDecc EXP
+                    | TDecc METODO_LISTA;
 
-METODO_MIN ::=  TMin LIST;
+METODO_MIN ::=  TMin VALOR_LISTA;
 
-METODO_MAX ::=  TMax LIST;
+METODO_MAX ::=  TMax VALOR_LISTA;
 
-METODO_CONCATENACION ::=    LIST TAumento LIST;
+METODO_CONCATENACION ::=    LIST TAumento LIST MAS_CONCATENACION;
 
-METODO_INDICE ::=   LIST TIndiceLista LLAMADA_METODO;
+MAS_CONCATENACION ::=   TAumento LIST MAS_CONCATENACION
+                        |;
 
-METODO_OPERACION_LISTAS ::=     TSum LIST
-                                | TProduct LIST
-                                | TRevers LIST
-                                | TImpr LIST
-                                | TPar LIST
-                                | TAsc LIST
-                                | TDesc LIST
-                                | TLength LIST;
+METODO_INDICE ::=   Id TIndiceLista EXP TIndiceLista EXP
+                    | Id TIndiceLista EXP;
+
+
+METODO_OPERACION_LISTAS ::=     TSum VALOR_LISTA
+                                | TProduct VALOR_LISTA
+                                | TRevers VALOR_LISTA
+                                | TImpr VALOR_LISTA
+                                | TPar VALOR_LISTA
+                                | TAsc VALOR_LISTA
+                                | TDesc VALOR_LISTA
+                                | TLength VALOR_LISTA;
+VALOR_LISTA::=METODO_CONCATENACION
+    | LIST
+    | METODO_INDICE;
 
 LIST ::=    Cadena
             | Id
-            | MULTIDIMENSION;
+            | MULTIDIMENSION
+            | LLAMADA_METODO;
 
-DECLARACION_LISTA ::=   TLet Id TIgual LIST
-                        | TLet Id TIgual METODO_CONCATENACION;
+DECLARACION_LISTA ::=   TLet Id TIgual VALOR_LISTA;
 
 MULTIDIMENSION ::=   TCorchete_Abre DIMENSIONES TCorchete_Cierra;
 
@@ -175,5 +226,9 @@ LISTA_DIMENSION ::=     LISTA_DIMENSION TComa DIMENSION
 
 DIMENSION ::=   TCorchete_Abre LISTA_EXP TCorchete_Cierra;
 
-LISTA_EXP ::=   LISTA_EXP TComa EXP
-                | EXP;
+LISTA_EXP ::=   LISTA_EXP TComa VALOR_ARREGLO
+                | VALOR_ARREGLO;
+
+VALOR_ARREGLO ::=   EXP
+                    | Caracter
+                    | METODO_INDICE;

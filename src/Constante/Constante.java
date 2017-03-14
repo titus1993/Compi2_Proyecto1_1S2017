@@ -10,6 +10,8 @@ package Constante;
  * @author Titus
  */
 public class Constante {
+    public static final String TMetodo = "Metodo";
+    public static final String TVariable = "Variable";
     //tipo de datos
     public static final String TId = "Id";
     public static final String TVerdadero = "true";

@@ -5,6 +5,8 @@
  */
 package Ejecucion;
 
+import Funciones.FNodoExpresion;
+
 /**
  *
  * @author Titus
@@ -13,14 +15,16 @@ public class Variable {
     public String Tipo, Nombre, Rol;
     public int Fila, Columna;
     public Object valor;
-    //public Ambito Ambito;
+    public Ambito Ambito;
+    public FNodoExpresion Valor;
     
-    public Variable(){
-        this.Tipo = "";
-        this.Nombre = "";
-        this.Rol = "";
-        this.Fila = 0;
-        this.Columna = 0;
-        //this.Ambito = null;
+    public Variable(String tipo, String nombre, String rol, int fila, int columna, Ambito ambito, FNodoExpresion valor){
+        this.Tipo = tipo;
+        this.Nombre = nombre;
+        this.Rol = rol;
+        this.Fila = fila;
+        this.Columna = columna;
+        this.Ambito = ambito;
+        this.Valor = valor;
     }
 }

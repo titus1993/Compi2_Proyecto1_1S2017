@@ -13,9 +13,13 @@ import java.util.List;
  * @author Titus
  */
 public class TablaVariables {
-    public static List<String> a = new LinkedList<>();
+    public static List<Variable> Tabla = new LinkedList<Variable>();
     
     public TablaVariables(){
         
+    }
+    
+    public static void InsertarVariable(Variable var){
+        Tabla.add(var);
     }
 }

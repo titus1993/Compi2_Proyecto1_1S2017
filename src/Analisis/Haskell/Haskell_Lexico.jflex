@@ -107,9 +107,7 @@ ENTER   = [\ \n]
 {TRaiz}               { System.out.println(yytext()); return  new Symbol(sym.TRaiz, yyline, yycolumn, yytext()); }
 {TDolar}              { System.out.println(yytext()); return  new Symbol(sym.TDolar, yyline, yycolumn, yytext()); }
 {TParentesis_Abre}    { System.out.println(yytext()); return  new Symbol(sym.TParentesis_Abre, yyline, yycolumn, yytext()); }
-{TParentesis_Cierra}  { System.out.println(yytext()); return  new Symbol(sym.TParentesis_Cierra, yyline, yycolumn, yytext()); }
-{TFalso}              { System.out.println(yytext()); return  new Symbol(sym.TFalso, yyline, yycolumn, yytext()); }
-{TVerdadero}          { System.out.println(yytext()); return  new Symbol(sym.TVerdadero, yyline, yycolumn, yytext()); }    
+{TParentesis_Cierra}  { System.out.println(yytext()); return  new Symbol(sym.TParentesis_Cierra, yyline, yycolumn, yytext()); } 
 //Operaciones realcionales
 {TMayor}              { System.out.println(yytext()); return  new Symbol(sym.TMayor, yyline, yycolumn, yytext()); }
 {TMenor}              { System.out.println(yytext()); return  new Symbol(sym.TMenor, yyline, yycolumn, yytext()); }
