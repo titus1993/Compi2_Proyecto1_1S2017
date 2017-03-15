@@ -6,6 +6,7 @@ import Ejecucion.*;
 import java_cup.runtime.Symbol;
 import Interface.TitusNotificaciones;
 import java.util.ArrayList;
+import Ejecucion.Ambito;
 
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
@@ -57,43 +58,84 @@ precedence right TPotencia, TRaiz;
 
 start with INICIO;
 
-INICIO     ::=  LISTA_FUNCION {: TitusNotificaciones.ImprimirConsola("EXITO"); :}; 
+INICIO     ::=  LISTA_FUNCION:funcion {: TablaVariables.InsertarVariable(new Variable("","","",0,0,null, funcion)); :}; 
 
 
 LISTA_FUNCION ::= LISTA_FUNCION FUNCION
-                | FUNCION;
+                | FUNCION:funcion {: RESULT = funcion; :};
 
 
 
 FUNCION ::=     Id LISTA_PARAMETROS TIgual CUERPO TEnd 
-                | Id TIgual CUERPO TEnd ;
+                | Id TIgual CUERPO:cuerpo TEnd {: RESULT = cuerpo; :};
 
 LISTA_PARAMETROS ::=    LISTA_PARAMETROS TComa Id
                         | Id;
 
-CUERPO ::=  LISTA_SENTENCIAS;
+CUERPO ::=  LISTA_SENTENCIAS:t {: RESULT = t; :};
 
 
-LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS SENTENCIA{::}
-                        | SENTENCIA;
+LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS:listasent SENTENCIA:sentencia  {:
+                                                                            ArrayList<Simbolo> tabla = (ArrayList<Simbolo>)listasent;
+                                                                            tabla.add((Simbolo)sentencia);
+                                                                            RESULT = tabla;
+                                                                        :}
+                        | SENTENCIA:sentencia   {:
+                                                    ArrayList<Simbolo> tabla = new ArrayList<>();
+                                                    tabla.add((Simbolo)sentencia);
+                                                    RESULT = tabla;
+                                                :};
 
-SENTENCIA ::=   SENTENCIA_IF
-                | SENTENCIA_CASE
-                | EXP
-                | DECLARACION_LISTA;
+SENTENCIA ::=   SENTENCIA_IF:t  {: RESULT = t; :}
+                | SENTENCIA_CASE:t {: RESULT = t; :}
+                | LOGICO:t  {: 
+                                        FNodoExpresion nodo = (FNodoExpresion)t;
+                                        if(nodo.Tipo == Constante.TMetodo){
+                                            FLlamadaMetodo metodo = (FLlamadaMetodo)nodo.Metodo;
+                                            TablaVariables.InsertarVariable(new Variable("","","",0,0,null, metodo));
+                                            RESULT = new Simbolo(Constante.TMetodo, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo.Ambito, metodo);
+
+                                        }else{
+                                            //aqui va el error;
+                                            RESULT = new Simbolo(Constante.TMetodo, Constante.TMetodo, Constante.TMetodo, tleft, tright, new Ambito(Constante.TError), null);
+                                        }
+                            :}
+                | DECLARACION_LISTA:t   {: RESULT = t; :};
 
 DECLARACION_LISTA ::=   TLet Id TIgual LOGICO;
 
-SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TElse CUERPO TEnd;
+SENTENCIA_IF ::=    TIf LOGICO TThen CUERPO TElse CUERPO TEnd   {:
+                                                                    
+                                                                :};
 
-SENTENCIA_CASE ::=  TCase:t LOGICO:exp LISTA_CASOS TEnd  {:
-                                                        TablaVariables.InsertarVariable(new Variable(Constante.TVacio, "prueba", Constante.TVariable, tleft, tright, null, (FNodoExpresion)exp));
-                                                    :};
+SENTENCIA_CASE ::=  TCase:t LOGICO:exp LISTA_CASOS:listac TEnd  {:
+                                                                    ArrayList<FCaso> lista = (ArrayList<FCaso>)listac;
+                                                                    FCase fcase = new FCase((FNodoExpresion)exp, lista, new Ambito(Constante.TCase), null);
+                                                                    for(FCaso caso: lista){
+                                                                        caso.Padre = fcase.Ambito;
+                                                                        for(Simbolo sim: caso.Ambito.TablaSimbolo){
+                                                                            sim.Ambito.Padre = fcase.Ambito;
+                                                                        }
+                                                                    }
+                                                                    RESULT = new Simbolo(Constante.TCase, Constante.TCase, Constante.TCase, tleft, tright, fcase.Ambito, fcase);
+                                                                :};
 
-LISTA_CASOS ::=     LISTA_CASOS CASO
-                    |CASO;
+LISTA_CASOS ::=     LISTA_CASOS:listac CASO:caso     {:
+                                                        ArrayList<FCaso> lista = (ArrayList<FCaso>)listac;
+                                                        lista.add((FCaso)caso);
+                                                        RESULT = lista;
+                                                    :}
+                    |CASO:caso  {:
+                                    ArrayList<FCaso> lista = new ArrayList<>();
+                                    lista.add((FCaso)caso);
+                                    RESULT = lista;
+                                :};
 
-CASO ::=    VALOR TDosPuntos CUERPO TPuntoyComa;
+CASO ::=    VALOR:valor TDosPuntos CUERPO:cuerpo TPuntoyComa    {:
+                                                                    Ambito ambito = new Ambito(Constante.TCase, (ArrayList<Simbolo>)cuerpo, null);
+                                                                    FCaso caso = new FCaso((FNodoExpresion)valor, ambito);
+                                                                    RESULT = caso;
+                                                                :};
 
 VALOR ::=   Numero:t  {: RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); :}
             | Caracter:t  {: char c = t.toString().charAt(1); RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, c); :};
@@ -176,19 +218,22 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                                 char c = t.toString().charAt(1);                              
                                 RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, c);
                             :}
-            | EXP:izq TAumento:t EXP:der    {:
-                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAumento, Constante.TAumento, tleft, tright, null); 
+            | EXP:izq TAumento:t EXP:der     {:
+                                                ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                aux.add((FNodoExpresion)izq);
+                                                aux.add((FNodoExpresion)der);
+                                                FLlamadaMetodo metodo = new FLlamadaMetodo(Constante.TAumento, aux, tleft, tright);
+                                                RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo);
                                             :}
             | EXP:izq TIndiceLista:t EXP:der    {:
-                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TIndiceLista, Constante.TIndiceLista, tleft, tright, null); 
-                                                :}
-            ;
+                                                    ArrayList<FNodoExpresion> aux = new ArrayList<>();
+                                                    aux.add((FNodoExpresion)izq);
+                                                    aux.add((FNodoExpresion)der);
+                                                    FLlamadaMetodo metodo = new FLlamadaMetodo(Constante.TIndiceLista, aux, tleft, tright);
+                                                    RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo);
+                                                :};
 
-LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :}
-                    |METODO_LISTA:t     {: RESULT = t; :};
-
-METODO_LISTA ::=    METODO_CONCATENACION:t {: RESULT = t; :}
-                    | METODO_INDICE:t {: RESULT = t; :};
+LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :};
 
 METODO ::=  METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
             | METODO_CUALQUIERA:t {: RESULT = t; :};

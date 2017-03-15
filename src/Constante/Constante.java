@@ -13,6 +13,7 @@ public class Constante {
     public static final String TMetodo = "Metodo";
     public static final String TVariable = "Variable";    
     public static final String TArreglo = "Arreglo";
+    public static final String TError = "Error";
     //tipo de datos
     public static final String TId = "Id";
     public static final String TVerdadero = "true";
@@ -72,7 +73,7 @@ public class Constante {
     //operaciones exclusivas
     public static final String TAumento = "++";
     public static final String TDecremento = "--";
-    public static final String TIndiceLista = "!!";
+    public static final String TIndiceLista  = "!!";
     
     //operaciones en lista
     public static final String TSum = "sum";

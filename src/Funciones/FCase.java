@@ -6,19 +6,22 @@
 package Funciones;
 
 import Ejecucion.Ambito;
+import java.util.ArrayList;
 
 /**
  *
  * @author Titus
  */
-public class FCaso {
-    public FNodoExpresion Valor;
+public class FCase {
     public Ambito Ambito;
     public Ambito Padre;
+    public ArrayList<FCaso> Casos;
+    public FNodoExpresion Condicion;
     
-    public FCaso(FNodoExpresion valor, Ambito ambito){
-        this.Valor = valor;
+    public FCase(FNodoExpresion condicion, ArrayList<FCaso> casos, Ambito ambito, Ambito padre){
+        this.Condicion = condicion;
+        this.Casos = casos;
         this.Ambito = ambito;
-        this.Padre = null;
+        this.Padre = padre;
     }
 }

@@ -16,9 +16,9 @@ public class Variable {
     public int Fila, Columna;
     public Object valor;
     public Ambito Ambito;
-    public FNodoExpresion Valor;
+    public Object Valor;
     
-    public Variable(String tipo, String nombre, String rol, int fila, int columna, Ambito ambito, FNodoExpresion valor){
+    public Variable(String tipo, String nombre, String rol, int fila, int columna, Ambito ambito, Object valor){
         this.Tipo = tipo;
         this.Nombre = nombre;
         this.Rol = rol;
