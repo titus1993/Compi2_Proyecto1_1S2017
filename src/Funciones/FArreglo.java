@@ -19,6 +19,7 @@ public class FArreglo {
     }
     
     public FArreglo(String cadena, int fila, int columna){
+        this.Arreglo = new ArrayList<>();
         cadena = cadena.substring(1, cadena.length() - 1);
         for(char c: cadena.toCharArray()){
             this.Arreglo.add(new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter , fila, columna, c));

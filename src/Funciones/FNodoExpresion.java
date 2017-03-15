@@ -36,7 +36,7 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TCaracter:
-                this.Caracter = valor.toString().charAt(1);
+                this.Caracter = (char)valor;
                 break;
                 
             case Constante.TCadena:
