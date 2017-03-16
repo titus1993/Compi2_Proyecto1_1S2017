@@ -11,6 +11,7 @@ import java.io.StringReader;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.JOptionPane;
 
 import Analisis.Haskell.Haskell_Sintactico;
 import Analisis.Haskell.Haskell_Lexico;
@@ -49,12 +50,19 @@ public class TitusTab extends JPanel {
 
     public void AnalizarHaskell(){
         try {
-            TitusNotificaciones.ImprimirConsola("Inicia Analisis");
+            
             Haskell_Lexico scan = new Haskell_Lexico(new BufferedReader(new StringReader(TextBox.getText())));
             //scan.yyreset(new BufferedReader(new StringReader(TextBox.getText())));
             Haskell_Sintactico parser = new Haskell_Sintactico(scan);
             parser.parse();
-            TitusNotificaciones.ImprimirConsola("Finaliza");
+            
+            if(parser.Ejecucion != null){
+                if(JOptionPane.showConfirmDialog(this, "Desea cargar las funciones a memoria.", "Cargar funciones", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+                    TitusNotificaciones.ImprimirConsola("Funciones cargadas correctamente");
+                }
+            }else{
+                
+            }
         } catch (Exception ex) {
             Logger.getLogger(TitusTab.class.getName()).log(Level.SEVERE, null, ex);
         }
