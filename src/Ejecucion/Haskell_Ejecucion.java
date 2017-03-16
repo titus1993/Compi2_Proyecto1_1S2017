@@ -16,4 +16,11 @@ public class Haskell_Ejecucion {
     public Haskell_Ejecucion(Ambito ambito){
         this.Ambito = ambito;
     }
+    
+    public void LlenarTabla(){
+        for(Simbolo sim: Ambito.TablaSimbolo){
+            Variable var = new Variable(sim.Tipo, sim.Nombre, sim.Rol, sim.Fila, sim.Columna, sim.Ambito, sim.Valor);
+            TablaHaskell.InsertarFuncion(var);
+        }
+    }
 }

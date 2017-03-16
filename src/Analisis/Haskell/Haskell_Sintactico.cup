@@ -252,7 +252,9 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                         RESULT = new FNodoExpresion(null, null, Constante.TVariable, t.toString(), tleft, tright, null); 
                     :}
             | LLAMADA_METODO:t  {:
-                                    RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, t); 
+                                    FNodoExpresion a = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, t); 
+                                    a.ResolverExpresion();
+                                    RESULT = a;
                                 :}
             | TParentesis_Abre LOGICO:t TParentesis_Cierra  {:
                                                                 RESULT = t; 

@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import Ejecucion.*;
 
 import javax.swing.*;
 
@@ -38,6 +39,7 @@ public class Interface extends javax.swing.JFrame {
         IniciarSplitPane();
         PosicionarCentro();
         TitusNotificaciones.Iniciar(ControlTab);
+        TablaHaskell.IniciarTabla();
     }
 
     private void IniciarSplitPane() {

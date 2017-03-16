@@ -58,7 +58,9 @@ public class TitusTab extends JPanel {
             
             if(parser.Ejecucion != null){
                 if(JOptionPane.showConfirmDialog(this, "Desea cargar las funciones a memoria.", "Cargar funciones", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION){
+                    parser.Ejecucion.LlenarTabla();
                     TitusNotificaciones.ImprimirConsola("Funciones cargadas correctamente");
+                    
                 }
             }else{
                 
