@@ -6,6 +6,7 @@
 package Funciones;
 
 import Constante.Constante;
+import java.util.ArrayList;
 
 /**
  *
@@ -70,6 +71,7 @@ public class FNodoExpresion {
         this.Bool = nodo.Bool;
         this.Caracter = nodo.Caracter;
         this.Metodo = nodo.Metodo;
+        this.Arreglo = nodo.Arreglo;
     }
 
     public FNodoExpresion ResolverExpresion() {
@@ -161,9 +163,11 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TProduct:
+                nodo = FProduct(metodo.Parametros.get(0));
                 break;
 
             case Constante.TRevers:
+                nodo = FRevers(metodo.Parametros.get(0));
                 break;
 
             case Constante.TImpr:
@@ -194,21 +198,106 @@ public class FNodoExpresion {
         return nodo;
     }
 
-    public FNodoExpresion FSum(FNodoExpresion der) {
-        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
+    
+   
+    
+    public FNodoExpresion FSum(FNodoExpresion der){
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
         if (der.Tipo.equals(Constante.TArreglo)) {
-            double valor = 0;
-            for (FNodoExpresion a : der.Arreglo.Arreglo) {
-                FNodoExpresion aux = a.ResolverExpresion();
-                if (aux.Tipo.equals(Constante.TDecimal)) {
-                    valor += aux.Numero;
-                } else if (aux.Tipo.equals(Constante.TCaracter)) {
-                    valor += aux.Caracter;
-                } else {
-                    //error porque no es numerico el valor
-                    break;
-                }
+            nodo = FSum2(der);
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+    
+    public FNodoExpresion FSum2(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+
+        double valor = 0;
+
+        FNodoExpresion aux = new FNodoExpresion(der);
+        if (aux.Tipo.equals(Constante.TDecimal)) {
+            valor += aux.Numero;
+        } else if (aux.Tipo.equals(Constante.TCaracter)) {
+            valor += aux.Caracter;
+        } else if (aux.Tipo.equals(Constante.TArreglo)) {
+            for (FNodoExpresion b : aux.Arreglo.Arreglo) {
+                valor += FSum2(b).Numero;
             }
+        } else {
+            //error porque no es numerico el valor
+        }
+        nodo.Tipo = Constante.TDecimal;
+        nodo.Nombre = Constante.TDecimal;
+        nodo.Numero = valor;
+
+        return nodo;
+    }
+
+    public FNodoExpresion FProduct(FNodoExpresion der) {
+       FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.Tipo.equals(Constante.TArreglo)) {
+            nodo = FProduct2(der);
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+
+    public FNodoExpresion FProduct2(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+
+        double valor = 1;
+
+        FNodoExpresion aux = new FNodoExpresion(der);
+        if (aux.Tipo.equals(Constante.TDecimal)) {
+            valor *= aux.Numero;
+        } else if (aux.Tipo.equals(Constante.TCaracter)) {
+            valor *= aux.Caracter;
+        } else if (aux.Tipo.equals(Constante.TArreglo)) {
+            for (FNodoExpresion b : aux.Arreglo.Arreglo) {
+                valor *= FProduct2(b).Numero;
+            }
+        } else {
+            //error porque no es numerico el valor
+        }
+        nodo.Tipo = Constante.TDecimal;
+        nodo.Nombre = Constante.TDecimal;
+        nodo.Numero = valor;
+
+        return nodo;
+    }
+    
+    public FNodoExpresion FRevers(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, der.Fila, der.Columna, new FArreglo(new ArrayList<>()));
+            for (int i = der.Arreglo.Dimensiones - 1; i >= 0; i--) {
+                exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i));
+            }
+            exp.Arreglo.Dimensiones = exp.Arreglo.Arreglo.size();
+            nodo = exp;            
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+    
+    
+    public FNodoExpresion FImpr(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, der.Fila, der.Columna, new FArreglo(new ArrayList<>()));
+            boolean estado = true;
+            for (int i = der.Arreglo.Dimensiones - 1; i >= 0; i--) {
+                if(estado){
+                    exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i));
+                }    
+                estado = !estado;
+            }
+            exp.Arreglo.Dimensiones = exp.Arreglo.Arreglo.size();
+            nodo = exp;            
         } else {
             //error, tiene que ser lista
         }

@@ -15,6 +15,8 @@ import javax.swing.JOptionPane;
 
 import Analisis.Haskell.Haskell_Sintactico;
 import Analisis.Haskell.Haskell_Lexico;
+import java.awt.Component;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -40,7 +42,6 @@ public class TitusTab extends JPanel {
         //pane.setRowHeaderView(texto);
         TextBox = new JTextPane();
         JScrollPane pane = new JScrollPane(TextBox);
-        TextBox.setText("funcion x,y =  end");
         this.add(pane, BorderLayout.CENTER);
     }
 
