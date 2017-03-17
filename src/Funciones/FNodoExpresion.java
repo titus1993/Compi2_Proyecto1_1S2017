@@ -82,49 +82,63 @@ public class FNodoExpresion {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, raiz.Fila, raiz.Columna, null);
         switch (raiz.Tipo) {
             case Constante.TMas:
-
+                nodo = Suma(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMenos:
+                nodo = Resta(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TPor:
+                nodo = Multiplicacion(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TDivision:
+                nodo = Division(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TPotenciaH:
+                nodo = Potencia(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TModulo:
+                nodo = Modulo(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TRaiz:
+                nodo = Raiz(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMayor:
+                nodo = Mayor(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMenor:
+                nodo = Menor(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMayorIgual:
+                nodo = MayorIgual(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMenorIgual:
+                nodo = MenorIgual(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TIgualacion:
+                nodo = Igualacion(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TDiferenciacion:
+                nodo = Diferenciacion(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TOr:
+                nodo = Or(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TAnd:
+                nodo = And(raiz.Izquierda, raiz.Derecha);
                 break;
 
             case Constante.TMetodo:
@@ -148,7 +162,12 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TArreglo:
-                nodo = new FNodoExpresion(raiz);
+                FNodoExpresion aux = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, raiz.Fila, raiz.Columna, new FArreglo(new ArrayList<>()));
+                for (FNodoExpresion exp : raiz.Arreglo.Arreglo) {
+                    aux.Arreglo.Arreglo.add(exp.ResolverExpresion());
+                }
+                aux.Arreglo.Dimensiones = aux.Arreglo.Arreglo.size();
+                nodo = aux;
                 break;
         }
         return nodo;
@@ -171,9 +190,11 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TImpr:
+                nodo = FImpr(metodo.Parametros.get(0));
                 break;
 
             case Constante.TPar:
+                nodo = FPar(metodo.Parametros.get(0));
                 break;
 
             case Constante.TAsc:
@@ -183,6 +204,7 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TLength:
+                nodo = FLength(metodo.Parametros.get(0));
                 break;
 
             case Constante.TAumento:
@@ -191,6 +213,20 @@ public class FNodoExpresion {
             case Constante.TIndiceLista:
                 break;
 
+            case Constante.TMin:
+                FMin(metodo.Parametros.get(0));
+                break;
+
+            case Constante.TMax:
+                FMax(metodo.Parametros.get(0));
+                break;
+
+            case Constante.TSucc:
+                break;
+                
+            case Constante.TDecc:
+                break;
+                
             default:
                 break;
 
@@ -198,30 +234,27 @@ public class FNodoExpresion {
         return nodo;
     }
 
-    
-   
-    
-    public FNodoExpresion FSum(FNodoExpresion der){
+    public FNodoExpresion FSum(FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
-        if (der.Tipo.equals(Constante.TArreglo)) {
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             nodo = FSum2(der);
         } else {
             //error, tiene que ser lista
         }
         return nodo;
     }
-    
+
     public FNodoExpresion FSum2(FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
 
         double valor = 0;
 
         FNodoExpresion aux = new FNodoExpresion(der);
-        if (aux.Tipo.equals(Constante.TDecimal)) {
+        if (aux.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             valor += aux.Numero;
-        } else if (aux.Tipo.equals(Constante.TCaracter)) {
+        } else if (aux.ResolverExpresion().Tipo.equals(Constante.TCaracter)) {
             valor += aux.Caracter;
-        } else if (aux.Tipo.equals(Constante.TArreglo)) {
+        } else if (aux.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             for (FNodoExpresion b : aux.Arreglo.Arreglo) {
                 valor += FSum2(b).Numero;
             }
@@ -235,9 +268,91 @@ public class FNodoExpresion {
         return nodo;
     }
 
+    public FNodoExpresion FMax(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
+            nodo = FMax2(der);
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+
+    public FNodoExpresion FMax2(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        FNodoExpresion aux = der.ResolverExpresion();
+
+        if (aux.Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion anterior = null;
+            for (FNodoExpresion hijo : aux.Arreglo.Arreglo) {
+                FNodoExpresion hijoaux = FMax2(hijo.ResolverExpresion());
+                if (anterior == null) {
+                    anterior = hijoaux;
+                } else {
+                    if (anterior.Tipo.equals(Constante.TDecimal) && hijoaux.Tipo.equals(Constante.TDecimal)) {
+                        if (anterior.Numero < hijoaux.Numero) {
+                            anterior = hijoaux;
+                        }
+                    }else if(anterior.Tipo.equals(Constante.TCaracter) && hijoaux.Tipo.equals(Constante.TCaracter)){
+                        if(anterior.Caracter < hijoaux.Caracter){
+                            anterior = hijoaux;
+                        }
+                    }else{
+                        //error diferentes tipos de datos
+                    }
+                }
+            }
+            nodo = anterior;
+        } else {
+            nodo = der.ResolverExpresion();
+        }
+        return nodo;
+    }
+    
+    public FNodoExpresion FMin(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
+            nodo = FMin2(der);
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+
+    public FNodoExpresion FMin2(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        FNodoExpresion aux = der.ResolverExpresion();
+
+        if (aux.Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion anterior = null;
+            for (FNodoExpresion hijo : aux.Arreglo.Arreglo) {
+                FNodoExpresion hijoaux = FMin2(hijo.ResolverExpresion());
+                if (anterior == null) {
+                    anterior = hijoaux;
+                } else {
+                    if (anterior.Tipo.equals(Constante.TDecimal) && hijoaux.Tipo.equals(Constante.TDecimal)) {
+                        if (anterior.Numero > hijoaux.Numero) {
+                            anterior = hijoaux;
+                        }
+                    }else if(anterior.Tipo.equals(Constante.TCaracter) && hijoaux.Tipo.equals(Constante.TCaracter)){
+                        if(anterior.Caracter > hijoaux.Caracter){
+                            anterior = hijoaux;
+                        }
+                    }else{
+                        //error diferentes tipos de datos
+                    }
+                }
+            }
+            nodo = anterior;
+        } else {
+            nodo = der.ResolverExpresion();
+        }
+        return nodo;
+    }
+
     public FNodoExpresion FProduct(FNodoExpresion der) {
-       FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
-        if (der.Tipo.equals(Constante.TArreglo)) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             nodo = FProduct2(der);
         } else {
             //error, tiene que ser lista
@@ -251,11 +366,11 @@ public class FNodoExpresion {
         double valor = 1;
 
         FNodoExpresion aux = new FNodoExpresion(der);
-        if (aux.Tipo.equals(Constante.TDecimal)) {
+        if (aux.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             valor *= aux.Numero;
-        } else if (aux.Tipo.equals(Constante.TCaracter)) {
+        } else if (aux.ResolverExpresion().Tipo.equals(Constante.TCaracter)) {
             valor *= aux.Caracter;
-        } else if (aux.Tipo.equals(Constante.TArreglo)) {
+        } else if (aux.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             for (FNodoExpresion b : aux.Arreglo.Arreglo) {
                 valor *= FProduct2(b).Numero;
             }
@@ -268,36 +383,65 @@ public class FNodoExpresion {
 
         return nodo;
     }
-    
+
     public FNodoExpresion FRevers(FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
-        if (der.Tipo.equals(Constante.TArreglo)) {
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, der.Fila, der.Columna, new FArreglo(new ArrayList<>()));
-            for (int i = der.Arreglo.Dimensiones - 1; i >= 0; i--) {
-                exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i));
+            for (int i = der.Arreglo.Arreglo.size() - 1; i >= 0; i--) {
+                exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i).ResolverExpresion());
             }
             exp.Arreglo.Dimensiones = exp.Arreglo.Arreglo.size();
-            nodo = exp;            
+            nodo = exp;
         } else {
             //error, tiene que ser lista
         }
         return nodo;
     }
-    
-    
+
     public FNodoExpresion FImpr(FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
-        if (der.Tipo.equals(Constante.TArreglo)) {
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
             FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, der.Fila, der.Columna, new FArreglo(new ArrayList<>()));
             boolean estado = true;
-            for (int i = der.Arreglo.Dimensiones - 1; i >= 0; i--) {
-                if(estado){
-                    exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i));
-                }    
+            for (int i = 0; i < der.Arreglo.Arreglo.size(); i++) {
+                if (estado) {
+                    exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i).ResolverExpresion());
+                }
                 estado = !estado;
             }
             exp.Arreglo.Dimensiones = exp.Arreglo.Arreglo.size();
-            nodo = exp;            
+            nodo = exp;
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+
+    public FNodoExpresion FPar(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, der.Fila, der.Columna, new FArreglo(new ArrayList<>()));
+            boolean estado = false;
+            for (int i = 0; i < der.Arreglo.Arreglo.size(); i++) {
+                if (estado) {
+                    exp.Arreglo.Arreglo.add(der.Arreglo.Arreglo.get(i).ResolverExpresion());
+                }
+                estado = !estado;
+            }
+            exp.Arreglo.Dimensiones = exp.Arreglo.Arreglo.size();
+            nodo = exp;
+        } else {
+            //error, tiene que ser lista
+        }
+        return nodo;
+    }
+
+    public FNodoExpresion FLength(FNodoExpresion der) {
+        FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
+        if (der.ResolverExpresion().Tipo.equals(Constante.TArreglo)) {
+            FNodoExpresion exp = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, der.Fila, der.Columna, der.Arreglo.Arreglo.size());
+            nodo = exp;
         } else {
             //error, tiene que ser lista
         }
@@ -306,7 +450,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Suma(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero + der.Numero);
         } else {
             //error en suma tipo de dato
@@ -316,17 +460,26 @@ public class FNodoExpresion {
 
     public FNodoExpresion Resta(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
-            nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero - der.Numero);
+        if (izq != null) {
+            if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
+                nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero - der.Numero);
+            } else {
+                //error en suma tipo de dato
+            }
         } else {
-            //error en suma tipo de dato
+            if (der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
+                nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, -der.Numero);
+            } else {
+                //error en suma tipo de dato
+            }
         }
+
         return nodo;
     }
 
     public FNodoExpresion Multiplicacion(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero * der.Numero);
         } else {
             //error en suma tipo de dato
@@ -336,7 +489,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Division(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (der.Numero != 0) {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero + der.Numero);
             } else {
@@ -350,7 +503,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Modulo(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (der.Numero != 0) {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, izq.Numero % der.Numero);
             } else {
@@ -364,7 +517,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Raiz(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (der.Numero != 0) {
                 if (izq.Numero != 0) {
                     nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, Math.pow(der.Numero, 1 / izq.Numero));
@@ -382,7 +535,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Potencia(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (der.Numero != 0) {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, Math.pow(izq.Numero, der.Numero));
             } else {
@@ -396,7 +549,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Mayor(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero > der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -410,7 +563,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Menor(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero < der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -424,7 +577,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Igualacion(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero == der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -438,7 +591,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion MayorIgual(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero >= der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -452,7 +605,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion MenorIgual(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero <= der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -466,7 +619,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Diferenciacion(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TDecimal) && der.Tipo.equals(Constante.TDecimal)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TDecimal) && der.ResolverExpresion().Tipo.equals(Constante.TDecimal)) {
             if (izq.Numero != der.Numero) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -480,7 +633,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion Or(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TBool) && der.Tipo.equals(Constante.TBool)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TBool) && der.ResolverExpresion().Tipo.equals(Constante.TBool)) {
             if (izq.Bool || der.Bool) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
@@ -494,7 +647,7 @@ public class FNodoExpresion {
 
     public FNodoExpresion And(FNodoExpresion izq, FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
-        if (izq.Tipo.equals(Constante.TBool) && der.Tipo.equals(Constante.TBool)) {
+        if (izq.ResolverExpresion().Tipo.equals(Constante.TBool) && der.ResolverExpresion().Tipo.equals(Constante.TBool)) {
             if (izq.Bool && der.Bool) {
                 nodo = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, 0, 0, true);
             } else {
