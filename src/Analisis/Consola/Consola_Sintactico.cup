@@ -1,4 +1,4 @@
-package Analisis.Haskell;
+package Analisis.Consola;
 
 import Constante.Constante;
 import Funciones.*;
@@ -11,10 +11,10 @@ import Ejecucion.Ambito;
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
 {://Codigo visible
-    public Haskell_Ejecucion Ejecucion = null;
+    public Simbolo simbolo = null;
 
     public void syntax_error(Symbol s){
-        TitusNotificaciones.InsertarError("Sintactico",s.value + " no reconocido", s.left, s.right);
+        System.out.println("Error sintactico en la Línea " + (s.left) +" Columna "+s.right+ ". Lexema "+s.value + " no reconocido." );
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
@@ -34,17 +34,17 @@ terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion,
 
 terminal TLet, TCalcular, TSucc, TDecc, TMin, TMax;
 
-terminal TSum, TProduct, TRevers, TImpr, TPar, TAsc, TDesc, TLength, TAumento, TIndiceLista;
+terminal TSum, TProduct, TRevers, TImpr, TPar, TAsc, TDesc, TLength, TAumento, TIndiceLista, TPorcentaje;
 
-terminal TEnd, TIf, TThen, TElse, TCase, TLlave_Abre, TLlave_Cierra, TComa, TPuntoyComa, TDosPuntos;
+terminal TLlave_Abre, TLlave_Cierra, TComa;
 
-nonterminal INICIO, LISTA_FUNCION, FUNCION, LISTA_PARAMETROS, CUERPO, LISTA_SENTENCIAS, SENTENCIA, SENTENCIA_IF, EXP, LLAMADA_METODO;
+nonterminal INICIO, EXP, LLAMADA_METODO;
 
 nonterminal DECLARACION_LISTA, ARREGLO, LISTA_EXP, METODO; 
 
-nonterminal METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
+nonterminal METODO_OPERACION_LISTAS;
 
-nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LOGICO, RELACIONAL, METODO_LISTA;
+nonterminal METODO_CUALQUIERA, LOGICO, RELACIONAL, SIMBOLO;
 
 precedence left TAnd, TOr;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
@@ -59,74 +59,10 @@ precedence right TPotencia, TRaiz;
 
 start with INICIO;
 
-INICIO     ::=  LISTA_FUNCION:funcion   {: 
-                                            Ambito global = new Ambito("Global", (ArrayList<Simbolo>)funcion, null);
-                                            for(Simbolo sim: global.TablaSimbolo){
-                                                sim.Ambito.Padre = global;
-                                            }
-                                            parser.Ejecucion = new Haskell_Ejecucion(global);
-                                        :}; 
+INICIO ::= SIMBOLO:t {: parser.simbolo = (Simbolo)t; :};
 
-LISTA_FUNCION ::= LISTA_FUNCION:listaf FUNCION:funcion  {: 
-                                                            ArrayList<Simbolo> lista = (ArrayList<Simbolo>)listaf;
-                                                            lista.add((Simbolo)funcion);
-                                                            RESULT = lista;  
-                                                        :}
-                | FUNCION:funcion   {: 
-                                        ArrayList<Simbolo> lista = new ArrayList<>();
-                                        lista.add((Simbolo)funcion);
-                                        RESULT = lista;  
-                                    :};
-
-
-
-FUNCION ::=     Id:t LISTA_PARAMETROS:parametros TIgual CUERPO:cuerpo TEnd  {: 
-                                                                                ArrayList<Simbolo> simbolo = (ArrayList<Simbolo>)cuerpo;
-                                                                                Ambito afuncion = new Ambito(t.toString(), simbolo, null);
-                                                                                FFuncion f = new FFuncion((ArrayList<Simbolo>)parametros, afuncion);
-                                                                                for(Simbolo sim: f.Ambito.TablaSimbolo){
-                                                                                    sim.Ambito.Padre = f.Ambito;
-                                                                                }
-                                                                                RESULT = new Simbolo(Constante.TMetodo, t.toString(), Constante.TMetodo, tleft, tright, f.Ambito, f);
-                                                                            :} 
-                | Id:t TIgual CUERPO:cuerpo TEnd    {: 
-                                                        ArrayList<Simbolo> simbolo = (ArrayList<Simbolo>)cuerpo;
-                                                        Ambito afuncion = new Ambito(t.toString(), simbolo, null);
-                                                        FFuncion f = new FFuncion(new ArrayList<Simbolo>(), afuncion);
-                                                        for(Simbolo sim: f.Ambito.TablaSimbolo){
-                                                            sim.Ambito.Padre = f.Ambito;
-                                                        }
-                                                        RESULT = new Simbolo(Constante.TMetodo, t.toString(), Constante.TMetodo, tleft, tright, f.Ambito, f);
-                                                    :};
-
-LISTA_PARAMETROS ::=    LISTA_PARAMETROS:listap TComa Id:t  {:
-                                                                ArrayList<Simbolo> lista = (ArrayList<Simbolo>)listap;
-                                                                lista.add(new Simbolo(Constante.TVacio, t.toString(), Constante.TVariable, tleft, tright, new Ambito(t.toString()), null));
-                                                                RESULT = lista; 
-                                                            :}
-                        | Id:t  {:
-                                    ArrayList<Simbolo> lista = new ArrayList<>();
-                                    lista.add(new Simbolo(Constante.TVacio, t.toString(), Constante.TVariable, tleft, tright, new Ambito(t.toString()), null));
-                                    RESULT = lista; 
-                                :};
-
-CUERPO ::=  LISTA_SENTENCIAS:t {: RESULT = t; :};
-
-
-LISTA_SENTENCIAS ::=    LISTA_SENTENCIAS:listasent SENTENCIA:sentencia  {:
-                                                                            ArrayList<Simbolo> tabla = (ArrayList<Simbolo>)listasent;
-                                                                            tabla.add((Simbolo)sentencia);
-                                                                            RESULT = tabla;
-                                                                        :}
-                        | SENTENCIA:sentencia   {:
-                                                    ArrayList<Simbolo> tabla = new ArrayList<>();
-                                                    tabla.add((Simbolo)sentencia);
-                                                    RESULT = tabla;
-                                                :};
-
-SENTENCIA ::=   SENTENCIA_IF:t  {: RESULT = t; :}
-                | SENTENCIA_CASE:t {: RESULT = t; :}
-                | LOGICO:t  {: 
+SIMBOLO     ::=  DECLARACION_LISTA:t {: RESULT = t; :}
+                |LOGICO:t  {: 
                                         FNodoExpresion nodo = (FNodoExpresion)t;
                                         if(nodo.Tipo == Constante.TMetodo){
                                             FLlamadaMetodo metodo = (FLlamadaMetodo)nodo.Metodo;                                            
@@ -137,58 +73,10 @@ SENTENCIA ::=   SENTENCIA_IF:t  {: RESULT = t; :}
                                             nodo.ResolverExpresion();
                                             RESULT = new Simbolo(Constante.TError, Constante.TError, Constante.TError, tleft, tright, new Ambito(Constante.TError), null);
                                         }
-                            :}
-                | DECLARACION_LISTA:t   {: RESULT = t; :};
+                            :}; 
 
 DECLARACION_LISTA ::=   TLet Id:nombre TIgual LOGICO:valor   {: RESULT = new Simbolo(Constante.TArreglo, nombre.toString(), Constante.TVariable, nombreleft, nombreright, new Ambito(nombre.toString()), (FNodoExpresion)valor); :};
 
-SENTENCIA_IF ::=    TIf:t LOGICO:cond TThen CUERPO:cue TElse CUERPO:cue2 TEnd   {:
-                                                                                    ArrayList<Simbolo> si = (ArrayList<Simbolo>)cue;
-                                                                                    ArrayList<Simbolo> sino = (ArrayList<Simbolo>)cue2;
-                                                                                    Ambito asi = new Ambito(Constante.TIf, si, null);
-                                                                                    Ambito asino = new Ambito(Constante.TElse, sino, null);
-                                                                                    FIf fsi = new FIf((FNodoExpresion)cond, asi, asino);
-                                                                                    for(Simbolo sim: fsi.Ambito.TablaSimbolo){
-                                                                                        sim.Ambito.Padre = fsi.Ambito;
-                                                                                    }
-                                                                                    for(Simbolo sim: fsi.Else.TablaSimbolo){
-                                                                                        sim.Ambito.Padre = fsi.Ambito;
-                                                                                    }
-                                                                                    RESULT = new Simbolo(Constante.TIf, Constante.TIf, Constante.TIf, tleft, tright, fsi.Ambito, fsi);
-
-                                                                                :};
-
-SENTENCIA_CASE ::=  TCase:t LOGICO:exp LISTA_CASOS:listac TEnd  {:
-                                                                    ArrayList<FCaso> lista = (ArrayList<FCaso>)listac;
-                                                                    FCase fcase = new FCase((FNodoExpresion)exp, lista, new Ambito(Constante.TCase), null);
-                                                                    for(FCaso caso: lista){
-                                                                        caso.Padre = fcase.Ambito;
-                                                                        for(Simbolo sim: caso.Ambito.TablaSimbolo){
-                                                                            sim.Ambito.Padre = fcase.Ambito;
-                                                                        }
-                                                                    }
-                                                                    RESULT = new Simbolo(Constante.TCase, Constante.TCase, Constante.TCase, tleft, tright, fcase.Ambito, fcase);
-                                                                :};
-
-LISTA_CASOS ::=     LISTA_CASOS:listac CASO:caso     {:
-                                                        ArrayList<FCaso> lista = (ArrayList<FCaso>)listac;
-                                                        lista.add((FCaso)caso);
-                                                        RESULT = lista;
-                                                    :}
-                    |CASO:caso  {:
-                                    ArrayList<FCaso> lista = new ArrayList<>();
-                                    lista.add((FCaso)caso);
-                                    RESULT = lista;
-                                :};
-
-CASO ::=    VALOR:valor TDosPuntos CUERPO:cuerpo TPuntoyComa    {:
-                                                                    Ambito ambito = new Ambito(Constante.TCase, (ArrayList<Simbolo>)cuerpo, null);
-                                                                    FCaso caso = new FCaso((FNodoExpresion)valor, ambito);
-                                                                    RESULT = caso;
-                                                                :};
-
-VALOR ::=   Numero:t  {: RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); :}
-            | Caracter:t  {: char c = t.toString().charAt(1); RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, c); :};
 
 LOGICO ::=  LOGICO:izq TAnd:t LOGICO:der    {:
                                                 RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAnd, Constante.TAnd, tleft, tright, null);
@@ -250,6 +138,9 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                                 RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t); 
                             :}
             | Id:t  {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TVariable, t.toString(), tleft, tright, null); 
+                    :}
+            | TPorcentaje:t  {:
                         RESULT = new FNodoExpresion(null, null, Constante.TVariable, t.toString(), tleft, tright, null); 
                     :}
             | LLAMADA_METODO:t  {:

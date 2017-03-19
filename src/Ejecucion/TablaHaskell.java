@@ -6,6 +6,7 @@
 package Ejecucion;
 
 import Constante.Constante;
+import Interface.TitusNotificaciones;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,15 +27,17 @@ public class TablaHaskell {
     }
 
     public static void InsertarVariable(Variable var) {
-        Tabla.add(var);
+        if (BuscarVariable(var.Nombre) == null) {
+            Tabla.add(var);
+        }
     }
 
     public static void InsertarFuncion(Variable funcion) {
         Variable existe = ExisteFuncion(funcion.Nombre);
-        if(existe != null){
+        if (existe != null) {
             BorrarFuncion(existe);
         }
-        Tabla.add(funcion);        
+        Tabla.add(funcion);
     }
 
     public static Variable ExisteFuncion(String nombre) {
@@ -50,5 +53,18 @@ public class TablaHaskell {
 
     public static void BorrarFuncion(Variable nombre) {
         Tabla.remove(nombre);
+    }
+
+    public static Variable BuscarVariable(String nombre) {
+        int i = 0;
+        Variable aux = null;
+        while (i < Tabla.size()) {
+            if (Tabla.get(i).Nombre.equals(nombre) && Tabla.get(i).Rol.equals(Constante.TVariable)) {
+                aux = Tabla.get(i);
+                break;
+            }
+            i++;
+        }
+        return aux;
     }
 }

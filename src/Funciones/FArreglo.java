@@ -33,10 +33,41 @@ public class FArreglo {
             this.Arreglo.add(new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, fila, columna, c));
             fila++;
             columna++;
-        }        
+        }
         this.Dimensiones = this.Arreglo.size();
         this.Tipo = ObtenerTipo(this.Arreglo);
         ComprobarNiveles(this.Arreglo);
+    }
+
+    public String ObtenerCadena() {
+        String cad = "";
+        String aux = "";
+        for (FNodoExpresion d : Arreglo) {
+            FNodoExpresion auxd = d.ResolverExpresion();
+            cad = aux + ObtenerCadena(auxd);
+            aux = aux + ObtenerCadena(auxd) + ", ";
+        }
+        cad = "[" + cad + "]";
+        return cad;
+    }
+
+    private String ObtenerCadena(FNodoExpresion exp) {
+        String cad = "";
+        if (exp.Tipo.equals(Constante.TArreglo)) {
+            cad += "[";
+            String aux = "";
+            for (FNodoExpresion d : exp.Arreglo.Arreglo) {
+                FNodoExpresion auxd = d.ResolverExpresion();
+                cad = aux + ObtenerCadena(auxd);
+                aux = aux + ObtenerCadena(auxd) + ", ";
+            }
+            cad = "[" + cad + "]";
+        } else if (exp.Tipo.equals(Constante.TDecimal)) {
+            cad += String.valueOf(exp.Numero);
+        } else if (exp.Tipo.equals(Constante.TCaracter)) {
+            cad += String.valueOf(exp.Caracter);
+        }
+        return cad;
     }
 
     private String ObtenerTipo(ArrayList<FNodoExpresion> arreglo) {
@@ -70,7 +101,7 @@ public class FArreglo {
                                 }
                             }
                         } else {
-                           TitusNotificaciones.ImprimirConsola("Las listas internas no son del mismo tamaño");
+                            TitusNotificaciones.ImprimirConsola("Las listas internas no son del mismo tamaño");
                         }
 
                     } else {

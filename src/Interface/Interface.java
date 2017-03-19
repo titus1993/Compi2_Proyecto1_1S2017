@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import Ejecucion.*;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
  *
@@ -38,27 +39,40 @@ public class Interface extends javax.swing.JFrame {
     private void IniciarComponentes() {        
         IniciarSplitPane();
         PosicionarCentro();
-        TitusNotificaciones.Iniciar(ControlTab);
+        
         TablaHaskell.IniciarTabla();
     }
 
     private void IniciarSplitPane() {
         ControlTab = new TabControl();
         ControlTab.setTabPlacement(JTabbedPane.NORTH);
-        
+        TitusNotificaciones.Iniciar(ControlTab);
         splitpane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitpane.setLeftComponent(ControlTab);
 
         JPanel paneRight = new JPanel(new BorderLayout());
         
         
-        JScrollPane scrollRigth = new JScrollPane(TitusNotificaciones.Consola);       
-        
-
-        paneRight.add(scrollRigth, BorderLayout.CENTER);
-        paneRight.add(TitusNotificaciones.Comando, BorderLayout.SOUTH);
+        JScrollPane scrollRigth = new JScrollPane(TitusNotificaciones.Consola); 
         splitpane.setRightComponent(paneRight);
         splitpane.setResizeWeight(0.70);
+        
+        JTabbedPane notificacion = new JTabbedPane();
+        
+        JPanel panelHaskell = new JPanel(new BorderLayout());
+        panelHaskell.setName("Haskell");
+        panelHaskell.add(TitusNotificaciones.Comando, BorderLayout.SOUTH);
+        panelHaskell.add(scrollRigth, BorderLayout.CENTER);
+        paneRight.add(notificacion, BorderLayout.CENTER);
+        notificacion.add(panelHaskell);        
+        notificacion.setTabPlacement(JTabbedPane.BOTTOM);
+        
+        //Agregamos errores
+        JPanel panelErrores = new JPanel(new BorderLayout());
+        panelErrores.setName("Errores");
+        JScrollPane scrollErrores = new JScrollPane(TitusNotificaciones.TablaErrores);
+        panelErrores.add(scrollErrores, BorderLayout.CENTER);
+        notificacion.add(panelErrores);
         this.add(splitpane, BorderLayout.CENTER);
     }
 

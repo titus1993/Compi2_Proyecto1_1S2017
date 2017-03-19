@@ -51,9 +51,8 @@ public class TitusTab extends JPanel {
 
     public void AnalizarHaskell(){
         try {
-            
+            TitusNotificaciones.LimpiarTabla();
             Haskell_Lexico scan = new Haskell_Lexico(new BufferedReader(new StringReader(TextBox.getText())));
-            //scan.yyreset(new BufferedReader(new StringReader(TextBox.getText())));
             Haskell_Sintactico parser = new Haskell_Sintactico(scan);
             parser.parse();
             

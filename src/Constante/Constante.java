@@ -14,6 +14,9 @@ public class Constante {
     public static final String TVariable = "Variable";    
     public static final String TArreglo = "Arreglo";
     public static final String TError = "Error";
+    public static final String TErrorLexico = "Error Lexico";
+    public static final String TErrorSintactico = "Error Sintactico";
+    public static final String TErrorSemantico= "Error Semantico";
     //tipo de datos
     public static final String TId = "Id";
     public static final String TVerdadero = "true";
