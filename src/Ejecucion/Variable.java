@@ -14,7 +14,6 @@ import Funciones.FNodoExpresion;
 public class Variable {
     public String Tipo, Nombre, Rol;
     public int Fila, Columna;
-    public Object valor;
     public Ambito Ambito;
     public Object Valor;
     

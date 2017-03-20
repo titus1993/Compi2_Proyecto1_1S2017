@@ -94,7 +94,7 @@ public class TitusNotificaciones {
     
     public static void AnalizarHaskell(){
         try {
-            
+            TitusNotificaciones.LimpiarTabla();
             Consola_Lexico scan = new Consola_Lexico(new BufferedReader(new StringReader(Comando.getText())));
             //scan.yyreset(new BufferedReader(new StringReader(TextBox.getText())));
             Consola_Sintactico parser = new Consola_Sintactico(scan);
@@ -105,8 +105,8 @@ public class TitusNotificaciones {
                 Haskell_Ejecucion ejecutar = new Haskell_Ejecucion(null);
                 ejecutar.EjecutarConsola(parser.simbolo);
                 parser.simbolo = null;
-            }else{
-                
+            }else{                
+                TitusNotificaciones.ImprimirConsola("Error, revisar la seccion de errores");
             }
         } catch (Exception ex) {
             Logger.getLogger(TitusTab.class.getName()).log(Level.SEVERE, null, ex);

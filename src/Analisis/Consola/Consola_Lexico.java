@@ -5,6 +5,7 @@ package Analisis.Consola;
 
 import Constante.Constante;
 import java_cup.runtime.Symbol;
+import Interface.*;
 
 
 /**
@@ -706,8 +707,8 @@ public class Consola_Lexico implements java_cup.runtime.Scanner {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 1: 
-          { String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline)+" y columna: "+yycolumn;
-        System.out.println(errLex);
+          { //String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline)+" y columna: "+yycolumn;
+        TitusNotificaciones.InsertarError(Constante.TErrorLexico,"Simbolo " + yytext() + " no reconocido", yyline, yycolumn);
           }
         case 48: break;
         case 2: 

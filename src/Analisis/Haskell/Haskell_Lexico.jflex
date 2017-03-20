@@ -1,6 +1,7 @@
 
 package Analisis.Haskell;
 
+import Interface.*;
 import Constante.Constante;
 import java_cup.runtime.Symbol;
 
@@ -163,6 +164,6 @@ ENTER   = [\ \n]
 {SPACE}               {}
 {ENTER}               {}
 . {
-        String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline)+" y columna: "+yycolumn;
-        System.out.println(errLex);
+        //String errLex = "Error léxico, caracter irreconocible: '"+yytext()+"' en la línea: "+(yyline)+" y columna: "+yycolumn;
+        TitusNotificaciones.InsertarError(Constante.TErrorLexico,"Simbolo " + yytext() + " no reconocido", yyline, yycolumn);
 }

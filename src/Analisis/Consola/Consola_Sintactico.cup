@@ -14,7 +14,7 @@ parser code
     public Simbolo simbolo = null;
 
     public void syntax_error(Symbol s){
-        System.out.println("Error sintactico en la Línea " + (s.left) +" Columna "+s.right+ ". Lexema "+s.value + " no reconocido." );
+        TitusNotificaciones.InsertarError("Sintactico",s.value + " no reconocido", s.left, s.right);
     }
 
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{ 
@@ -190,6 +190,9 @@ METODO ::=  METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
 
 METODO_CUALQUIERA ::= Id:t TLlave_Abre LISTA_EXP:lista TLlave_Cierra    {:
                                                                             RESULT = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)lista, tleft, tright);
+                                                                        :}
+                    |Id:t TLlave_Abre TLlave_Cierra    {:
+                                                                            RESULT = new FLlamadaMetodo(t.toString(), new ArrayList<FNodoExpresion>(), tleft, tright);
                                                                         :};
 
 METODO_OPERACION_LISTAS ::=     TSum:t LOGICO:exp  {:

@@ -99,6 +99,8 @@ FUNCION ::=     Id:t LISTA_PARAMETROS:parametros TIgual CUERPO:cuerpo TEnd  {:
                                                         RESULT = new Simbolo(Constante.TMetodo, t.toString(), Constante.TMetodo, tleft, tright, f.Ambito, f);
                                                     :};
 
+
+
 LISTA_PARAMETROS ::=    LISTA_PARAMETROS:listap TComa Id:t  {:
                                                                 ArrayList<Simbolo> lista = (ArrayList<Simbolo>)listap;
                                                                 lista.add(new Simbolo(Constante.TVacio, t.toString(), Constante.TVariable, tleft, tright, new Ambito(t.toString()), null));
@@ -299,6 +301,9 @@ METODO ::=  METODO_OPERACION_LISTAS:t   {: RESULT = t; :}
 
 METODO_CUALQUIERA ::= Id:t TLlave_Abre LISTA_EXP:lista TLlave_Cierra    {:
                                                                             RESULT = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)lista, tleft, tright);
+                                                                        :}
+                        |Id:t TLlave_Abre TLlave_Cierra    {:
+                                                                            RESULT = new FLlamadaMetodo(t.toString(), new ArrayList<FNodoExpresion>(), tleft, tright);
                                                                         :};
 
 METODO_OPERACION_LISTAS ::=     TSum:t LOGICO:exp  {:

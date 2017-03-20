@@ -10,6 +10,7 @@ package Constante;
  * @author Titus
  */
 public class Constante {
+    public static final String TMixto = "Mixto";
     public static final String TMetodo = "Metodo";
     public static final String TVariable = "Variable";    
     public static final String TArreglo = "Arreglo";
