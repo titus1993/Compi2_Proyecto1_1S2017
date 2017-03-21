@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Funciones;
+package Funciones_Haskell;
 
 import java.util.ArrayList;
 import Constante.Constante;

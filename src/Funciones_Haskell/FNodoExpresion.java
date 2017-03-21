@@ -3,11 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Funciones;
+package Funciones_Haskell;
 
+import Ejecucion_Haskell.Haskell_Ejecucion;
+import Ejecucion_Haskell.Ambito;
+import Ejecucion_Haskell.TablaHaskell;
+import Ejecucion_Haskell.Variable;
 import Constante.Constante;
 import java.util.ArrayList;
-import Ejecucion.*;
 import Interface.TitusNotificaciones;
 
 /**

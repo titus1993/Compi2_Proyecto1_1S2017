@@ -7,7 +7,7 @@ package Interface;
 
 import Analisis.Consola.Consola_Lexico;
 import Analisis.Consola.Consola_Sintactico;
-import Ejecucion.Haskell_Ejecucion;
+import Ejecucion_Haskell.Haskell_Ejecucion;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyAdapter;

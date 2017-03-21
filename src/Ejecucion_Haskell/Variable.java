@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ejecucion;
+package Ejecucion_Haskell;
 
-import Funciones.FNodoExpresion;
+import Funciones_Haskell.FNodoExpresion;
 
 /**
  *

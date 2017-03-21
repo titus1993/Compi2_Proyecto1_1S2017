@@ -3,10 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Ejecucion;
+package Ejecucion_Haskell;
 
+import Funciones_Haskell.FCaso;
+import Funciones_Haskell.FIf;
+import Funciones_Haskell.FNodoExpresion;
+import Funciones_Haskell.FLlamadaMetodo;
+import Funciones_Haskell.FCase;
 import Constante.Constante;
-import Funciones.*;
 import Interface.TitusNotificaciones;
 import java.util.ArrayList;
 

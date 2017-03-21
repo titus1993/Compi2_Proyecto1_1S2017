@@ -3,24 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Funciones;
+package Funciones_Haskell;
 
-import Ejecucion.Ambito;
+import Ejecucion_Haskell.Ambito;
 
 /**
  *
  * @author Titus
  */
-public class FIf {
-    public FNodoExpresion Condicion;
+public class FCaso {
+    public FNodoExpresion Valor;
     public Ambito Ambito;
     public Ambito Padre;
-    public Ambito Else;
     
-    public FIf(FNodoExpresion condicion, Ambito ambito, Ambito sino){
-        this.Condicion = condicion;
+    public FCaso(FNodoExpresion valor, Ambito ambito){
+        this.Valor = valor;
         this.Ambito = ambito;
-        this.Else = sino;
+        this.Padre = null;
     }
-            
 }

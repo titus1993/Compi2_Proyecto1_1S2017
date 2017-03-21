@@ -4,11 +4,11 @@
  * and open the template in the editor.
  */
 package Interface;
+import Ejecucion_Haskell.TablaHaskell;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
-import Ejecucion.*;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;

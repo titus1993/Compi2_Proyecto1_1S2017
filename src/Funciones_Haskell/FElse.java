@@ -3,22 +3,20 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Funciones;
+package Funciones_Haskell;
 
-import Ejecucion.Ambito;
-import Ejecucion.Simbolo;
-import java.util.ArrayList;
+import Constante.Constante;
+import Ejecucion_Haskell.Ambito;
 
 /**
  *
  * @author Titus
  */
-public class FFuncion {
+public class FElse {
     public Ambito Ambito;
-    public ArrayList<Simbolo> Parametros;
+    public Ambito Padre;
     
-    public FFuncion(ArrayList<Simbolo> parametros, Ambito ambito){
-        this.Parametros = parametros;
+    public FElse(Ambito ambito){
         this.Ambito = ambito;
     }
 }

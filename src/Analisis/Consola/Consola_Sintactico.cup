@@ -1,12 +1,12 @@
 package Analisis.Consola;
 
 import Constante.Constante;
-import Funciones.*;
-import Ejecucion.*;
+import Funciones_Haskell.*;
+import Ejecucion_Haskell.*;
 import java_cup.runtime.Symbol;
 import Interface.TitusNotificaciones;
 import java.util.ArrayList;
-import Ejecucion.Ambito;
+import Ejecucion_Haskell.Ambito;
 
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
