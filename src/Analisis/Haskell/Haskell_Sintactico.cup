@@ -278,21 +278,13 @@ EXP ::=     EXP:izq TMas:t EXP:der  {:
                                                 FLlamadaMetodo metodo = new FLlamadaMetodo(Constante.TAumento, aux, tleft, tright);
                                                 RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo);
                                             :}
-            | Id:izq TIndiceLista:t EXP:der    {:
+            | EXP:izq TIndiceLista:t EXP:der    {:
                                                     ArrayList<FNodoExpresion> aux = new ArrayList<>();
                                                     aux.add((FNodoExpresion)izq);
                                                     aux.add((FNodoExpresion)der);
                                                     FLlamadaMetodo metodo = new FLlamadaMetodo(Constante.TIndiceLista, aux, tleft, tright);
                                                     RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo);
-                                                :}
-            | Id:izq TIndiceLista:t EXP:der1 TIndiceLista EXP:der2  {:
-                                                                        ArrayList<FNodoExpresion> aux = new ArrayList<>();
-                                                                        aux.add((FNodoExpresion)izq);
-                                                                        aux.add((FNodoExpresion)der1);
-                                                                        aux.add((FNodoExpresion)der2);
-                                                                        FLlamadaMetodo metodo = new FLlamadaMetodo(Constante.TIndiceLista, aux, tleft, tright);
-                                                                        RESULT = new FNodoExpresion(null, null, Constante.TMetodo, Constante.TMetodo, tleft, tright, metodo);
-                                                                    :};
+                                                :};
 
 LLAMADA_METODO ::= TDolar METODO:t TDolar {: RESULT = t; :};
 

@@ -82,7 +82,7 @@ public class TitusNotificaciones {
     }
     
     public static void InsertarError(String tipo, String descripcion, int linea, int columna){
-        String[] error = {tipo, descripcion, String.valueOf(linea), String.valueOf(columna)};
+        String[] error = {tipo, descripcion, String.valueOf(linea+1), String.valueOf(columna+1)};
         Error.addRow(error);
     }
     
