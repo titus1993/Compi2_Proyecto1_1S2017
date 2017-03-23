@@ -46,7 +46,8 @@ nonterminal METODO_OPERACION_LISTAS;
 
 nonterminal METODO_CUALQUIERA, LOGICO, RELACIONAL, SIMBOLO;
 
-precedence left TAnd, TOr;
+precedence left TOr;
+precedence left TAnd;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
 
 precedence left TIndiceLista;

@@ -9,8 +9,17 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 
 /**
@@ -24,7 +33,8 @@ public class Interface extends javax.swing.JFrame {
      */
     JSplitPane splitpane;
     TabControl ControlTab;
-
+    
+    
     public Interface() {
         initComponents();
         setLayout(new GridLayout());
@@ -41,6 +51,12 @@ public class Interface extends javax.swing.JFrame {
         PosicionarCentro();
         
         TablaHaskell.IniciarTabla();
+        jFileChooser1.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("GraphiK", "gk");
+        FileNameExtensionFilter filter2 = new FileNameExtensionFilter("Haskell++", "hk");
+        jFileChooser1.setFileFilter(filter);
+        jFileChooser1.addChoosableFileFilter(filter2);
+        
     }
 
     private void IniciarSplitPane() {
@@ -82,6 +98,27 @@ public class Interface extends javax.swing.JFrame {
         this.setBounds((ancho / 2) - (this.getWidth() / 2), (alto / 2) - (this.getHeight() / 2), this.getWidth(), this.getHeight());
     }
 
+    private void AbrirArchivo() throws FileNotFoundException, IOException{
+        //jFileChooser1.setCurrentDirectory(new File(System.getProperty("user.home")+"/Desktop"));
+       
+        if( jFileChooser1.showOpenDialog(this) == JFileChooser.APPROVE_OPTION){
+           File selectedFile = jFileChooser1.getSelectedFile();
+           
+           BufferedReader in = new BufferedReader(new FileReader (selectedFile));
+           
+           String cadena = "";
+           while(in.ready()){
+               cadena += in.readLine()+"\n";
+           }
+           
+           if(selectedFile.toString().toLowerCase().endsWith(".gk")){
+               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Graphik, cadena);
+           }else{
+               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Haskell, cadena);
+           }
+       }
+        
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -91,6 +128,7 @@ public class Interface extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jFileChooser1 = new javax.swing.JFileChooser();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
@@ -116,6 +154,8 @@ public class Interface extends javax.swing.JFrame {
         jMenuItem12 = new javax.swing.JMenuItem();
         jMenuItem13 = new javax.swing.JMenuItem();
 
+        jFileChooser1.setCurrentDirectory(new java.io.File("C:\\Users\\Titus\\Desktop"));
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jMenu1.setText("Archivo");
@@ -131,11 +171,21 @@ public class Interface extends javax.swing.JFrame {
         jMenu3.add(jMenuItem1);
 
         jMenuItem2.setText("GraphiK");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         jMenu3.add(jMenuItem2);
 
         jMenu1.add(jMenu3);
 
         jMenuItem7.setText("Abrir");
+        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem7ActionPerformed(evt);
+            }
+        });
         jMenu1.add(jMenuItem7);
         jMenu1.add(jSeparator2);
 
@@ -174,6 +224,11 @@ public class Interface extends javax.swing.JFrame {
         jMenu5.add(jMenuItem14);
 
         jMenuItem15.setText("Reportes");
+        jMenuItem15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem15ActionPerformed(evt);
+            }
+        });
         jMenu5.add(jMenuItem15);
 
         jMenuBar1.add(jMenu5);
@@ -233,7 +288,7 @@ public class Interface extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-        ControlTab.AgregarNuevaTab();
+        ControlTab.AgregarNuevaTab(Constante.Constante.Haskell);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem12ActionPerformed
@@ -256,6 +311,22 @@ public class Interface extends javax.swing.JFrame {
     private void jMenuItem14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem14ActionPerformed
         ControlTab.Analizar();
     }//GEN-LAST:event_jMenuItem14ActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        ControlTab.AgregarNuevaTab(Constante.Constante.Graphik);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jMenuItem15ActionPerformed
+
+    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
+        try {
+            AbrirArchivo();
+        } catch (IOException ex) {
+            Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_jMenuItem7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -293,6 +364,7 @@ public class Interface extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JFileChooser jFileChooser1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;

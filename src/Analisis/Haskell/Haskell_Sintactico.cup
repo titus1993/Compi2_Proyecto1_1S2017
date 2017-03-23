@@ -46,7 +46,8 @@ nonterminal METODO_CONCATENACION, METODO_INDICE, METODO_OPERACION_LISTAS;
 
 nonterminal SENTENCIA_CASE, LISTA_CASOS, CASO, VALOR, METODO_CUALQUIERA, LOGICO, RELACIONAL, METODO_LISTA;
 
-precedence left TAnd, TOr;
+precedence left TOr;
+precedence left TAnd;
 precedence left TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion;
 
 precedence left TIndiceLista;
