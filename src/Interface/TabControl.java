@@ -18,12 +18,12 @@ public class TabControl extends JTabbedPane{
         //AgregarNuevaTab();
     }
     
-    public void AgregarNuevaTab(String nombre, String tipo, String texto){
+    public void AgregarNuevaTab(String nombre, String tipo, String texto, String ruta){
         TitusTab tab;
         if(tipo.equals(Constante.Constante.Graphik)){
-            tab = new TitusTab(nombre, tipo, texto);
+            tab = new TitusTab(nombre, tipo, texto, ruta);
         }else{
-            tab = new TitusTab(nombre, tipo, texto);
+            tab = new TitusTab(nombre, tipo, texto, ruta);
         }
         this.addTab(tab.Nombre, null, tab);
         this.setSelectedIndex(this.getComponentCount()-1);
@@ -32,9 +32,9 @@ public class TabControl extends JTabbedPane{
     public void AgregarNuevaTab(String tipo){
         TitusTab tab;
         if(tipo.equals(Constante.Constante.Graphik)){
-            tab = new TitusTab("Nuevo Documento " + cont+".gk", tipo, "");
+            tab = new TitusTab("Nuevo Documento " + cont+".gk", tipo, "", "");
         }else{
-            tab = new TitusTab("Nuevo Documento " + cont+".hk", tipo, "");
+            tab = new TitusTab("Nuevo Documento " + cont+".hk", tipo, "", "");
         }
         
         cont++;

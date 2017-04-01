@@ -1,17 +1,17 @@
 package Analisis.Graphik;
 
 import Constante.Constante;
-import Funciones_Haskell.*;
-import Ejecucion_Haskell.*;
+import Funciones_GraphiK.*;
+import Ejecucion_GraphiK.*;
 import java_cup.runtime.Symbol;
 import Interface.TitusNotificaciones;
 import java.util.ArrayList;
-import Ejecucion_Haskell.Ambito;
 
 //PARSER PARA EL ARCHIVO DE ESCENARIOS
 parser code
 {://Codigo visible
-    public Simbolo simbolo = null;
+    public Archivo Ejecucion = null;
+    public String archivonombre = "";
 
     public void syntax_error(Symbol s){
         TitusNotificaciones.InsertarError("Sintactico",s.value + " no reconocido", s.left, s.right);
@@ -35,7 +35,7 @@ terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion,
 terminal TLlave_Abre, TLlave_Cierra, TComa, TVar, TPublico, TPrivado, TProtegido, TDosPuntos, TCaso, TDefecto, TPara, THacer;
 
 terminal TInicio, TProcesar, TDonde, TDondeCada, TDondeTodo, TImprimir, TGraphikar_Funcion, TDatos, TColumna, TLlamar, TLlamarHk, TIncluye, TImportar, TGk, THereda, TRetornar, TInterrogacion, TContinuar, TTerminar, TEntero, TCadena, TVacio, TDecimal, TCaracter, TBool, TAls, TPunto, TNuevo, TSi, TSino, TSeleccion, TMientras;
-nonterminal INICIO, METODO_DATOS, METODO_INICIO, LLAMADA_IMPRIMIR, LLAMADA_GRAPHIKAR, LLAMADA_METODO, LLAMADA_AUMENTO, LLAMADA_DISMINUCION, LISTA_EXP_FUNCION, LLAMADA_FUNCION, LLAMADA_HASKELL, LISTA_HASKELL, HASKELL, IMPORTACIONES_GRAPHIK, LISTA_GRAPHIK, GRAPHIK, HERENCIA, ALS, LISTA_ALS, TIPO_DATO_METODO, METODO, PARAMETRO, LISTA_PARAMETROS, LISTA_PARAMETRO, LISTA_METODOS, LISTA_EXP, ARREGLO, SENTENCIA_HACER_MIENTRAS, SENTENCIA_MIENTRAS, DECLARACION_PARA, SENTENCIA_PARA, ACCION_ANTERIOR, ACCION_POSTERIOR, LISTA_CASOS, CASOS, PUNTUAL, SENTENCIA_SELECCION, CUERPO, SENTENCIA_IF, ASIGNACION, LISTA_SENTENCIAS, SENTENCIA, DECLARACION, TIPO_DATO, LISTA_ID, VISIBILIDAD, VALOR_ASIGNACION, EXP, OBJETO, HIJO, LISTA_DIMENSIONES, DIMENSION, NUEVO_OBJETO;
+nonterminal INICIO, METODO_DATOS, METODO_INICIO, LLAMADA_IMPRIMIR, LLAMADA_GRAPHIKAR, LLAMADA_METODO, LLAMADA_AUMENTO, LLAMADA_DISMINUCION, LISTA_EXP_FUNCION, LLAMADA_FUNCION, LLAMADA_HASKELL, LISTA_HASKELL, HASKELL, IMPORTACIONES_GRAPHIK, LISTA_GRAPHIK, GRAPHIK, HERENCIA, ALS, LISTA_ALS, TIPO_DATO_METODO, METODO, PARAMETRO, LISTA_PARAMETROS, LISTA_PARAMETRO, LISTA_METODOS, LISTA_EXP, ARREGLO, SENTENCIA_HACER_MIENTRAS, SENTENCIA_MIENTRAS, DECLARACION_PARA, SENTENCIA_PARA, ACCION_ANTERIOR, ACCION_POSTERIOR, LISTA_CASOS, CASOS, PUNTUAL, SENTENCIA_SELECCION, CUERPO, SENTENCIA_IF, ASIGNACION, LISTA_SENTENCIAS, SENTENCIA, DECLARACION, TIPO_DATO, LISTA_ID, VISIBILIDAD, VALOR_ASIGNACION, EXP, OBJETO, HIJO, LISTA_DIMENSIONES, DEFECTO, NUEVO_OBJETO;
 
 precedence left TOr;
 precedence left TXor;
@@ -51,230 +51,717 @@ precedence right TPotencia;
 
 start with INICIO;
 
-INICIO ::= IMPORTACIONES_GRAPHIK LLAMADA_HASKELL LISTA_ALS;
+INICIO ::= IMPORTACIONES_GRAPHIK:g LLAMADA_HASKELL:h LISTA_ALS:a   {: Archivo archivo = new Archivo(parser.archivonombre, (ArrayList<Simbolo>)a, (ArrayList<String>)h, (ArrayList<String>)g); 
+                                                                        ArrayList<Simbolo> als = (ArrayList<Simbolo>)a;
+                                                                        for(Simbolo sim : als){
+                                                                            FAls f = (FAls)sim.Valor;
+                                                                            f.ArchivoPadre = archivo;
 
-IMPORTACIONES_GRAPHIK ::= LISTA_GRAPHIK
-                        |;
+                                                                        }
+                                                                        parser.Ejecucion = archivo; :};
 
-LISTA_GRAPHIK ::= LISTA_GRAPHIK GRAPHIK
-                |GRAPHIK;
+IMPORTACIONES_GRAPHIK ::= LISTA_GRAPHIK:t {: RESULT = t; :}
+                        | {: RESULT = new ArrayList<String>(); :};
 
-GRAPHIK ::= TImportar Id TPunto TGk TInterrogacion;
+LISTA_GRAPHIK ::= LISTA_GRAPHIK:l GRAPHIK:m {:
+                                                        ArrayList<String> lista = (ArrayList<String>)l;
+                                                        ArrayList<String> sent = (ArrayList<String>)m;
+                                                        for(String sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
+                |GRAPHIK:t {: RESULT = t; :};
 
-LLAMADA_HASKELL ::= LISTA_HASKELL
-                    |;
+GRAPHIK ::= TImportar Id:t TPunto TGk TInterrogacion {: ArrayList<String> lista = new ArrayList<>(); lista.add(t.toString()); RESULT = lista; :};
+
+LLAMADA_HASKELL ::= LISTA_HASKELL:t {: RESULT = t; :}
+                    |{: RESULT = new ArrayList<String>(); :};
 
 
-LISTA_HASKELL::=     LISTA_HASKELL HASKELL
-                    |HASKELL;
+LISTA_HASKELL::=     LISTA_HASKELL:l HASKELL:m {:
+                                                        ArrayList<String> lista = (ArrayList<String>)l;
+                                                        ArrayList<String> sent = (ArrayList<String>)m;
+                                                        for(String sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
+                    |HASKELL:t {: RESULT = t; :};
 
-HASKELL::= TIncluye Id TInterrogacion;
+HASKELL::= TIncluye Id:t TInterrogacion     {: ArrayList<String> lista = new ArrayList<>(); lista.add(t.toString()); RESULT = lista; :};
 
-LISTA_ALS ::= LISTA_ALS ALS 
-                |ALS;
+LISTA_ALS ::= LISTA_ALS:l ALS:m {:
+                                                        ArrayList<Simbolo> lista = (ArrayList<Simbolo>)l;
+                                                        ArrayList<Simbolo> sent = (ArrayList<Simbolo>)m;
+                                                        for(Simbolo sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
+                |ALS:m {: RESULT = m; :};
 
-ALS::= TAls Id HERENCIA VISIBILIDAD TLlave_Abre LISTA_METODOS TLlave_Cierra;
+ALS::= TAls Id:t HERENCIA:h VISIBILIDAD:v TLlave_Abre LISTA_METODOS:c TLlave_Cierra   {:
+                                                                                        Ambito ambito = new Ambito(t.toString(), (ArrayList<Simbolo>)c);
+                                                                                        for(Simbolo sim : ambito.TablaSimbolo){
+                                                                                            sim.Ambito.Padre = ambito;
+                                                                                        }
+                                                                                        FAls als = new FAls(t.toString(), h.toString(), ambito);
+                                                                                        Simbolo s = new Simbolo(v.toString(), Constante.TAls, t.toString(), Constante.TAls, tleft, tright, ambito, als); 
+                                                                                        ArrayList<Simbolo> listapadre = new ArrayList<>();
+                                                                                        listapadre.add(s);
+                                                                                        Ambito ambitopadre = new Ambito(t.toString(), listapadre);
+                                                                                        ambito.Padre = ambitopadre;
+                                                                                        ArrayList<Simbolo> lista = new ArrayList<>();
+                                                                                        lista.add(s);
+                                                                                        RESULT = lista;
+                                                                                    :};
 
-HERENCIA ::= THereda Id
-            |;
+HERENCIA ::= THereda Id:t {: RESULT = t.toString(); :}
+            |{: RESULT = ""; :};
 
-LISTA_METODOS ::= LISTA_METODOS METODO
-                    |METODO;
+LISTA_METODOS ::= LISTA_METODOS:l METODO:s  {:
+                                                        ArrayList<Simbolo> lista = (ArrayList<Simbolo>)l;
+                                                        ArrayList<Simbolo> sent = (ArrayList<Simbolo>)s;
+                                                        for(Simbolo sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
+                    |METODO:m {: RESULT = m; :};
 
-TIPO_DATO_METODO ::= TIPO_DATO
-                    | TVacio;
+TIPO_DATO_METODO ::= TIPO_DATO:t {: RESULT = t.toString(); :}
+                    | TVacio {: RESULT = Constante.TVacio; :};
 
-METODO::=    TIPO_DATO_METODO Id TParentesis_Abre LISTA_PARAMETROS TParentesis_Cierra VISIBILIDAD TLlave_Abre CUERPO TLlave_Cierra
+METODO::=    TIPO_DATO_METODO:td Id:t TParentesis_Abre LISTA_PARAMETROS:p TParentesis_Cierra VISIBILIDAD:v TLlave_Abre CUERPO:c TLlave_Cierra {:
+                                                                                                                                                Ambito ambito = new Ambito(t.toString(), (ArrayList<Simbolo>)c);
+                                                                                                                                                for(Simbolo sim : ambito.TablaSimbolo){
+                                                                                                                                                    sim.Ambito.Padre = ambito;
+                                                                                                                                                }
+                                                                                                                                                FMetodo metodo = new FMetodo((ArrayList<Simbolo>)p, ambito);
+                                                                                                                                                Simbolo s = new Simbolo(v.toString(), td.toString(), t.toString(), Constante.TMetodo, tleft, tright, ambito, metodo); 
+                                                                                                                                                ArrayList<Simbolo> lista = new ArrayList<>();
+                                                                                                                                                lista.add(s);
+                                                                                                                                                RESULT = lista;
+                                                                                                                                                :}
             | METODO_DATOS
-            | METODO_INICIO
-            | DECLARACION TInterrogacion
-            | ASIGNACION TInterrogacion;
+            | METODO_INICIO:t {: RESULT = t; :}
+            | DECLARACION:t TInterrogacion {: RESULT = t;:}
+            | ASIGNACION:t TInterrogacion  {:
+                                            ArrayList<Simbolo> lista = new ArrayList<>();
+                                            lista.add((Simbolo)t);
+                                            RESULT = lista; 
+                                            :};
 
-METODO_DATOS ::= TVacio TDatos TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra;
+METODO_DATOS ::= TVacio TDatos:t TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra {:
+                                                                                                        Ambito ambito = new Ambito(Constante.TDatos, (ArrayList<Simbolo>)c);
+                                                                                                        for(Simbolo sim : ambito.TablaSimbolo){
+                                                                                                            sim.Ambito.Padre = ambito;
+                                                                                                        }
+                                                                                                        FMetodo metodo = new FMetodo(new ArrayList<Simbolo>(), ambito);
+                                                                                                        Simbolo s = new Simbolo(Constante.TPublico, Constante.TVacio, Constante.TDatos, Constante.TMetodo, tleft, tright, ambito, metodo); 
+                                                                                                        ArrayList<Simbolo> lista = new ArrayList<>();
+                                                                                                        lista.add(s);
+                                                                                                        RESULT = lista;
+                                                                                                        :};
 
-METODO_INICIO ::= TVacio TInicio TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra;
+METODO_INICIO ::= TVacio TInicio:t TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra{:
+                                                                                                        Ambito ambito = new Ambito(Constante.TInicio, (ArrayList<Simbolo>)c);
+                                                                                                        for(Simbolo sim : ambito.TablaSimbolo){
+                                                                                                            sim.Ambito.Padre = ambito;
+                                                                                                        }
+                                                                                                        FMetodo metodo = new FMetodo(new ArrayList<Simbolo>(), ambito);
+                                                                                                        Simbolo s = new Simbolo(Constante.TPublico, Constante.TVacio, Constante.TInicio, Constante.TMetodo, tleft, tright, ambito, metodo); 
+                                                                                                        ArrayList<Simbolo> lista = new ArrayList<>();
+                                                                                                        lista.add(s);
+                                                                                                        RESULT = lista;
+                                                                                                        :};
 
-LISTA_PARAMETROS ::= LISTA_PARAMETRO
-                    |;
+LISTA_PARAMETROS ::= LISTA_PARAMETRO:l {: RESULT = l; :}
+                    | {: RESULT = new ArrayList<Simbolo>(); :};
 
-LISTA_PARAMETRO ::=    LISTA_PARAMETRO TComa PARAMETRO
-                        | PARAMETRO;
+LISTA_PARAMETRO ::=    LISTA_PARAMETRO:l TComa PARAMETRO:p  {:
+                                                        ArrayList<Simbolo> lista = (ArrayList<Simbolo>)l;
+                                                        ArrayList<Simbolo> sent = (ArrayList<Simbolo>)p;
+                                                        for(Simbolo sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
 
-PARAMETRO ::= TIPO_DATO Id;
+                        | PARAMETRO:p {: RESULT = p; :};
 
-LISTA_SENTENCIAS ::= LISTA_SENTENCIAS SENTENCIA
-                    |SENTENCIA;
+PARAMETRO ::= TIPO_DATO:td Id:t     {: 
+                                        FDeclaracion fd = new FDeclaracion(Constante.TPublico, Constante.TVariable, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), null); 
+                                        Simbolo s = new Simbolo(Constante.TPublico, td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                        ArrayList<Simbolo> lista = new ArrayList<Simbolo>();;
+                                        lista.add(s);
+                                        RESULT = lista;
+                                    :};
 
-CUERPO::=   LISTA_SENTENCIAS
-                |;
 
+CUERPO::=   LISTA_SENTENCIAS:l {: RESULT = l; :}
+                | {:RESULT = new ArrayList<Simbolo>();:};
 
+LISTA_SENTENCIAS ::= LISTA_SENTENCIAS:l SENTENCIA:s {:
+                                                        ArrayList<Simbolo> lista = (ArrayList<Simbolo>)l;
+                                                        ArrayList<Simbolo> sent = (ArrayList<Simbolo>)s;
+                                                        for(Simbolo sim : sent){
+                                                            lista.add(sim);
+                                                        }
+                                                        RESULT = lista;
+                                                    :}
+                    |SENTENCIA:s {: RESULT = s; :};
 
-SENTENCIA ::= DECLARACION TInterrogacion
-                |ASIGNACION TInterrogacion
-                |SENTENCIA_IF
-                |SENTENCIA_SELECCION
-                |SENTENCIA_PARA
-                |SENTENCIA_MIENTRAS
-                |SENTENCIA_HACER_MIENTRAS
-                |TContinuar TInterrogacion
-                |TTerminar TInterrogacion
-                |TRetornar EXP TInterrogacion
-                |LLAMADA_METODO TInterrogacion;
+SENTENCIA ::= DECLARACION:t TInterrogacion {: RESULT = t; :}
+                |ASIGNACION:t TInterrogacion {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |SENTENCIA_IF:t {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |SENTENCIA_SELECCION:t {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |SENTENCIA_PARA:t {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |SENTENCIA_MIENTRAS:t {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |SENTENCIA_HACER_MIENTRAS:t {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :}
+                |TContinuar:t TInterrogacion {: Simbolo s = new Simbolo(Constante.TPublico, Constante.TContinuar, Constante.TContinuar, Constante.TContinuar, tleft, tright, new Ambito(Constante.TContinuar, new ArrayList<Simbolo>()), null);
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; 
+                                                :}
+                |TTerminar:t TInterrogacion {: Simbolo s = new Simbolo(Constante.TPublico, Constante.TTerminar, Constante.TTerminar, Constante.TTerminar, tleft, tright, new Ambito(Constante.TTerminar, new ArrayList<Simbolo>()), null); 
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l;
+                                                :}
+                |TRetornar:t EXP:exp TInterrogacion {: Simbolo s = new Simbolo(Constante.TPublico, Constante.TRetornar, Constante.TRetornar, Constante.TRetornar, tleft, tright, new Ambito(Constante.TRetornar, new ArrayList<Simbolo>()), (FNodoExpresion)exp); 
+                                                        ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                        l.add(s);
+                                                        RESULT = l;
+                                                        :}
+                |LLAMADA_METODO:t TInterrogacion {: 
+                                                Simbolo s = (Simbolo)t;
+                                                ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                l.add(s);
+                                                RESULT = l; :};
 
-LLAMADA_METODO ::= LLAMADA_FUNCION
-                    | LLAMADA_AUMENTO
-                    | LLAMADA_DISMINUCION
-                    | LLAMADA_GRAPHIKAR
-                    | LLAMADA_IMPRIMIR;
+LLAMADA_METODO ::= LLAMADA_FUNCION:t {:
+                                    FLlamadaObjeto lo = (FLlamadaObjeto)t; 
+                                    RESULT = new Simbolo(Constante.TPublico, Constante.TMetodo, Constante.TMetodo, Constante.TMetodo, lo.Fila, lo.Columna, new Ambito(Constante.TMetodo, new ArrayList<Simbolo>()), lo); :}
+                    | LLAMADA_GRAPHIKAR:t {: RESULT = t; :}
+                    | LLAMADA_IMPRIMIR:t {: RESULT = t; :};
 
-LLAMADA_AUMENTO ::= OBJETO Id TAumento
-                    |Id TAumento
-                    |OBJETO Id LISTA_DIMENSIONES TAumento
-                    |Id LISTA_DIMENSIONES TAumento;
+LLAMADA_AUMENTO ::= OBJETO:o Id:t TAumento  {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                            flo.InsertarHijo(hijo);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAumento, flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                    |Id:t TAumento  {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAumento, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                    |OBJETO:o Id:t LISTA_DIMENSIONES:l TAumento     {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                    flo.InsertarHijo(hijo);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TAumento,flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :}
+                    |Id:t LISTA_DIMENSIONES:l TAumento  {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TAsignacion, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TAumento, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :};
 
-LLAMADA_DISMINUCION ::= OBJETO Id TDisminucion
-                        |Id TDisminucion
-                        | OBJETO Id LISTA_DIMENSIONES TDisminucion
-                        | Id LISTA_DIMENSIONES TDisminucion;
+LLAMADA_DISMINUCION ::= OBJETO:o Id:t TDisminucion  {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                            flo.InsertarHijo(hijo);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAumento, flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TDisminucion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                    |Id:t TDisminucion  {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAumento, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TDisminucion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                    |OBJETO:o Id:t LISTA_DIMENSIONES:l TDisminucion     {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                    flo.InsertarHijo(hijo);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TAumento,flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TDisminucion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :}
+                    |Id:t LISTA_DIMENSIONES:l TDisminucion  {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TDisminucion, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TAumento, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :};
 
-LLAMADA_GRAPHIKAR ::= TGraphikar_Funcion TParentesis_Abre EXP TComa EXP TParentesis_Cierra;
+LLAMADA_GRAPHIKAR ::= TGraphikar_Funcion:t TParentesis_Abre EXP:exp1 TComa EXP:exp2 TParentesis_Cierra {:
+                                                                                                        FGraphikar fg = new FGraphikar((FNodoExpresion)exp1 ,(FNodoExpresion)exp2, new Ambito(Constante.TGraficarFuncion, new ArrayList<Simbolo>()));
+                                                                                                        Simbolo s = new Simbolo(Constante.TPublico, Constante.TVacio, Constante.TGraficarFuncion, Constante.TGraficarFuncion, tleft, tright, fg.Ambito, fg);
+                                                                                                        RESULT = s;
+                                                                                                    :};
 
-LLAMADA_IMPRIMIR ::= TImprimir TParentesis_Abre EXP TParentesis_Cierra;
+LLAMADA_IMPRIMIR ::= TImprimir:t TParentesis_Abre EXP:exp TParentesis_Cierra    {:
+                                                                                FImprimir fg = new FImprimir((FNodoExpresion)exp);
+                                                                                Simbolo s = new Simbolo(Constante.TPublico, Constante.TVacio, Constante.TImprimir, Constante.TImprimir, tleft, tright, fg.Ambito, fg);
+                                                                                RESULT = s;
+                                                                            :};
 
-DECLARACION ::= TVar TIPO_DATO Id VISIBILIDAD LISTA_ID 
-                | TVar TIPO_DATO Id VISIBILIDAD VALOR_ASIGNACION
-                | TVar TIPO_DATO Id LISTA_DIMENSIONES VISIBILIDAD VALOR_ASIGNACION
-                | TVar TIPO_DATO Id LISTA_DIMENSIONES VISIBILIDAD
+DECLARACION ::= TVar TIPO_DATO:td Id:t VISIBILIDAD:v LISTA_ID:l     {: 
+                                                                                FDeclaracion fd = new FDeclaracion(v.toString(), Constante.TVariable, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), null); 
+                                                                                ArrayList<FDeclaracion> listad = (ArrayList<FDeclaracion>)l;
+                                                                                listad.add(fd);
+                                                                                ArrayList<Simbolo> lista = new ArrayList<Simbolo>();
+                                                                                for(FDeclaracion dec : listad){
+                                                                                    dec.Tipo = td.toString();
+                                                                                    Simbolo s = new Simbolo(dec.Visibilidad, dec.Tipo, dec.Nombre, Constante.TDeclaracion, tleft, tright, new Ambito(dec.Nombre, new ArrayList<Simbolo>()), dec);
+                                                                                    lista.add(s);
+                                                                                }
+                                                                                RESULT = lista;
+                                                                                :} 
+                | TVar TIPO_DATO:td Id:t VISIBILIDAD:v VALOR_ASIGNACION:exp    {: 
+                                                                                FDeclaracion fd = new FDeclaracion(v.toString(), Constante.TVariable, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp); 
+                                                                                Simbolo s = new Simbolo(v.toString(), td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                                                                ArrayList<Simbolo> lista = new ArrayList<Simbolo>();;
+                                                                                lista.add(s);
+                                                                                RESULT = lista;
+                                                                                :}
+                | TVar TIPO_DATO:td Id:t LISTA_DIMENSIONES:l VISIBILIDAD:v VALOR_ASIGNACION:exp{: 
+                                                                                FArreglo fa = new FArreglo(td.toString(), t.toString(), (ArrayList<FNodoExpresion>)l, (FNodoExpresion)exp);
+                                                                                FDeclaracion fd = new FDeclaracion(v.toString(), Constante.TVariableArreglo, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), fa); 
+                                                                                Simbolo s = new Simbolo(v.toString(), td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                                                                ArrayList<Simbolo> lista = new ArrayList<Simbolo>();;
+                                                                                lista.add(s);
+                                                                                RESULT = lista;
+                                                                                :}
+                | TVar TIPO_DATO:td Id:t LISTA_DIMENSIONES:l VISIBILIDAD:v {: 
+                                                                    FArreglo fa = new FArreglo(td.toString(), t.toString(), (ArrayList<FNodoExpresion>)l, null);
+                                                                    FDeclaracion fd = new FDeclaracion(v.toString(), Constante.TVariableArreglo, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), fa); 
+                                                                    Simbolo s = new Simbolo(v.toString(), td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                                                    ArrayList<Simbolo> lista = new ArrayList<Simbolo>();;
+                                                                                lista.add(s);
+                                                                                RESULT = lista;
+                                                                    :}
                 ;
 
 
 
-ASIGNACION::=   OBJETO Id LISTA_DIMENSIONES TIgual EXP
-                |Id LISTA_DIMENSIONES TIgual EXP
-                | OBJETO Id VALOR_ASIGNACION
-                | Id VALOR_ASIGNACION;
+ASIGNACION::=   OBJETO:o Id:t LISTA_DIMENSIONES:l TIgual EXP:exp  {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                    flo.InsertarHijo(hijo);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TAsignacion,flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :}
+                |Id:t LISTA_DIMENSIONES:l TIgual EXP:exp    {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FAsignacion fa = new FAsignacion(Constante.TVariableArreglo, Constante.TAsignacion, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp);
+                                                    RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                    :}
+                | OBJETO:o Id:t VALOR_ASIGNACION:exp    {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                            flo.InsertarHijo(hijo);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAsignacion, flo, new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                | Id:t VALOR_ASIGNACION:exp   {:                            
+                                                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                                                            FAsignacion fa = new FAsignacion(Constante.TVariable, Constante.TAsignacion, hijo, new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp);
+                                                            RESULT = new Simbolo(Constante.TPublico, Constante.TAsignacion, t.toString(), Constante.TAsignacion, tleft, tright, fa.Ambito , fa); 
+                                                        :}
+                | LLAMADA_AUMENTO:t {: RESULT = t; :}
+                | LLAMADA_DISMINUCION:t {: RESULT = t; :};
 
 
 
-VALOR_ASIGNACION ::= TIgual EXP
-                        | TIgual NUEVO_OBJETO
+VALOR_ASIGNACION ::= TIgual EXP:exp {: RESULT = exp; :}
+                        | TIgual NUEVO_OBJETO:exp {: RESULT = exp; :}
                         ;
 
-NUEVO_OBJETO ::=    TNuevo Id TParentesis_Abre TParentesis_Cierra;
+NUEVO_OBJETO ::=    TNuevo Id:t TParentesis_Abre TParentesis_Cierra {: RESULT = new FNodoExpresion(null, null, Constante.TNuevo, t.toString(), tleft, tright, null); :};
 
-LISTA_ID ::= TComa Id VISIBILIDAD LISTA_ID
-            |;
+LISTA_ID ::= TComa Id:t VISIBILIDAD:v LISTA_ID:l {:
+                                                        FDeclaracion fd = new FDeclaracion(v.toString() ,Constante.TVariable, "", t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), null);
+                                                        ArrayList<FDeclaracion> lista = (ArrayList<FDeclaracion>)l;
+                                                        lista.add(fd);
+                                                        RESULT = lista;          
+                                                    :}
+            | {:RESULT = new ArrayList<FDeclaracion>();:};
 
-VISIBILIDAD ::= TDosPuntos TPublico
-                | TDosPuntos TPrivado
-                | TDosPuntos TProtegido
-                |;
+VISIBILIDAD ::= TDosPuntos TPublico {:RESULT = Constante.TPublico;:}
+                | TDosPuntos TPrivado {:RESULT = Constante.TPrivado;:}
+                | TDosPuntos TProtegido {:RESULT = Constante.TProtegido;:}
+                | {:RESULT = Constante.TPublico;:};
 
-TIPO_DATO ::= TEntero
-              | TDecimal
-              | TCadena
-              | TCaracter
-              | TBool
-              | Id;
-
-
-SENTENCIA_IF::= TSi TParentesis_Abre EXP TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra 
-                | TSi TParentesis_Abre EXP TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra TSino TLlave_Abre CUERPO TLlave_Cierra;
-
-
-SENTENCIA_SELECCION::=  TSeleccion TParentesis_Abre EXP TParentesis_Cierra TLlave_Abre LISTA_CASOS TLlave_Cierra;
-
-LISTA_CASOS::= LISTA_CASOS CASOS 
-                |CASOS;
-
-CASOS::=    TCaso PUNTUAL TDosPuntos CUERPO
-            |TDefecto TDosPuntos CUERPO;
-
-PUNTUAL ::= Entero
-            |Decimal
-            |Cadena
-            |Caracter;
+TIPO_DATO ::= TEntero:t {:RESULT = Constante.TEntero;:}
+              | TDecimal {:RESULT = Constante.TDecimal;:}
+              | TCadena {:RESULT = Constante.TCadena;:}
+              | TCaracter {:RESULT = Constante.TCaracter;:}
+              | TBool {:RESULT = Constante.TBool;:}
+              | Id:t {:RESULT = t.toString();:};
 
 
-SENTENCIA_PARA ::=  TPara TParentesis_Abre ACCION_ANTERIOR TDosPuntos EXP TDosPuntos ACCION_POSTERIOR TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra;
+SENTENCIA_IF::= TSi:t TParentesis_Abre EXP:exp TParentesis_Cierra TLlave_Abre CUERPO:cs TLlave_Cierra
+               {:
+                    Ambito ambitosi = new Ambito(Constante.TSi, (ArrayList<Simbolo>)cs);
+                    Ambito ambito = new Ambito(Constante.TSi, new ArrayList<Simbolo>());
+                            
+                    for(Simbolo sim: ambitosi.TablaSimbolo){
+                        sim.Ambito.Padre = ambito;
+                    }                    
+                            
+                    FSi fs = new FSi((FNodoExpresion)exp, ambitosi, null, ambito);
+                    Simbolo s = new Simbolo(Constante.TPublico, Constante.TSi, Constante.TSi, Constante.TSi, tleft, tright, fs.Ambito, fs);
+                    RESULT = s;
+                :} 
+                | TSi:t TParentesis_Abre EXP:exp TParentesis_Cierra TLlave_Abre CUERPO:cs TLlave_Cierra TSino TLlave_Abre CUERPO:csn TLlave_Cierra
+                {:
+                    Ambito ambitosi = new Ambito(Constante.TSi, (ArrayList<Simbolo>)cs);
+                    Ambito ambitosino = new Ambito(Constante.TSiNo, (ArrayList<Simbolo>)csn);
+                    Ambito ambito = new Ambito(Constante.TSi, new ArrayList<Simbolo>());
+                            
+                    for(Simbolo sim: ambitosi.TablaSimbolo){
+                        sim.Ambito.Padre = ambito;
+                    }
+                    
+                    for(Simbolo sim: ambitosino.TablaSimbolo){
+                        sim.Ambito.Padre = ambito;
+                    }        
+                    FSi fs = new FSi((FNodoExpresion)exp, ambitosi, ambitosino, ambito);
+                    Simbolo s = new Simbolo(Constante.TPublico, Constante.TSi, Constante.TSi, Constante.TSi, tleft, tright, fs.Ambito, fs);
+                    RESULT = s;
+                :}
+                    ;
 
-ACCION_ANTERIOR::= DECLARACION_PARA
-                    |ASIGNACION;
 
-ACCION_POSTERIOR ::= OBJETO Id TAumento
-                    |Id TAumento
-                    |OBJETO Id LISTA_DIMENSIONES TAumento
-                    |Id LISTA_DIMENSIONES TAumento
-                    |OBJETO Id TDisminucion
-                    |Id TDisminucion
-                    |OBJETO Id LISTA_DIMENSIONES TDisminucion
-                    |Id LISTA_DIMENSIONES TDisminucion
-                    | ASIGNACION;
+SENTENCIA_SELECCION::=  TSeleccion:t TParentesis_Abre EXP:exp TParentesis_Cierra TLlave_Abre LISTA_CASOS:l DEFECTO:d TLlave_Cierra 
+                        {:
+                            Ambito ambito = new Ambito(Constante.TSeleccion, (ArrayList<Simbolo>)l);
+                            ArrayList<FCaso> casos = (ArrayList<FCaso>)l;
+                            for(FCaso caso: casos){
+                                for(Simbolo sim: caso.Ambito.TablaSimbolo){
+                                    sim.Ambito.Padre = ambito;
+                                }
+                            }
+                            FCaso defecto = (FCaso)d;
+                            for(Simbolo sim: defecto.Ambito.TablaSimbolo){
+                                    sim.Ambito.Padre = ambito;
+                            }
+                            FSelecciona fs = new FSelecciona(casos,defecto,ambito);
+                            Simbolo s = new Simbolo(Constante.TPublico, Constante.TSeleccion, Constante.TSeleccion, Constante.TSeleccion, tleft, tright, fs.Ambito, fs);
+                            RESULT = s;
+                            :}
 
-DECLARACION_PARA ::= TVar TIPO_DATO Id VALOR_ASIGNACION
-                | TVar TIPO_DATO Id LISTA_DIMENSIONES TIgual EXP
+                        | TSeleccion:t TParentesis_Abre EXP:exp TParentesis_Cierra TLlave_Abre LISTA_CASOS:l TLlave_Cierra 
+                        {:
+                            Ambito ambito = new Ambito(Constante.TSeleccion, (ArrayList<Simbolo>)l);
+                            ArrayList<FCaso> casos = (ArrayList<FCaso>)l;
+                            for(FCaso caso: casos){
+                                for(Simbolo sim: caso.Ambito.TablaSimbolo){
+                                    sim.Ambito.Padre = ambito;
+                                }
+                            }
+
+                            FSelecciona fs = new FSelecciona(casos,null,ambito);
+                            Simbolo s = new Simbolo(Constante.TPublico, Constante.TSeleccion, Constante.TSeleccion, Constante.TSeleccion, tleft, tright, fs.Ambito, fs);
+                            RESULT = s;
+                            :};
+
+LISTA_CASOS::= LISTA_CASOS:l CASOS:c    {:
+                                            ArrayList<FCaso> lista = (ArrayList<FCaso>)l;
+                                            lista.add((FCaso)c);
+                                            RESULT = lista;
+                                        :} 
+                |CASOS:c    {:
+                                ArrayList<FCaso> lista = new ArrayList<>();
+                                lista.add((FCaso)c);
+                                RESULT = lista;
+                            :};
+
+CASOS::=    TCaso:t PUNTUAL:p TDosPuntos CUERPO:c   {:
+                                                        Ambito ambito = new Ambito(Constante.TCaso, (ArrayList<Simbolo>)c);
+                                                        for(Simbolo sim : ambito.TablaSimbolo){
+                                                            sim.Ambito.Padre = ambito;
+                                                        }
+                                                        FNodoExpresion puntual = (FNodoExpresion)p;
+                                                        FCaso caso = new FCaso(puntual, ambito);
+                                                        RESULT = caso;
+                                                    :};
+
+DEFECTO ::= TDefecto:t TDosPuntos CUERPO:c {:
+                                                Ambito ambito = new Ambito(Constante.TCaso, (ArrayList<Simbolo>)c);
+                                                for(Simbolo sim : ambito.TablaSimbolo){
+                                                    sim.Ambito.Padre = ambito;
+                                                }
+                                                FCaso caso = new FCaso(null, ambito);
+                                                RESULT = caso;
+                                            :}; 
+
+PUNTUAL ::= Entero:t  {: RESULT = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, tleft, tright, t.toString());  :}
+            |Decimal:t {: RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t.toString());  :}
+            |Cadena:t {: RESULT = new FNodoExpresion(null, null, Constante.TCadena, Constante.TCadena, tleft, tright, t.toString());  :}
+            |Caracter:t {: RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t.toString());  :};
+
+
+SENTENCIA_PARA ::=  TPara:t TParentesis_Abre ACCION_ANTERIOR:aa TDosPuntos EXP:exp TDosPuntos ASIGNACION:ap TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra
+
+                        {:
+                            Ambito ambito = new Ambito(Constante.TPara, (ArrayList<Simbolo>)c);
+                            for(Simbolo sim: ambito.TablaSimbolo){
+                                sim.Ambito.Padre = ambito;
+                            }
+                            FPara fp = new FPara((Simbolo)aa,(FNodoExpresion)exp,(Simbolo)ap, ambito);
+                            Simbolo s = new Simbolo(Constante.TPublico, Constante.TPara, Constante.TPara, Constante.TPara, tleft, tright, fp.Ambito, fp);
+                            RESULT = s;
+                        :};
+
+ACCION_ANTERIOR::= DECLARACION_PARA:t {: RESULT = t; :}
+                    |ASIGNACION:t {: RESULT = t; :};
+
+DECLARACION_PARA ::= TVar TIPO_DATO:td Id:t VALOR_ASIGNACION:exp {: 
+                                                                                FDeclaracion fd = new FDeclaracion(Constante.TPublico ,Constante.TVariable, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), (FNodoExpresion)exp); 
+                                                                                Simbolo s = new Simbolo(Constante.TPublico, td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                                                                RESULT = s;
+                                                                                :}
+                | TVar TIPO_DATO:td Id:t LISTA_DIMENSIONES:d TIgual EXP:exp {: 
+                                                                                FArreglo fa = new FArreglo(td.toString(), t.toString(), (ArrayList<FNodoExpresion>)d, (FNodoExpresion)exp);
+                                                                                FDeclaracion fd = new FDeclaracion(Constante.TPublico, Constante.TVariableArreglo, td.toString(), t.toString(), new Ambito(t.toString(), new ArrayList<Simbolo>()), fa); 
+                                                                                Simbolo s = new Simbolo(Constante.TPublico, td.toString(), t.toString(), Constante.TDeclaracion, tleft, tright, new Ambito(t.toString(), new ArrayList<Simbolo>()), fd);
+                                                                                RESULT = s;
+                                                                                :}
                 ;
 
-SENTENCIA_MIENTRAS ::=  TMientras TParentesis_Abre EXP TParentesis_Cierra TLlave_Abre CUERPO TLlave_Cierra;
+SENTENCIA_MIENTRAS ::=  TMientras:t TParentesis_Abre EXP:exp TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra  {:  
+                                                                                                                        Ambito ambito = new Ambito(Constante.TMientras, (ArrayList<Simbolo>)c);
+                                                                                                                        for(Simbolo sim: ambito.TablaSimbolo){
+                                                                                                                            sim.Ambito.Padre = ambito;
+                                                                                                                        }
+                                                                                                                        FMientras m = new FMientras((FNodoExpresion)exp, ambito);
+                                                                                                                        Simbolo s = new Simbolo(Constante.TPublico, Constante.TMientras, Constante.TMientras, Constante.TMientras, tleft, tright, m.Ambito, m);
+                                                                                                                        RESULT = s;
+                                                                                                                    :};
 
-SENTENCIA_HACER_MIENTRAS ::= THacer TLlave_Abre TLlave_Cierra TMientras TParentesis_Abre EXP TParentesis_Cierra;
+SENTENCIA_HACER_MIENTRAS ::= THacer:t TLlave_Abre CUERPO:c TLlave_Cierra TMientras TParentesis_Abre EXP:exp TParentesis_Cierra  {:  
+                                                                                                                        Ambito ambito = new Ambito(Constante.TMientras, (ArrayList<Simbolo>)c);
+                                                                                                                        for(Simbolo sim: ambito.TablaSimbolo){
+                                                                                                                            sim.Ambito.Padre = ambito;
+                                                                                                                        }
+                                                                                                                        FHacerMientras m = new FHacerMientras((FNodoExpresion)exp, ambito);
+                                                                                                                        Simbolo s = new Simbolo(Constante.TPublico, Constante.THacer, Constante.THacer, Constante.THacer, tleft, tright, m.Ambito, m);
+                                                                                                                        RESULT = s;
+                                                                                                                    :};
 
-EXP ::= EXP TOr EXP
-        | EXP TXor EXP
-        | EXP TAnd EXP
-        | TNot EXP
-        | EXP TMayor EXP
-        | EXP TMenor EXP
-        | EXP TMayorIgual EXP
-        | EXP TMenorIgual EXP        
-        | EXP TIgualacion EXP
-        | EXP TDiferenciacion EXP
-        | EXP TMas EXP
-        | EXP TMenos EXP
-        | EXP TPor EXP
-        | EXP TDivision EXP
-        | EXP TPotencia EXP
-        | EXP TAumento
-        | EXP TDisminucion
-        | TMenos EXP
-        | TParentesis_Abre EXP TParentesis_Cierra
-        | Entero
-        | Decimal
-        | Caracter
-        | Cadena
-        | Verdadero
-        | Falso
-        | OBJETO Id
-        | Id
-        | OBJETO Id LISTA_DIMENSIONES
-        | Id LISTA_DIMENSIONES
-        | ARREGLO
-        | LLAMADA_FUNCION;
+EXP ::= EXP:izq TOr:t EXP:der       {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TOr, Constante.TOr, tleft, tright, null); 
+                                    :}
+        | EXP:izq TXor:t EXP:der    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TXor, Constante.TXor, tleft, tright, null); 
+                                    :}
+        | EXP:izq TAnd:t EXP:der    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TAnd, Constante.TAnd, tleft, tright, null); 
+                                    :}
+        | TNot:t EXP:der  {:
+                            RESULT = new FNodoExpresion(null, (FNodoExpresion)der, Constante.TNot, Constante.TNot, tleft, tright, null); 
+                        :}
+        | EXP:izq TMayor:t EXP:der  {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMayor, Constante.TMayor, tleft, tright, null); 
+                                    :}
+        | EXP:izq TMenor:t EXP:der  {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenor, Constante.TMenor, tleft, tright, null); 
+                                    :}
+        | EXP:izq TMayorIgual:t EXP:der     {:
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMayorIgual, Constante.TMayorIgual, tleft, tright, null); 
+                                            :}
+        | EXP:izq TMenorIgual:t EXP:der     {:
+                                                RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenorIgual, Constante.TMenorIgual, tleft, tright, null); 
+                                            :}        
+        | EXP:izq TIgualacion:t EXP:der {:
+                                            RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TIgualacion, Constante.TIgualacion, tleft, tright, null); 
+                                        :}
+        | EXP:izq TDiferenciacion:t EXP:der     {:
+                                                    RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TDiferenciacion, Constante.TDiferenciacion, tleft, tright, null); 
+                                                :}
+        | EXP:izq TMas:t EXP:der    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMas, Constante.TMas, tleft, tright, null); 
+                                    :}
+        | EXP:izq TMenos:t EXP:der  {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null); 
+                                    :}
+        | EXP:izq TPor:t EXP:der    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TPor, Constante.TPor, tleft, tright, null); 
+                                    :}
+        | EXP:izq TDivision:t EXP:der   {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TDivision, Constante.TDivision, tleft, tright, null); 
+                                    :}
+        | EXP:izq TPotencia:t EXP:der   {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, (FNodoExpresion)der, Constante.TPotenciaG, Constante.TPotenciaG, tleft, tright, null); 
+                                    :}
+        | EXP:izq TAumento:t    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, null, Constante.TAumento, Constante.TAumento, tleft, tright, null); 
+                                    :}
+        | EXP:izq TDisminucion:t    {:
+                                        RESULT = new FNodoExpresion((FNodoExpresion)izq, null, Constante.TDecremento, Constante.TDecremento, tleft, tright, null); 
+                                    :}
+        | TMenos:t EXP:der  {:
+                                        RESULT = new FNodoExpresion(null, (FNodoExpresion)der, Constante.TMenos, Constante.TMenos, tleft, tright, null); 
+                                    :}
+        | TParentesis_Abre EXP:t TParentesis_Cierra     {:
+                                                            RESULT = t; 
+                                                        :}
+        | Entero:t  {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, tleft, tright, t.toString()); 
+                    :}
+        | Decimal:t     {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, tleft, tright, t.toString()); 
+                    :}
+        | Caracter:t    {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TCaracter, Constante.TCaracter, tleft, tright, t.toString().substring(1, t.toString().length()-1)); 
+                    :}
+        | Cadena:t  {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TCadena, Constante.TCadena, tleft, tright, t.toString().substring(1, t.toString().length()-1)); 
+                    :}
+        | Verdadero:t   {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, tleft, tright, false); 
+                    :}
+        | Falso:t   {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TBool, Constante.TBool, tleft, tright, true); 
+                    :}
+        | OBJETO:o Id:t   {:                            
+                            FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                            FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                            flo.InsertarHijo(hijo);
+                            RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, flo); 
+                        :}
+        | Id:t  {:
+                        FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                        RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, hijo); 
+                    :}
+        | OBJETO:o Id:t LISTA_DIMENSIONES:l     {:
+                                                    FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)l);
+                                                    FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                    FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                    flo.InsertarHijo(hijo);
+                                                    RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, flo); 
+                    :}
+        | Id:t LISTA_DIMENSIONES:listat     {:
+                                                FLlamadaArreglo fla = new FLlamadaArreglo(t.toString(), (ArrayList<FNodoExpresion>)listat);
+                                                FLlamadaObjeto hijo = new FLlamadaObjeto(Constante.TVariableArreglo, t.toString(), tleft, tright, fla);
+                                                RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, hijo);  
+                                            :}
+        | ARREGLO:t   {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TArreglo, t.toString(), tleft, tright, (FNodoExpresion)t); 
+                    :}
+        | LLAMADA_FUNCION:t   {:
+                        RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, (FLlamadaObjeto)t); 
+                    :};  
 
 
-ARREGLO ::= TLlave_Abre LISTA_EXP TLlave_Cierra;
+ARREGLO ::= TLlave_Abre:a LISTA_EXP:t TLlave_Cierra {:
+                                                    FNodoArreglo fa = new FNodoArreglo((ArrayList<FNodoExpresion>)t);
+                                                    FNodoExpresion fe = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, aleft, aright, fa); 
+                                                    RESULT = fe;:};
 
-LISTA_EXP::= LISTA_EXP TComa EXP
-            | EXP;
-
-
-OBJETO ::= OBJETO HIJO 
-        |HIJO;
-
-HIJO ::= Id TPunto
-        |Id TPunto TParentesis_Abre LISTA_EXP_FUNCION TParentesis_Cierra;
-
-
-LLAMADA_FUNCION ::= TLlamar OBJETO Id TParentesis_Abre LISTA_EXP_FUNCION TParentesis_Cierra
-                    |TLlamar Id TParentesis_Abre LISTA_EXP_FUNCION TParentesis_Cierra
-                    | TLlamarHk Id TParentesis_Abre LISTA_EXP_FUNCION TParentesis_Cierra;
-
-LISTA_EXP_FUNCION ::= LISTA_EXP
-                        |;
+LISTA_EXP::= LISTA_EXP:listaux TComa EXP:exp    {:
+                                                    ArrayList<FNodoExpresion> lista = (ArrayList<FNodoExpresion>)listaux;
+                                                    lista.add((FNodoExpresion)exp);
+                                                    RESULT = lista;
+                                                :} 
+            | EXP:t     {:
+                                ArrayList<FNodoExpresion> lista = new ArrayList<>();
+                                lista.add((FNodoExpresion)t);
+                                RESULT = lista; 
+                            :};
 
 
-LISTA_DIMENSIONES ::= LISTA_DIMENSIONES DIMENSION
-                    | DIMENSION;
+OBJETO ::= OBJETO:p HIJO:h   {:
+                                FLlamadaObjeto padre = (FLlamadaObjeto)p;
+                                FLlamadaObjeto hijo = (FLlamadaObjeto)h;
+                                padre.InsertarHijo(hijo);
+                                RESULT = padre;
+                            :}
+        |HIJO:t {: RESULT = t;:};
 
-DIMENSION ::=   TCorchete_Abre EXP TCorchete_Cierra;
+HIJO ::= Id:t TPunto {:
+                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TVariable, t.toString(), tleft, tright, null);
+                        RESULT = lo;
+                    :}
+        |Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra TPunto    {:
+                                                                                    FLlamadaMetodo lm = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Graphik);
+                                                                                    FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString(), tleft, tright, lm);
+                                                                                    RESULT = lo;
+                                                                                :};
+
+
+LLAMADA_FUNCION ::= TLlamar OBJETO:o Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra   {:
+                                                                                                        FLlamadaMetodo lm = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Graphik);
+                                                                                                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString(), tleft, tright, lm);
+                                                                                                        FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                                                                        flo.InsertarHijo(lo);
+                                                                                                        RESULT = flo; 
+                                                                                                    :}
+                    |TLlamar Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra   {:
+                                                                                                        FLlamadaMetodo lm = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Graphik);
+                                                                                                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString(), tleft, tright, lm);
+                                                                                                        RESULT = lo; 
+                                                                                                    :}
+                    | TLlamarHk OBJETO:o Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra   {:
+                                                                                                        FLlamadaMetodo lm = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Haskell);
+                                                                                                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString(), tleft, tright, lm);
+                                                                                                        FLlamadaObjeto flo = (FLlamadaObjeto)o;
+                                                                                                        flo.InsertarHijo(lo);
+                                                                                                        RESULT = flo; 
+                                                                                                    :}
+                    | TLlamarHk Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra    {:
+                                                                                                        FLlamadaMetodo lm = new FLlamadaMetodo(t.toString(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Haskell);
+                                                                                                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString(), tleft, tright, lm);
+                                                                                                        RESULT = lo; 
+                                                                                                    :};
+
+LISTA_EXP_FUNCION ::= LISTA_EXP:L {: RESULT = L;:}
+                        | {: RESULT = new ArrayList<FNodoExpresion>(); :};
+
+
+LISTA_DIMENSIONES ::= LISTA_DIMENSIONES:ld TCorchete_Abre EXP:exp TCorchete_Cierra   {:
+                                                            ArrayList<FNodoExpresion> listadimension = (ArrayList<FNodoExpresion>)ld;
+                                                            listadimension.add((FNodoExpresion)exp);
+                                                            RESULT = listadimension;
+
+                                                    :}
+                    | TCorchete_Abre EXP:exp TCorchete_Cierra {: 
+                                                        ArrayList<FNodoExpresion> lista = new ArrayList<>();
+                                                        lista.add((FNodoExpresion)exp);
+                                                        RESULT = :};
+

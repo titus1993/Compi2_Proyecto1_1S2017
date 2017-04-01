@@ -10,12 +10,17 @@ package Constante;
  * @author Titus
  */
 public class Constante {
+    public static final String TObjeto = "Objeto";
+    
     public static final String Haskell = "H";
     public static final String Graphik = "G";
     
+    public static final String TDeclaracion = "Declaracion";
+    public static final String TAsignacion = "Asignacion";
     public static final String TMixto = "Mixto";
     public static final String TMetodo = "Metodo";
-    public static final String TVariable = "Variable";    
+    public static final String TVariable = "Variable"; 
+    public static final String TVariableArreglo = "VariableArreglo";
     public static final String TArreglo = "Arreglo";
     public static final String TError = "Error";
     public static final String TErrorLexico = "Error Lexico";
@@ -80,6 +85,7 @@ public class Constante {
     //operaciones exclusivas
     public static final String TAumento = "++";
     public static final String TDecremento = "--";
+    public static final String TDisminucion = "--";
     public static final String TIndiceLista  = "!!";
     
     //operaciones en lista

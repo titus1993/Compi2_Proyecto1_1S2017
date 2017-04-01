@@ -86,6 +86,10 @@ public class TitusNotificaciones {
         Error.addRow(error);
     }
     
+    public static boolean ContarErrores(){
+        return Error.getRowCount() == 0;
+    }
+    
     public static void LimpiarTabla(){
         while(Error.getRowCount() > 0){
             Error.removeRow(0);

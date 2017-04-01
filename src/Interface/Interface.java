@@ -112,9 +112,9 @@ public class Interface extends javax.swing.JFrame {
            }
            
            if(selectedFile.toString().toLowerCase().endsWith(".gk")){
-               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Graphik, cadena);
+               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Graphik, cadena, selectedFile.getAbsolutePath());
            }else{
-               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Haskell, cadena);
+               ControlTab.AgregarNuevaTab(selectedFile.getName(), Constante.Constante.Haskell, cadena, selectedFile.getAbsolutePath());
            }
        }
         
