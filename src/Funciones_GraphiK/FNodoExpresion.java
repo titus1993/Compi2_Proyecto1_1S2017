@@ -6,8 +6,10 @@
 package Funciones_GraphiK;
 
 import Constante.Constante;
+import Ejecucion_GraphiK.Arreglo;
 import Ejecucion_GraphiK.ControlArchivo;
 import Ejecucion_GraphiK.Objeto;
+import Ejecucion_GraphiK.Variable;
 import Funciones_GraphiK.*;
 import java.util.ArrayList;
 import Interface.TitusNotificaciones;
@@ -29,7 +31,8 @@ public class FNodoExpresion {
     public FLlamadaObjeto Objeto;
     public Objeto Obj;
     //public FLlamadaMetodo Metodo;
-    //public FArreglo Arreglo;
+    public FNodoArreglo Arreglo;
+    public Arreglo ArregloResuelto;
 
     public FNodoExpresion(FNodoExpresion nodo) {
         this.Izquierda = nodo.Izquierda;
@@ -63,11 +66,13 @@ public class FNodoExpresion {
             case Constante.TDecimal:
                 this.Decimal = Double.parseDouble(valor.toString());
                 this.Cadena = valor.toString();
+
                 break;
 
             case Constante.TCaracter:
                 this.Caracter = valor.toString().charAt(0);
                 this.Cadena = valor.toString();
+                this.Entero = this.Caracter;
                 break;
 
             case Constante.TCadena:
@@ -93,6 +98,14 @@ public class FNodoExpresion {
             case Constante.TObjeto:
                 this.Obj = (Objeto) valor;
                 break;
+
+            case Constante.TArreglo:
+                this.Arreglo = (FNodoArreglo) valor;
+                break;
+                
+            case Constante.TVariableArreglo:
+                this.ArregloResuelto = (Arreglo) valor;
+                break;
         }
     }
 
@@ -116,15 +129,15 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TPor:
-                aux = Suma(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Multiplicacion(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
                 break;
 
             case Constante.TDivision:
-                aux = Suma(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Division(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
                 break;
 
             case Constante.TPotenciaG:
-                aux = Suma(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Potencia(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
                 break;
 
             case Constante.TAumento:
@@ -132,7 +145,7 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TDisminucion:
-                aux = Aumento(nodo.Izquierda.ResolverExpresion(tabla));
+                aux = Disminucion(nodo.Izquierda.ResolverExpresion(tabla));
                 break;
 
             case Constante.TMayor:
@@ -196,20 +209,59 @@ public class FNodoExpresion {
                 break;
 
             case Constante.TArreglo:
+                FNodoExpresion nuevo = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, Fila, Columna, new FNodoArreglo(new ArrayList<>()));
+                for (FNodoExpresion exp : this.Arreglo.Arreglo) {
+                    nuevo.Arreglo.Arreglo.add(exp.ResolverExpresion(tabla));
+                }
+                int dimension = 0;
+                if (nuevo.Arreglo.Arreglo.get(0).Tipo.equals(Constante.TArreglo)) {
+                    dimension = nuevo.Arreglo.Arreglo.get(0).Arreglo.Arreglo.size();
+                } else {
+                    dimension = 1;
+                }
+
+                boolean estado = true;
+                for (FNodoExpresion exp : nuevo.Arreglo.Arreglo) {
+                    if (exp != null) {
+                        if (exp.Tipo.equals(Constante.TArreglo)) {
+                            if (!(exp.Arreglo.Arreglo.size() == dimension)) {
+                                estado = false;
+                            }
+                        }
+                    }else{
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un valor null a un arreglo", Fila, Columna);
+                    }
+                }
+
+                if (estado) {
+                    nuevo.Arreglo.Dimensiones = nuevo.Arreglo.Arreglo.size();
+                    aux = nuevo;
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo no tiene las mismas dimensiones", Fila, Columna);
+                }
                 break;
 
             case Constante.TAls:
+                FLlamadaObjeto llamada = (FLlamadaObjeto) this.Objeto;
+                Variable valor = llamada.Ejecutar(tabla, tabla);
+                if (valor != null) {
+                    aux = (FNodoExpresion) valor.Valor;
+                }
                 break;
 
             case Constante.TVariable:
                 break;
 
             case Constante.TVariableArreglo:
+                aux = nodo;
                 break;
 
             case Constante.TNuevo:
                 aux = new FNodoExpresion(nodo);
                 break;
+
+            case Constante.TObjeto:
+                aux = nodo;
         }
         return aux;
     }
@@ -699,7 +751,10 @@ public class FNodoExpresion {
             case Constante.TEntero:
                 switch (der.Tipo) {
                     case Constante.TEntero:
-                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, Math.pow(izq.Entero, der.Entero));
+                        double p = Math.pow(izq.Entero, der.Entero);
+                        int v = (int) p;
+                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, v);
+
                         break;
 
                     case Constante.TDecimal:
@@ -708,13 +763,16 @@ public class FNodoExpresion {
                         break;
 
                     case Constante.TCaracter:
-                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, Math.pow(izq.Entero, der.Caracter));
+                        double pc = Math.pow(izq.Entero, der.Entero);
+                        int vc = (int) pc;
+                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, vc);
 
                         break;
 
                     case Constante.TBool:
-                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, Math.pow(izq.Entero, der.Entero));
-
+                        double pb = Math.pow(izq.Entero, der.Entero);
+                        int vb = (int) pb;
+                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, vb);
                         break;
 
                     default:
@@ -753,7 +811,9 @@ public class FNodoExpresion {
             case Constante.TCaracter:
                 switch (der.Tipo) {
                     case Constante.TEntero:
-                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, Math.pow(izq.Caracter, der.Entero));
+                        double pe = Math.pow(izq.Entero, der.Entero);
+                        int ve = (int) pe;
+                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, ve);
                         break;
 
                     case Constante.TDecimal:
@@ -770,7 +830,9 @@ public class FNodoExpresion {
             case Constante.TBool:
                 switch (der.Tipo) {
                     case Constante.TEntero:
-                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, Math.pow(izq.Entero, der.Entero));
+                        double p = Math.pow(izq.Entero, der.Entero);
+                        int v = (int) p;
+                        aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, v);
                         break;
 
                     case Constante.TDecimal:

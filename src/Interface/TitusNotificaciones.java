@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
@@ -27,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
  * @author Titus
  */
 public class TitusNotificaciones {
-    public static JTextPane Consola = new JTextPane();
+    public static JTextArea Consola = new JTextArea();
     public static JTextField Comando = new JTextField();
     public static TabControl ControlTab;
     public static JTable TablaErrores;
@@ -42,7 +43,7 @@ public class TitusNotificaciones {
     }
     
     public static void IniciarConsola(){
-        Consola.setBackground(Color.black);
+        Consola.setBackground(Color.BLACK);
         Consola.setForeground(Color.WHITE);        
         Consola.setFont(new Font("", Font.PLAIN, 18));
         Consola.setEditable(false);

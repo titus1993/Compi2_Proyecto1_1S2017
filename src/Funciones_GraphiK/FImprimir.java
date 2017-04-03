@@ -25,15 +25,23 @@ public class FImprimir {
         this.Valor = valor;
     }
     
-    public void Imprimir(Objeto tabla){
-        FNodoExpresion solucion = Valor.ResolverExpresion(tabla);
+    public void Imprimir(Objeto tabla, Objeto padre){
+        FNodoExpresion solucion = Valor.ResolverExpresion(padre);
         if(TitusNotificaciones.ContarErrores()){
             if(solucion.Tipo.equals(Constante.TCadena)){
                 TitusNotificaciones.ImprimirConsola(solucion.Cadena);
+            }else if(solucion.Tipo.equals(Constante.TEntero)){
+                TitusNotificaciones.ImprimirConsola(String.valueOf(solucion.Entero));
+            }else if(solucion.Tipo.equals(Constante.TDecimal)){
+                TitusNotificaciones.ImprimirConsola(String.valueOf(solucion.Decimal));
+            }else if(solucion.Tipo.equals(Constante.TCaracter)){
+                TitusNotificaciones.ImprimirConsola(String.valueOf(solucion.Caracter));
+            }else if(solucion.Tipo.equals(Constante.TBool)){
+                TitusNotificaciones.ImprimirConsola(String.valueOf(solucion.Bool));
             }else{
-                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Se esperaba un tipo String", solucion.Fila, solucion.Columna);
+                TitusNotificaciones.ImprimirConsola(String.valueOf(solucion.Nombre));
+                //TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Se esperaba un tipo String", solucion.Fila, solucion.Columna);
             }
-        }
-        
+        }        
     }
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class FArreglo {
     public FNodoExpresion Arreglo = null;
     public ArrayList<FNodoExpresion> Dimensiones = null;    
+    
     public String Nombre, Tipo;
     
     public FArreglo(String tipo, String nombre, ArrayList<FNodoExpresion> dimensiones, FNodoExpresion arreglo){

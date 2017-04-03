@@ -128,14 +128,12 @@ public class TitusTab extends JPanel {
 
             if (parser.Ejecucion != null && TitusNotificaciones.ContarErrores()) {
                 Archivo archivo = parser.Ejecucion;
-                
+                TitusNotificaciones.LimpiarConsola();
                 Graphik_Ejecucion ejecucion = new Graphik_Ejecucion(archivo, Ruta);
                 
                 ejecucion.PrimerPasada();                
                 
                 ejecucion.Ejecutar();
-                
-                ArrayList<Archivo> a = ControlArchivo.Tabla;
                 if(!TitusNotificaciones.ContarErrores()){
                     JOptionPane.showMessageDialog(this, "Se encontraron errores.", "Error Graphik", JOptionPane.ERROR_MESSAGE);
                 }

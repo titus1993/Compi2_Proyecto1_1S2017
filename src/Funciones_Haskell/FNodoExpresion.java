@@ -201,9 +201,11 @@ public class FNodoExpresion {
                     nodo = val;
                 } else {
                     //variable no inicializada
+                    TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "La variable " + variable.Nombre + " esta nula", Fila, Columna);
                 }
             } else {
                 //error no existe variable
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "La variable " + variable.Nombre + " no existe", Fila, Columna);
             }
         } else {
 
@@ -365,12 +367,15 @@ public class FNodoExpresion {
                         }
                     } else {
                         //lista con diferentes dimensiones
+                        TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "La lista tiene diferentes dimensiones", Fila, Columna);
                     }
                 } else {
                     //error tipo de dato
+                    TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error en los tipos de datos", Fila, Columna);
                 }
             } else {
-                //error tiene que ser arreglo                
+                //error tiene que ser arreglo       
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "El valor tiene que ser de tipo arreglo", Fila, Columna);
             }
         }
 
@@ -406,13 +411,16 @@ public class FNodoExpresion {
                         nodo = lista.Arreglo.Arreglo.get(i);
 
                     } else {
-                        //fuera de dimensiones
+                        //lista con diferentes dimensiones
+                        TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "La lista tiene diferentes dimensiones", Fila, Columna);
                     }
                 } else {
                     //error tipo de dato
+                    TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error en los tipos de datos", Fila, Columna);
                 }
             } else {
-                //error tiene que ser arreglo                
+                //error tiene que ser arreglo       
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "El valor tiene que ser de tipo arreglo", Fila, Columna);
             }
         }
 
@@ -427,6 +435,7 @@ public class FNodoExpresion {
             nodo = auxder;
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -439,6 +448,7 @@ public class FNodoExpresion {
             nodo = auxder;
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -450,6 +460,7 @@ public class FNodoExpresion {
             nodo = FSum2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -471,6 +482,7 @@ public class FNodoExpresion {
             }
         } else {
             //error porque no es numerico el valor
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         nodo.Tipo = Constante.TDecimal;
         nodo.Nombre = Constante.TDecimal;
@@ -486,6 +498,7 @@ public class FNodoExpresion {
             nodo = FMax2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -512,6 +525,7 @@ public class FNodoExpresion {
                         }
                     } else {
                         //error diferentes tipos de datos
+                        TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
                     }
                 }
             }
@@ -529,6 +543,7 @@ public class FNodoExpresion {
             nodo = FMin2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -555,6 +570,7 @@ public class FNodoExpresion {
                         }
                     } else {
                         //error diferentes tipos de datos
+                        TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
                     }
                 }
             }
@@ -572,6 +588,7 @@ public class FNodoExpresion {
             nodo = FDes2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -609,7 +626,7 @@ public class FNodoExpresion {
                         h.Arreglo.Arreglo.add(hijo);
                     }
                     nodo = h;
-                    
+
                 } else {
                     FNodoExpresion hijo = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, 0, 0, new FArreglo(new ArrayList<>()));
                     int size = aux.Arreglo.Arreglo.size();
@@ -637,10 +654,11 @@ public class FNodoExpresion {
             }
         } else {
             //error
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
-    
+
     public FNodoExpresion FAsc(FNodoExpresion der) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, der.Fila, der.Columna, null);
         FNodoExpresion auxder = der.ResolverExpresion();
@@ -648,6 +666,7 @@ public class FNodoExpresion {
             nodo = FAsc2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -685,7 +704,7 @@ public class FNodoExpresion {
                         h.Arreglo.Arreglo.add(hijo);
                     }
                     nodo = h;
-                    
+
                 } else {
                     FNodoExpresion hijo = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, 0, 0, new FArreglo(new ArrayList<>()));
                     int size = aux.Arreglo.Arreglo.size();
@@ -713,6 +732,7 @@ public class FNodoExpresion {
             }
         } else {
             //error
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -724,6 +744,7 @@ public class FNodoExpresion {
             nodo = FProduct2(auxder);
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -745,6 +766,7 @@ public class FNodoExpresion {
             }
         } else {
             //error porque no es numerico el valor
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         nodo.Tipo = Constante.TDecimal;
         nodo.Nombre = Constante.TDecimal;
@@ -766,6 +788,7 @@ public class FNodoExpresion {
             nodo = exp;
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -787,6 +810,7 @@ public class FNodoExpresion {
             nodo = exp;
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -808,6 +832,7 @@ public class FNodoExpresion {
             nodo = exp;
         } else {
             //error, tiene que ser lista
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -820,6 +845,7 @@ public class FNodoExpresion {
             nodo = exp;
         } else {
             //error, tiene que ser lista
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato tiene que ser lista", Fila, Columna);
         }
         return nodo;
     }
@@ -832,6 +858,7 @@ public class FNodoExpresion {
             nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, auxizq.Numero + auxder.Numero);
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -845,6 +872,7 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, auxizq.Numero - auxder.Numero);
             } else {
                 //error en suma tipo de dato
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
             }
         } else {
             FNodoExpresion auxder = der.ResolverExpresion();
@@ -852,6 +880,7 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, -auxder.Numero);
             } else {
                 //error en suma tipo de dato
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
             }
         }
 
@@ -866,6 +895,7 @@ public class FNodoExpresion {
             nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, auxizq.Numero * auxder.Numero);
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -879,9 +909,11 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, auxizq.Numero / auxder.Numero);
             } else {
                 //error divison por cero
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error division por cero", Fila, Columna);
             }
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -895,9 +927,11 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, auxizq.Numero % auxder.Numero);
             } else {
                 //error divison por cero
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error division por cero", Fila, Columna);
             }
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -912,10 +946,12 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, Math.pow(auxder.Numero, 1 / auxizq.Numero));
             } else {
                 //error por cero
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error division por cero", Fila, Columna);
             }
 
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -929,9 +965,11 @@ public class FNodoExpresion {
                 nodo = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, 0, 0, Math.pow(auxizq.Numero, auxder.Numero));
             } else {
                 //error divison por cero
+                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error divison por cero", Fila, Columna);
             }
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -948,6 +986,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -964,6 +1003,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -980,6 +1020,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+            TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -996,6 +1037,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -1012,6 +1054,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -1028,6 +1071,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -1044,6 +1088,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
@@ -1060,6 +1105,7 @@ public class FNodoExpresion {
             }
         } else {
             //error en suma tipo de dato
+             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Error tipo de dato", Fila, Columna);
         }
         return nodo;
     }
