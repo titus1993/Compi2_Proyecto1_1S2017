@@ -31,7 +31,7 @@ public class Arreglo {
 
         //calculamos el total de posiciones
         for (FNodoExpresion i : dimensiones) {
-            FNodoExpresion exp = i.ResolverExpresion(tabla);
+            FNodoExpresion exp = i.ResolverExpresion(tabla, 1);
             if (exp.Tipo.equals(Constante.TEntero)) {
                 if (exp.Entero > 0) {
                     Tamanio *= exp.Entero;
@@ -54,14 +54,14 @@ public class Arreglo {
     }
 
     public Arreglo(FNodoExpresion exp, Objeto Tabla) {
-        FNodoExpresion nuevo = exp.ResolverExpresion(Tabla);
+        FNodoExpresion nuevo = exp.ResolverExpresion(Tabla, 1);
         if (nuevo.Tipo.equals(Constante.TArreglo)) {
             CrearDimensiones(nuevo);
         }
 
         //calculamos el total de posiciones
         for (FNodoExpresion i : this.Dimensiones) {
-            FNodoExpresion ex = i.ResolverExpresion(Tabla);
+            FNodoExpresion ex = i.ResolverExpresion(Tabla, 1);
             if (ex.Tipo.equals(Constante.TEntero)) {
                 if (ex.Entero > 0) {
                     Tamanio *= ex.Entero;
@@ -85,7 +85,7 @@ public class Arreglo {
 
     public void InsertarDatos(FNodoExpresion datosarreglo, Objeto Tabla) {
         posllenado = 0;
-        FNodoExpresion datos = datosarreglo.ResolverExpresion(Tabla);
+        FNodoExpresion datos = datosarreglo.ResolverExpresion(Tabla, 1);
         if (datos.Tipo.equals(Constante.TArreglo)) {
             if (ComprobarDimensiones(datos, 0)) {
                 InsertarDatos2(datos);
@@ -178,11 +178,11 @@ public class Arreglo {
             if (llamada.Dimensiones.size() == this.Dimensiones.size()) {
                 //comprobamos que la llamada este dentro del rango si no reportamos error
 
-                FNodoExpresion nuevovalor = valor.ResolverExpresion(Tabla);
+                FNodoExpresion nuevovalor = valor.ResolverExpresion(Tabla, 1);
                 int posicion = 0;
                 int residuo = this.Tamanio;
                 for (int i = 0; i < this.Dimensiones.size(); i++) {
-                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla, 1);
                     if (d.Tipo.equals(Constante.TEntero)) {
                         if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
 
@@ -221,7 +221,7 @@ public class Arreglo {
                 int posicion = 0;
                 int residuo = this.Tamanio;
                 for (int i = 0; i < this.Dimensiones.size(); i++) {
-                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla, 1);
                     if (d.Tipo.equals(Constante.TEntero)) {
                         if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
                             residuo = residuo / this.Dimensiones.get(i).Entero;
@@ -268,7 +268,7 @@ public class Arreglo {
                 int posicion = 0;
                 int residuo = this.Tamanio;
                 for (int i = 0; i < this.Dimensiones.size(); i++) {
-                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla, 1);
                     if (d.Tipo.equals(Constante.TEntero)) {
                         if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
                             residuo = residuo / this.Dimensiones.get(i).Entero;
@@ -316,7 +316,7 @@ public class Arreglo {
                     int posicion = 0;
                     int residuo = this.Tamanio;
                     for (int i = 0; i < this.Dimensiones.size(); i++) {
-                        FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                        FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla, 1);
                         if (d.Tipo.equals(Constante.TEntero)) {
                             if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
                                 residuo = residuo / this.Dimensiones.get(i).Entero;

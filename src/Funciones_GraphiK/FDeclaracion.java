@@ -49,7 +49,7 @@ public class FDeclaracion {
             Variable nuevavariable;
             if (Valor != null) {
                 FNodoExpresion exp = (FNodoExpresion) Valor;
-                exp = exp.ResolverExpresion(padre);
+                exp = exp.ResolverExpresion(padre, 1);
                 if (exp.Tipo.equals(Constante.TVariableArreglo)) {
                 exp = exp.PosArreglo;
             }

@@ -25,7 +25,7 @@ public class FMientras {
     }
 
     public void EjecutarMientras(Objeto Tabla, Simbolo instruccion, Objeto padre) {
-        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre, 1);
         if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
             condicion = condicion.PosArreglo;
         }
@@ -33,13 +33,13 @@ public class FMientras {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar()) {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TSi);
-                    metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre);
+                    metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre,1 );
 
                     if (Tabla.TablaVariables.IsContinuar()) {
                         Tabla.TablaVariables.SacarVariable();
                     }
 
-                    condicion = this.Condicion.ResolverExpresion(padre);
+                    condicion = this.Condicion.ResolverExpresion(padre, 1);
                     if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
                         condicion = condicion.PosArreglo;
                     }

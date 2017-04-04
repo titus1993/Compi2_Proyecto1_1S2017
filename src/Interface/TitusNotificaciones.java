@@ -13,17 +13,25 @@ import Ejecucion_Haskell.Haskell_Ejecucion;
 import Ejecucion_Haskell.TablaHaskell;
 import Ejecucion_Haskell.Variable;
 import Funciones_Haskell.FFuncion;
+import com.opencsv.CSVReader;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -56,6 +64,9 @@ public class TitusNotificaciones {
     public static int contador = 0;
     public static JTree Arbol;
     public static DefaultMutableTreeNode Raiz;
+    public static DefaultTableModel ModeloDatos;
+    public static JTable Datos;
+    public static JScrollPane DatosPanel = new JScrollPane();
 
     public TitusNotificaciones() {
 
@@ -77,6 +88,65 @@ public class TitusNotificaciones {
         contador = 0;
     }
 
+    public static void IniciarDatos() {
+        DatosPanel.setName("Datos");
+    }
+
+    public static void CargarDatos(String archivo, JPanel contenedor) {
+
+        String[] cadena = archivo.split("\n");
+        int t = 0;
+
+        String[] Titulo = null;
+        String[] Contenido = null;
+        ArrayList<String[]> a = new ArrayList<>();
+        for (String fila : cadena) {
+            if (t == 0) {
+                Titulo = fila.split(",");
+                t++;
+                int i = 0;
+                for (i = 0; i < Titulo.length; i++) {
+                    Titulo[i] = Titulo[i].replace("[", "");
+                    Titulo[i] = Titulo[i].replace("]", "");
+                    Titulo[i] = Titulo[i].replace("{", "");
+                    Titulo[i] = Titulo[i].replace("}", "");
+                    Titulo[i] = Titulo[i].replace("\"", "");
+                }
+            } else {
+                Contenido = fila.split(",");
+                if (Titulo.length == Contenido.length) {
+                    int i = 0;
+                    for (i = 0; i < Titulo.length; i++) {
+                        Contenido[i] = Contenido[i].replace("[", "");
+                        Contenido[i] = Contenido[i].replace("]", "");
+                        Contenido[i] = Contenido[i].replace("{", "");
+                        Contenido[i] = Contenido[i].replace("}", "");
+                        Contenido[i] = Contenido[i].replace("\"", "");
+                    }
+                    a.add(Contenido);
+                }
+
+            }
+        }
+
+        /* String[] columnas = {"Tipo de error", "Descripcion", "Linea", "Columna"};*/
+        ModeloDatos = new DefaultTableModel(Titulo, 0);
+        for (String[] c : a) {
+            if (Titulo.length == c.length) {
+                ModeloDatos.addRow(c);
+            }
+        }
+        Datos = new JTable(ModeloDatos);
+        DatosPanel = new JScrollPane(Datos);
+        DatosPanel.setName("Datos");
+        if (Interface.notificacion.getComponentCount() == 3) {
+            Interface.notificacion.add(DatosPanel);
+        } else {
+            Interface.notificacion.remove(3);
+            Interface.notificacion.add(DatosPanel);
+        }
+    }
+
     public static void IniciarArbol() {
         Raiz = new DefaultMutableTreeNode("Haskell");
         Arbol = new JTree(Raiz);
@@ -84,7 +154,7 @@ public class TitusNotificaciones {
     }
 
     public static void InsertarHijoArbol() {
-        Raiz.removeAllChildren();       
+        Raiz.removeAllChildren();
 
         int j = 0;
 
@@ -109,7 +179,7 @@ public class TitusNotificaciones {
             i++;
         }
         DefaultTreeModel model = (DefaultTreeModel) Arbol.getModel();
-        model.reload();
+        model.reload();        
     }
 
     public static void IniciarGrafica() {

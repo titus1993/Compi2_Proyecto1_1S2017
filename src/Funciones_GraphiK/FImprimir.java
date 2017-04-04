@@ -27,7 +27,7 @@ public class FImprimir {
     }
     
     public void Imprimir(Objeto tabla, Objeto padre){
-        FNodoExpresion solucion = Valor.ResolverExpresion(padre);
+        FNodoExpresion solucion = Valor.ResolverExpresion(padre, 1);
         if(solucion.Tipo.equals(Constante.TVariableArreglo)){
             solucion = solucion.PosArreglo;
         }

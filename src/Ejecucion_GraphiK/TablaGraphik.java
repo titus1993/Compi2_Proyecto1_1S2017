@@ -180,6 +180,21 @@ public class TablaGraphik {
         return aux;
     }
 
+    public Variable BuscarDatos() {
+        int cont = Tabla.size() - 1;
+        boolean encontrado = false;
+        Variable variable = null;
+        while (cont >= 0 && TitusNotificaciones.ContarErrores() && !encontrado) {
+            if (Tabla.get(cont).Nombre.toLowerCase().equals(Constante.TDatos.toLowerCase()) && (Tabla.get(cont).Rol.equals(Constante.TMetodo))) {
+                variable = Tabla.get(cont);
+                encontrado = !encontrado;
+                break;
+            }
+            cont--;
+        }
+        return variable;
+    }
+    
     public void BorrarVariable(String nombre) {
         int i = Tabla.size() - 1;
         while (i >= 0) {

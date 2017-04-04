@@ -36,7 +36,7 @@ public class FMetodo {
         this.Nombre = nombre;
     }
 
-    public void EjecutarInstrucciones(ArrayList<Simbolo> instrucciones, Objeto Tabla, Objeto Padre) {
+    public void EjecutarInstrucciones(ArrayList<Simbolo> instrucciones, Objeto Tabla, Objeto Padre, int pos) {
         if (TitusNotificaciones.ContarErrores()) {
             for (Simbolo instruccion : instrucciones) {
                 if (TitusNotificaciones.ContarErrores() && !Tabla.TablaVariables.IsContinuar() && !Tabla.TablaVariables.IsTerminar() && !Tabla.TablaVariables.IsRertorno()) {
@@ -45,7 +45,7 @@ public class FMetodo {
                             EjecutarMetodoImprimir(instruccion, Tabla, Padre);
                             break;
                         case Constante.TMetodo:
-                            EjecutarMetodo(instruccion, Tabla, Padre);
+                            EjecutarMetodo(instruccion, Tabla, Padre, pos);
                             break;
                         case Constante.TDeclaracion:
                             EjecutarDeclaracion(instruccion, Tabla, Padre);
@@ -83,6 +83,10 @@ public class FMetodo {
                             EjecutarGraficarFuncion(instruccion, Tabla, Padre);
                             break;
                             
+                        case Constante.TDatos:
+                            EjecutarDatos(instruccion, Tabla, Padre);
+                            break;
+                            
                         default:
                             break;
                     }
@@ -91,6 +95,11 @@ public class FMetodo {
         }
     }
 
+    public void EjecutarDatos(Simbolo sim, Objeto Tabla, Objeto Padre){
+        FDatos datos = new FDatos();
+        datos.EjecutarDatos(sim, Tabla, Padre);
+    }
+    
      public void EjecutarGraficarFuncion(Simbolo sim, Objeto Tabla, Objeto Padre) {
         FGraphikar graficar = (FGraphikar) sim.Valor;
         graficar.Ejecutar(Tabla, sim, Padre);
@@ -123,7 +132,7 @@ public class FMetodo {
 
     public void EjecutarRetorno(Objeto Tabla, Simbolo instruccion) {
         FNodoExpresion exp = (FNodoExpresion) instruccion.Valor;        
-        exp = exp.ResolverExpresion(Tabla);
+        exp = exp.ResolverExpresion(Tabla, 1);
         if (exp.Tipo.equals(Constante.TVariableArreglo)) {
             exp = exp.PosArreglo;
         }
@@ -138,14 +147,14 @@ public class FMetodo {
         Tabla.TablaVariables.InsertarVariable(new Variable(Constante.Graphik, sim.Visibilidad, sim.Tipo, sim.Nombre, sim.Rol, sim.Fila, sim.Columna, sim.Ambito, Tabla, Tabla));
     }
 
-    public Variable EjecutarMetodo(FLlamadaMetodo llamada, Objeto Tabla, Variable metodo, Objeto Padre) {
+    public Variable EjecutarMetodo(FLlamadaMetodo llamada, Objeto Tabla, Variable metodo, Objeto Padre, int pos) {
         Variable resultado = null;
         if (this.Parametros.size() == llamada.Parametros.size()) {
             int cont = 0;
             //metemos la variables de los parametros a la tabla
             while (cont < this.Parametros.size() && TitusNotificaciones.ContarErrores()) {
                 //aqui le enviamos al padre
-                FNodoExpresion resultadoparametro = llamada.Parametros.get(cont).ResolverExpresion(Padre);
+                FNodoExpresion resultadoparametro = llamada.Parametros.get(cont).ResolverExpresion(Padre, pos);
                 if (resultadoparametro.Tipo.equals(Constante.TVariableArreglo)) {
                     resultadoparametro = resultadoparametro.PosArreglo;
                 }
@@ -171,7 +180,7 @@ public class FMetodo {
 
             //ejecutamos el cuerpo
             if (TitusNotificaciones.ContarErrores()) {
-                EjecutarInstrucciones(this.Ambito.TablaSimbolo, Tabla, Tabla);
+                EjecutarInstrucciones(this.Ambito.TablaSimbolo, Tabla, Tabla, pos);
 
                 //obtenemos el valor del retun si hay
                 if (Tabla.TablaVariables.IsRertorno()) {
@@ -207,9 +216,9 @@ public class FMetodo {
         asigna.EjecutarAsignacion(Tabla, instruccion, Padre);
     }
 
-    public void EjecutarMetodo(Simbolo instruccion, Objeto Tabla, Objeto Padre) {
+    public void EjecutarMetodo(Simbolo instruccion, Objeto Tabla, Objeto Padre, int pos) {
         FLlamadaObjeto metodo = (FLlamadaObjeto) instruccion.Valor;
-        metodo.Ejecutar(Tabla, Padre);
+        metodo.Ejecutar(Tabla, Padre, pos);
 
     }
 

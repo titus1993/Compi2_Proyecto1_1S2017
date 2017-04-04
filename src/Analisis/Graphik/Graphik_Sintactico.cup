@@ -35,7 +35,7 @@ terminal TMayor, TMenor, TMayorIgual, TMenorIgual, TIgualacion, TDiferenciacion,
 terminal TLlave_Abre, TLlave_Cierra, TComa, TVar, TPublico, TPrivado, TProtegido, TDosPuntos, TCaso, TDefecto, TPara, THacer;
 
 terminal TInicio, TProcesar, TDonde, TDondeCada, TDondeTodo, TImprimir, TGraphikar_Funcion, TDatos, TColumna, TLlamar, TLlamarHk, TIncluye, TImportar, TGk, THereda, TRetornar, TInterrogacion, TContinuar, TTerminar, TEntero, TCadena, TVacio, TDecimal, TCaracter, TBool, TAls, TPunto, TNuevo, TSi, TSino, TSeleccion, TMientras;
-nonterminal INICIO, METODO_DATOS, METODO_INICIO, LLAMADA_IMPRIMIR, LLAMADA_GRAPHIKAR, LLAMADA_METODO, LLAMADA_AUMENTO, LLAMADA_DISMINUCION, LISTA_EXP_FUNCION, LLAMADA_FUNCION, LLAMADA_HASKELL, LISTA_HASKELL, HASKELL, IMPORTACIONES_GRAPHIK, LISTA_GRAPHIK, GRAPHIK, HERENCIA, ALS, LISTA_ALS, TIPO_DATO_METODO, METODO, PARAMETRO, LISTA_PARAMETROS, LISTA_PARAMETRO, LISTA_METODOS, LISTA_EXP, ARREGLO, SENTENCIA_HACER_MIENTRAS, SENTENCIA_MIENTRAS, DECLARACION_PARA, SENTENCIA_PARA, ACCION_ANTERIOR, ACCION_POSTERIOR, LISTA_CASOS, CASOS, PUNTUAL, SENTENCIA_SELECCION, CUERPO, SENTENCIA_IF, ASIGNACION, LISTA_SENTENCIAS, SENTENCIA, DECLARACION, TIPO_DATO, LISTA_ID, VISIBILIDAD, VALOR_ASIGNACION, EXP, OBJETO, HIJO, LISTA_DIMENSIONES, DEFECTO, NUEVO_OBJETO;
+nonterminal INICIO, PROCESAR, DONDE, METODO_DATOS, METODO_INICIO, LLAMADA_IMPRIMIR, LLAMADA_GRAPHIKAR, LLAMADA_METODO, LLAMADA_AUMENTO, LLAMADA_DISMINUCION, LISTA_EXP_FUNCION, LLAMADA_FUNCION, LLAMADA_HASKELL, LISTA_HASKELL, HASKELL, IMPORTACIONES_GRAPHIK, LISTA_GRAPHIK, GRAPHIK, HERENCIA, ALS, LISTA_ALS, TIPO_DATO_METODO, METODO, PARAMETRO, LISTA_PARAMETROS, LISTA_PARAMETRO, LISTA_METODOS, LISTA_EXP, ARREGLO, SENTENCIA_HACER_MIENTRAS, SENTENCIA_MIENTRAS, DECLARACION_PARA, SENTENCIA_PARA, ACCION_ANTERIOR, LISTA_CASOS, CASOS, PUNTUAL, SENTENCIA_SELECCION, CUERPO, SENTENCIA_IF, ASIGNACION, LISTA_SENTENCIAS, SENTENCIA, DECLARACION, TIPO_DATO, LISTA_ID, VISIBILIDAD, VALOR_ASIGNACION, EXP, OBJETO, HIJO, LISTA_DIMENSIONES, DEFECTO, NUEVO_OBJETO;
 
 precedence left TOr;
 precedence left TXor;
@@ -149,7 +149,7 @@ METODO::=    TIPO_DATO_METODO:td Id:t TParentesis_Abre LISTA_PARAMETROS:p TParen
                                                                                                                                                 lista.add(s);
                                                                                                                                                 RESULT = lista;
                                                                                                                                                 :}
-            | METODO_DATOS
+            | METODO_DATOS:t {:RESULT = t;:}
             | METODO_INICIO:t {: RESULT = t; :}
             | DECLARACION:t TInterrogacion {: RESULT = t;:}
             | ASIGNACION:t TInterrogacion  {:
@@ -158,17 +158,29 @@ METODO::=    TIPO_DATO_METODO:td Id:t TParentesis_Abre LISTA_PARAMETROS:p TParen
                                             RESULT = lista; 
                                             :};
 
-METODO_DATOS ::= TVacio TDatos:t TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra {:
-                                                                                                        Ambito ambito = new Ambito(Constante.TDatos, (ArrayList<Simbolo>)c);
-                                                                                                        for(Simbolo sim : ambito.TablaSimbolo){
-                                                                                                            sim.Ambito.Padre = ambito;
-                                                                                                        }
+METODO_DATOS ::= TVacio TDatos:t TParentesis_Abre TParentesis_Cierra TLlave_Abre PROCESAR:p DONDE:d TLlave_Cierra {:
+                                                                                                        Ambito ambito = new Ambito(Constante.TDatos, new ArrayList<>());
+                                                                                                        Simbolo a = new Simbolo(Constante.TPublico, Constante.TProcesar, Constante.TProcesar, Constante.TProcesar, tleft, tright, null, (FProcesar)p);                                                                                                         
+                                                                                                        Simbolo b = new Simbolo(Constante.TPublico, Constante.TDonde, Constante.TDonde, Constante.TDonde, tleft, tright, null, (FDonde)d);                                                                                                         
+                                                                                                        ambito.TablaSimbolo.add(a);
+                                                                                                        ambito.TablaSimbolo.add(b);
                                                                                                         FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), ambito, tleft, tright, Constante.TVacio, t.toString().toLowerCase());
                                                                                                         Simbolo s = new Simbolo(Constante.TPublico, Constante.TVacio, Constante.TDatos, Constante.TMetodo, tleft, tright, ambito, metodo); 
                                                                                                         ArrayList<Simbolo> lista = new ArrayList<>();
                                                                                                         lista.add(s);
                                                                                                         RESULT = lista;
                                                                                                         :};
+
+
+
+PROCESAR ::= TProcesar:t TIgual EXP:exp TInterrogacion {: RESULT = new FProcesar((FNodoExpresion)exp, tleft, tright); :};
+
+DONDE ::= TDonde:t TParentesis_Abre EXP:exp1 TParentesis_Cierra TIgual EXP:exp2 TInterrogacion {: RESULT = new FDonde(Constante.TDonde, (FNodoExpresion)exp1, (FNodoExpresion)exp2, tleft, tright);:}
+            |TDondeCada:t TParentesis_Abre EXP:exp1 TParentesis_Cierra TInterrogacion {: RESULT = new FDonde(Constante.TDondeCada, (FNodoExpresion)exp1, null, tleft, tright);:}
+            |TDondeTodo:t TParentesis_Abre EXP:exp1 TParentesis_Cierra TInterrogacion {: RESULT = new FDonde(Constante.TDondeTodo, (FNodoExpresion)exp1, null, tleft, tright);:}
+    ;
+
+
 
 METODO_INICIO ::= TVacio TInicio:t TParentesis_Abre TParentesis_Cierra TLlave_Abre CUERPO:c TLlave_Cierra{:
                                                                                                         Ambito ambito = new Ambito(Constante.TInicio, (ArrayList<Simbolo>)c);
@@ -268,7 +280,12 @@ SENTENCIA ::= DECLARACION:t TInterrogacion {: RESULT = t; :}
                                                 Simbolo s = (Simbolo)t;
                                                 ArrayList<Simbolo> l = new ArrayList<Simbolo>();
                                                 l.add(s);
-                                                RESULT = l; :};
+                                                RESULT = l; :}
+
+                |TLlamar TDatos:t TParentesis_Abre TParentesis_Cierra TInterrogacion{:Simbolo s = new Simbolo(Constante.TPublico, Constante.TDatos, Constante.TDatos, Constante.TDatos, tleft, tright, new Ambito(Constante.TDatos, new ArrayList<Simbolo>()), null); 
+                                                                                    ArrayList<Simbolo> l = new ArrayList<Simbolo>();
+                                                                                    l.add(s);
+                                                                                    RESULT = l;:};
 
 LLAMADA_METODO ::= LLAMADA_FUNCION:t {:
                                     FLlamadaObjeto lo = (FLlamadaObjeto)t; 
@@ -691,7 +708,8 @@ EXP ::= EXP:izq TOr:t EXP:der       {:
                     :}
         | LLAMADA_FUNCION:t   {:
                         RESULT = new FNodoExpresion(null, null, Constante.TAls, Constante.TAls, tleft, tright, (FLlamadaObjeto)t); 
-                    :};  
+                    :}
+        | TColumna:t TParentesis_Abre EXP:exp TParentesis_Cierra {: RESULT = new FNodoExpresion(null, null, Constante.TColumna, Constante.TColumna, tleft, tright, (FNodoExpresion)exp); :};  
 
 
 ARREGLO ::= TLlave_Abre:a LISTA_EXP:t TLlave_Cierra {:

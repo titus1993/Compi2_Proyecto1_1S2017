@@ -39,7 +39,7 @@ public class FPara {
             asigna.EjecutarAsignacion(Tabla, AccionAnterior, padre);
         }
 
-        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre, 1);
         if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
             condicion = condicion.PosArreglo;
         }
@@ -47,21 +47,21 @@ public class FPara {
         if (TitusNotificaciones.ContarErrores()) {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar()) {
-                    condicion = Condicion.ResolverExpresion(padre);
+                    condicion = Condicion.ResolverExpresion(padre, 1);
                     if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
                         condicion = condicion.PosArreglo;
                     }
                     FMetodo metodo1 = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TPara);
 
                     if (condicion.Bool) {
-                        metodo1.EjecutarInstrucciones(this.Ambito.TablaSimbolo, Tabla, padre);
+                        metodo1.EjecutarInstrucciones(this.Ambito.TablaSimbolo, Tabla, padre,1);
 
                     }
 
                     if (Tabla.TablaVariables.IsContinuar()) {
                         Tabla.TablaVariables.SacarVariable();
                     }
-                    condicion = Condicion.ResolverExpresion(padre);
+                    condicion = Condicion.ResolverExpresion(padre, 1);
                     if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
                         condicion = condicion.PosArreglo;
                     }

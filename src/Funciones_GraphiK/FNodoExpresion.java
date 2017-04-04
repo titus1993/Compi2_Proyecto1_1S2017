@@ -34,6 +34,7 @@ public class FNodoExpresion {
     public FNodoArreglo Arreglo;
     public Arreglo ArregloResuelto;
     public FNodoExpresion PosArreglo;
+    public FNodoExpresion Col;
 
     public FNodoExpresion(FNodoExpresion nodo) {
         this.Izquierda = nodo.Izquierda;
@@ -107,25 +108,29 @@ public class FNodoExpresion {
             case Constante.TVariableArreglo:
                 this.ArregloResuelto = (Arreglo) valor;
                 break;
+
+            case Constante.TColumna:
+                this.Col = (FNodoExpresion) valor;
+                break;
         }
     }
 
-    public FNodoExpresion ResolverExpresion(Objeto tabla) {
-        return ResolverExpresion(this, tabla);
+    public FNodoExpresion ResolverExpresion(Objeto tabla, int pos) {
+        return ResolverExpresion(this, tabla, pos);
     }
 
-    private FNodoExpresion ResolverExpresion(FNodoExpresion nodo, Objeto tabla) {
+    private FNodoExpresion ResolverExpresion(FNodoExpresion nodo, Objeto tabla, int pos) {
         FNodoExpresion aux = new FNodoExpresion(null, null, Constante.TError, Constante.TError, nodo.Fila, nodo.Columna, null);
         FNodoExpresion izq = nodo.Izquierda;
         FNodoExpresion der = nodo.Derecha;
         if (nodo.Izquierda != null) {
-            izq = nodo.Izquierda.ResolverExpresion(tabla);
+            izq = nodo.Izquierda.ResolverExpresion(tabla, pos);
             if (izq.Tipo.equals(Constante.TVariableArreglo)) {
                 izq = izq.PosArreglo;
             }
         }
         if (nodo.Derecha != null) {
-            der = nodo.Derecha.ResolverExpresion(tabla);
+            der = nodo.Derecha.ResolverExpresion(tabla, pos);
             if (der.Tipo.equals(Constante.TVariableArreglo)) {
                 der = der.PosArreglo;
             }
@@ -226,11 +231,11 @@ public class FNodoExpresion {
             case Constante.TArreglo:
                 FNodoExpresion nuevo = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, Fila, Columna, new FNodoArreglo(new ArrayList<>()));
                 for (FNodoExpresion exp : this.Arreglo.Arreglo) {
-                    FNodoExpresion a = exp.ResolverExpresion(tabla);
+                    FNodoExpresion a = exp.ResolverExpresion(tabla, pos);
                     if (a.Tipo.equals(Constante.TVariableArreglo)) {
                         a = a.PosArreglo;
                     }
-                    nuevo.Arreglo.Arreglo.add(a.ResolverExpresion(tabla));
+                    nuevo.Arreglo.Arreglo.add(a.ResolverExpresion(tabla, pos));
                 }
                 int dimension = 0;
                 if (nuevo.Arreglo.Arreglo.get(0).Tipo.equals(Constante.TArreglo)) {
@@ -262,7 +267,7 @@ public class FNodoExpresion {
 
             case Constante.TAls:
                 FLlamadaObjeto llamada = (FLlamadaObjeto) this.Objeto;
-                Variable valor = llamada.Ejecutar(tabla, tabla);
+                Variable valor = llamada.Ejecutar(tabla, tabla, pos);
                 if (valor != null) {
                     aux = (FNodoExpresion) valor.Valor;
                     if (valor.Rol.equals(Constante.TVariableArreglo)) {
@@ -284,6 +289,31 @@ public class FNodoExpresion {
 
             case Constante.TObjeto:
                 aux = nodo;
+                break;
+
+            case Constante.TColumna:
+                FNodoExpresion i = nodo.Col.ResolverExpresion(tabla, pos);
+                if (i.Tipo.equals(Constante.TEntero)) {
+                    if (i.Entero > 0 && i.Entero <= TitusNotificaciones.ModeloDatos.getColumnCount()) {
+
+                        String value = TitusNotificaciones.ModeloDatos.getValueAt(pos, i.Entero - 1).toString();
+                        try {
+                            int a = Integer.parseInt(value);
+                            aux = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, Fila, Columna, a);
+                        } catch (Exception e) {
+                            try {
+                                double a = Double.parseDouble(value);
+                                aux = new FNodoExpresion(null, null, Constante.TDecimal, Constante.TDecimal, Fila, Columna, a);
+                            } catch (Exception ex) {
+                                aux = new FNodoExpresion(null, null, Constante.TCadena, Constante.TCadena, Fila, Columna, value);
+                            }
+                        }
+                    }else{
+                       TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "Posicion de la columna fuera de rango", Fila, Columna);
+                    }
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El acceso a la columna tiene que ser de tipo entero", nodo.Fila, nodo.Columna);
+                }
         }
         return aux;
     }

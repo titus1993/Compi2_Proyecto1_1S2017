@@ -47,7 +47,7 @@ public class FLlamadaObjeto {
         }
     }
 
-    public Variable Ejecutar(Objeto objeto, Objeto padre) {
+    public Variable Ejecutar(Objeto objeto, Objeto padre, int pos) {
         if (this.Tipo.equals(Constante.TVariable)) {
             Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);
             if (actual != null) {
@@ -57,7 +57,7 @@ public class FLlamadaObjeto {
                         if ((FNodoExpresion) actual.Valor != null) {
                             Objeto nuevo = ((FNodoExpresion) actual.Valor).Obj;
                             if (nuevo != null) {
-                                return Hijo.EjecutarHijo(nuevo, objeto);
+                                return Hijo.EjecutarHijo(nuevo, objeto, pos);
                             } else {
                                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "La variable " + this.Hijo.Nombre + " esta nula", this.Hijo.Fila, this.Hijo.Columna);
                             }
@@ -78,7 +78,7 @@ public class FLlamadaObjeto {
         } else if (this.Tipo.equals(Constante.TMetodo)) {
             ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
             for (FNodoExpresion par : LlamadaMetodo.Parametros) {
-                FNodoExpresion nuevopar = par.ResolverExpresion(padre);
+                FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
                 if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
                     nuevopar = nuevopar.PosArreglo;
                 }
@@ -89,7 +89,7 @@ public class FLlamadaObjeto {
                 //primero ejecutamos el metodo
                 FMetodo metodo = (FMetodo) actual.Valor;
                 //obtenemos el return
-                Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre);
+                Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
 
                 //metodo.Ejecutar(objeto)
                 //exite el metodo en el ambito actual ahora verificamos si tiene hijos
@@ -100,7 +100,7 @@ public class FLlamadaObjeto {
 
                             Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
                             if (nuevo != null) {
-                                return Hijo.EjecutarHijo(nuevo, objeto);
+                                return Hijo.EjecutarHijo(nuevo, objeto, pos);
                             } else {
                                 if (this.Hijo.Hijo == null) {
                                     return retorno;
@@ -144,7 +144,7 @@ public class FLlamadaObjeto {
         return null;
     }
 
-    private Variable EjecutarHijo(Objeto objeto, Objeto padre) {
+    private Variable EjecutarHijo(Objeto objeto, Objeto padre, int pos) {
         if (this.Tipo.equals(Constante.TVariable)) {
             Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);
             if (actual != null) {
@@ -156,7 +156,7 @@ public class FLlamadaObjeto {
                             if ((FNodoExpresion) actual.Valor != null) {
                                 Objeto nuevo = ((FNodoExpresion) actual.Valor).Obj;
 
-                                return Hijo.Ejecutar(nuevo, objeto);
+                                return Hijo.EjecutarHijo(nuevo, objeto, pos);
 
                             } else {
                                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "La variable " + actual.Nombre + " esta nula", Fila, Columna);
@@ -178,7 +178,7 @@ public class FLlamadaObjeto {
         } else if (this.Tipo.equals(Constante.TMetodo)) {
             ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
             for (FNodoExpresion par : LlamadaMetodo.Parametros) {
-                FNodoExpresion nuevopar = par.ResolverExpresion(padre);
+                FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
                 if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
                     nuevopar = nuevopar.PosArreglo;
                 }
@@ -191,7 +191,7 @@ public class FLlamadaObjeto {
 
                 if (metodo.Visibilidad.equals(Constante.TPublico) || metodo.Visibilidad.equals(Constante.TProtegido)) {
                     //obtenemos el return
-                    Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre);
+                    Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
 
                     //metodo.Ejecutar(objeto)
                     //exite el metodo en el ambito actual ahora verificamos si tiene hijos
@@ -202,7 +202,7 @@ public class FLlamadaObjeto {
 
                                 Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
                                 if (nuevo != null) {
-                                    return Hijo.EjecutarHijo(nuevo, objeto);
+                                    return Hijo.EjecutarHijo(nuevo, objeto, pos);
                                 } else {
                                     if (this.Hijo.Hijo == null) {
                                         return retorno;

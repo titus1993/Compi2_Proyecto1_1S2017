@@ -44,7 +44,7 @@ public class FAsignacion {
             Variable nuevavariable;
             if (Valor != null) {
                 FNodoExpresion exp = (FNodoExpresion) Valor;
-                exp = exp.ResolverExpresion(padre);
+                exp = exp.ResolverExpresion(padre, 1);
                 if (exp.Tipo.equals(Constante.TVariableArreglo)) {
                     exp = exp.PosArreglo;
                 }
@@ -66,7 +66,7 @@ public class FAsignacion {
                             o = new Objeto(als);
                             if (o != null) {
                                 FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TObjeto, o.Nombre, instruccion.Fila, instruccion.Columna, o);
-                                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo
                                 if (o.Nombre.equals(nuevavariable.Tipo)) {
 
                                     if (nuevavariable != null) {
@@ -86,7 +86,7 @@ public class FAsignacion {
                         }
                     } else {//sino es cualquier otro valor
 
-                        nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                        nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo
 
                         if (nuevavariable != null) {
                             if (nuevavariable.Rol.equals(Constante.TVariableArreglo)) {
@@ -115,7 +115,7 @@ public class FAsignacion {
 
                 }
             } else if (this.Tipo.equals(Constante.TAumento)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -144,7 +144,7 @@ public class FAsignacion {
                     TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
                 }
             } else if (this.Tipo.equals(Constante.TDisminucion)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -178,14 +178,14 @@ public class FAsignacion {
             Variable nuevavariable;
             if (Valor != null) {
                 FNodoExpresion exp = (FNodoExpresion) Valor;
-                exp = exp.ResolverExpresion(padre);
+                exp = exp.ResolverExpresion(padre, 1);
                 //comprobamos si hay errores
                 if (TitusNotificaciones.ContarErrores()) {
                     //comprobar si es un nuevo objeto
                     if (exp.Tipo.equals(Constante.TNuevo)) {
                         TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede crear als en un arreglo", instruccion.Fila, instruccion.Columna);
                     } else {//sino es cualquier otro valor
-                        nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                        nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
 
                         if (nuevavariable != null) {
                             if (nuevavariable.Rol.equals(Constante.TVariableArreglo)) {
@@ -203,7 +203,7 @@ public class FAsignacion {
 
                 }
             } else if (this.Tipo.equals(Constante.TAumento)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -221,7 +221,7 @@ public class FAsignacion {
                     TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
                 }
             } else if (this.Tipo.equals(Constante.TDisminucion)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {

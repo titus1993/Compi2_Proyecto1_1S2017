@@ -36,6 +36,7 @@ public class Interface extends javax.swing.JFrame {
      */
     JSplitPane splitpane;
     TabControl ControlTab;
+    public static JTabbedPane notificacion = new JTabbedPane();
 
     public Interface() {
         initComponents();
@@ -74,10 +75,8 @@ public class Interface extends javax.swing.JFrame {
         splitpane.setRightComponent(paneRight);
         splitpane.setResizeWeight(0.70);
 
-        JTabbedPane notificacion = new JTabbedPane();
-
         JPanel panelHaskell = new JPanel(new BorderLayout());
-        panelHaskell.setName("Haskell");
+        panelHaskell.setName("Consola");
         panelHaskell.add(TitusNotificaciones.Comando, BorderLayout.SOUTH);
         panelHaskell.add(scrollRigth, BorderLayout.CENTER);
         paneRight.add(notificacion, BorderLayout.CENTER);
@@ -91,8 +90,18 @@ public class Interface extends javax.swing.JFrame {
         panelErrores.add(scrollErrores, BorderLayout.CENTER);
         notificacion.add(panelErrores);
 
+        //agregamos la grafica
         TitusNotificaciones.IniciarGrafica();
         notificacion.add(TitusNotificaciones.PanelGrafica);
+
+        //Agregamos la tabla para carga de datos
+        TitusNotificaciones.IniciarDatos();
+        //notificacion.add(TitusNotificaciones.DatosPanel);
+        /*JPanel paneldatos = new JPanel(new BorderLayout());
+        paneldatos.setName("Datos");
+        paneldatos.add(TitusNotificaciones.DatosPanel);
+        notificacion.add(paneldatos);*/
+
         //creamos el split para meter el jtree
         JSplitPane splitpane2 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
@@ -259,7 +268,7 @@ public class Interface extends javax.swing.JFrame {
         });
         jMenu5.add(jMenuItem15);
 
-        jMenuItem16.setText("Grafica");
+        jMenuItem16.setText("Cargar Datos");
         jMenuItem16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem16ActionPerformed(evt);
@@ -353,7 +362,7 @@ public class Interface extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void jMenuItem15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem15ActionPerformed
-        
+
     }//GEN-LAST:event_jMenuItem15ActionPerformed
 
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
@@ -383,9 +392,30 @@ public class Interface extends javax.swing.JFrame {
             Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem5ActionPerformed
-
+    JFileChooser j = new JFileChooser();
     private void jMenuItem16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem16ActionPerformed
-        
+
+        j.setCurrentDirectory(new java.io.File("C:\\Users\\Titus\\Desktop"));
+        if (j.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            try {
+                File selectedFile = j.getSelectedFile();
+
+                BufferedReader in = new BufferedReader(new FileReader(selectedFile));
+
+                String cadena = "";
+                while (in.ready()) {
+                    try {
+                        cadena += in.readLine() + "\n";
+                    } catch (IOException ex) {
+                        Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                TitusNotificaciones.CargarDatos(cadena, new JPanel());
+            } catch (IOException ex) {
+                Logger.getLogger(Interface.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_jMenuItem16ActionPerformed
 
     /**

@@ -30,7 +30,7 @@ public class FSi {
     }
 
     public void EjecutarSi(Objeto Tabla, Simbolo instruccion, Objeto padre) {
-        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre, 1);
         if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
                 condicion = condicion.PosArreglo;
             }
@@ -38,12 +38,12 @@ public class FSi {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 if (condicion.Bool) {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Si, 0, 0, Constante.TVacio, Constante.TSi);
-                    metodo.EjecutarInstrucciones(Si.TablaSimbolo, Tabla, padre);
+                    metodo.EjecutarInstrucciones(Si.TablaSimbolo, Tabla, padre,1);
                     metodo.SacarAmbito(Si.TablaSimbolo, Tabla);
                 } else {
                     if (Sino != null) {
                         FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Sino, 0, 0, Constante.TVacio, Constante.TSi);
-                        metodo.EjecutarInstrucciones(Sino.TablaSimbolo, Tabla, padre);
+                        metodo.EjecutarInstrucciones(Sino.TablaSimbolo, Tabla, padre,1);
                         metodo.SacarAmbito(Sino.TablaSimbolo, Tabla);
                     }
                 }

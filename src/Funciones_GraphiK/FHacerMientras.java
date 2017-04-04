@@ -27,7 +27,7 @@ public class FHacerMientras {
     }
 
     public void EjecutarHacerMientras(Objeto Tabla, Simbolo instruccion, Objeto padre) {
-        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre, 1);
         if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
             condicion = condicion.PosArreglo;
         }
@@ -35,13 +35,13 @@ public class FHacerMientras {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 do {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TSi);
-                    metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre);
+                    metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre, 1);
 
                     if (Tabla.TablaVariables.IsContinuar()) {
                         Tabla.TablaVariables.SacarVariable();
                     }
 
-                    condicion = this.Condicion.ResolverExpresion(padre);
+                    condicion = this.Condicion.ResolverExpresion(padre, 1);
                     if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
                         condicion = condicion.PosArreglo;
                     }

@@ -29,7 +29,7 @@ public class FSelecciona {
     }
 
     public void EjecutarSelecciona(Objeto Tabla, Simbolo instruccion, Objeto padre) {
-        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre, 1);
         if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
             condicion = condicion.PosArreglo;
         }
@@ -43,7 +43,7 @@ public class FSelecciona {
                         if (Casos.get(cont).Valor.Tipo.equals(Constante.TEntero)) {
                             if (Casos.get(cont).Valor.Entero == condicion.Entero) {
                                 FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                                 encontrado = true;
                                 posencontrado = cont;
                                 if (Tabla.TablaVariables.IsTerminar()) {
@@ -57,7 +57,7 @@ public class FSelecciona {
                         } else if (Casos.get(cont).Valor.Tipo.equals(Constante.TDecimal)) {
                             if (Casos.get(cont).Valor.Decimal == condicion.Decimal) {
                                 FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                                 encontrado = true;
                                 posencontrado = cont;
                                 if (Tabla.TablaVariables.IsTerminar()) {
@@ -72,7 +72,7 @@ public class FSelecciona {
                         } else if (Casos.get(cont).Valor.Tipo.equals(Constante.TCadena)) {
                             if (Casos.get(cont).Valor.Cadena.equals(condicion.Cadena)) {
                                 FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                                 encontrado = true;
                                 posencontrado = cont;
                                 if (Tabla.TablaVariables.IsTerminar()) {
@@ -87,7 +87,7 @@ public class FSelecciona {
                         } else if (Casos.get(cont).Valor.Tipo.equals(Constante.TCaracter)) {
                             if (Casos.get(cont).Valor.Caracter == condicion.Caracter) {
                                 FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                                 encontrado = true;
                                 posencontrado = cont;
                                 if (Tabla.TablaVariables.IsTerminar()) {
@@ -102,7 +102,7 @@ public class FSelecciona {
                         } else if (Casos.get(cont).Valor.Tipo == Constante.TBool) {
                             if (Casos.get(cont).Valor.Bool == condicion.Bool) {
                                 FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                                metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                                 encontrado = true;
                                 posencontrado = cont;
                                 if (Tabla.TablaVariables.IsTerminar()) {
@@ -125,7 +125,7 @@ public class FSelecciona {
 
                     if (encontrado & cont > posencontrado) {
                         FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Casos.get(cont).Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                        metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre);
+                        metodo.EjecutarInstrucciones(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla, padre,1);
                         metodo.SacarAmbito(this.Casos.get(cont).Ambito.TablaSimbolo, Tabla);
 
                     }
@@ -141,7 +141,7 @@ public class FSelecciona {
             if (!encontrado && !Tabla.TablaVariables.IsTerminar() && !Tabla.TablaVariables.IsRertorno() && TitusNotificaciones.ContarErrores()) {
                 if (Defecto != null) {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Defecto.Ambito, 0, 0, Constante.TVacio, Constante.TCase);
-                    metodo.EjecutarInstrucciones(this.Defecto.Ambito.TablaSimbolo, Tabla, padre);
+                    metodo.EjecutarInstrucciones(this.Defecto.Ambito.TablaSimbolo, Tabla, padre,1);
                     if (Tabla.TablaVariables.IsTerminar()) {
                         Variable tope = Tabla.TablaVariables.ObtenerTope();
                         Tabla.TablaVariables.SacarVariable();

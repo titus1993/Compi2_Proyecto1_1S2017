@@ -32,8 +32,8 @@ public class FGraphikar {
     ArrayList<Double> PosY = new ArrayList<>();
 
     public void Ejecutar(Objeto Tabla, Simbolo sim, Objeto Padre) {
-        FNodoExpresion x = this.Arreglo1.ResolverExpresion(Padre);
-        FNodoExpresion y = this.Arreglo2.ResolverExpresion(Padre);
+        FNodoExpresion x = this.Arreglo1.ResolverExpresion(Padre, 1);
+        FNodoExpresion y = this.Arreglo2.ResolverExpresion(Padre, 1);
 
         if ((x.Tipo.equals(Constante.TVariableArreglo) || x.Tipo.equals(Constante.TArreglo)) && (y.Tipo.equals(Constante.TArreglo) || y.Tipo.equals(Constante.TVariableArreglo))) {
             if (x.Tipo.equals(Constante.TVariableArreglo)) {
