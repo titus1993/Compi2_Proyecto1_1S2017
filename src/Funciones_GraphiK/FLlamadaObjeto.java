@@ -77,8 +77,11 @@ public class FLlamadaObjeto {
             }
         } else if (this.Tipo.equals(Constante.TMetodo)) {
             ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
-            for(FNodoExpresion par: LlamadaMetodo.Parametros){
+            for (FNodoExpresion par : LlamadaMetodo.Parametros) {
                 FNodoExpresion nuevopar = par.ResolverExpresion(padre);
+                if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
+                    nuevopar = nuevopar.PosArreglo;
+                }
                 listaparametros.add(nuevopar);
             }
             Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
@@ -122,6 +125,21 @@ public class FLlamadaObjeto {
             } else {
                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
             }
+        } else if (this.Tipo.equals(Constante.TVariableArreglo)) {
+            Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);
+            if (actual != null) {
+                //exite la variable en el ambito actual ahora verificamos si tiene hijos
+                if (this.Hijo != null) {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede acceder a objeto en arreglos, piensa XD", Fila, Columna);
+                } else {
+                    //devolvemos el valor de la variable
+                    if (this.LlamadaArreglo != null) {
+                        return actual;
+                    }
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro la variable " + this.Nombre, this.Fila, this.Columna);
+            }
         }
         return null;
     }
@@ -159,8 +177,11 @@ public class FLlamadaObjeto {
             }
         } else if (this.Tipo.equals(Constante.TMetodo)) {
             ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
-            for(FNodoExpresion par: LlamadaMetodo.Parametros){
+            for (FNodoExpresion par : LlamadaMetodo.Parametros) {
                 FNodoExpresion nuevopar = par.ResolverExpresion(padre);
+                if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
+                    nuevopar = nuevopar.PosArreglo;
+                }
                 listaparametros.add(nuevopar);
             }
             Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
@@ -212,6 +233,20 @@ public class FLlamadaObjeto {
 
             } else {
                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
+            }
+        } else if (this.Tipo.equals(Constante.TVariableArreglo)) {
+            Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);
+            if (actual != null) {
+                //exite la variable en el ambito actual ahora verificamos si tiene hijos
+                if (this.Hijo != null) {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede acceder a objeto en arreglos, piensa XD", Fila, Columna);
+                } else {
+                    //devolvemos el valor de la variable
+
+                    return actual;
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro la variable " + this.Nombre, this.Fila, this.Columna);
             }
         }
         return null;

@@ -31,6 +31,9 @@ public class FSi {
 
     public void EjecutarSi(Objeto Tabla, Simbolo instruccion, Objeto padre) {
         FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+                condicion = condicion.PosArreglo;
+            }
         if (TitusNotificaciones.ContarErrores()) {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 if (condicion.Bool) {

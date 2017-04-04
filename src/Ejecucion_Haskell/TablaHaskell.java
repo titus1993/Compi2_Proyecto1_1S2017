@@ -6,6 +6,8 @@
 package Ejecucion_Haskell;
 
 import Constante.Constante;
+import Funciones_Haskell.FFuncion;
+import Interface.TitusNotificaciones;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +38,7 @@ public class TablaHaskell {
             BorrarFuncion(existe);
         }
         funcion.Nombre = funcion.Nombre.toLowerCase();
-        Tabla.add(funcion);
+        Tabla.add(funcion);        
     }
 
     public static void BorrarFuncion(Variable nombre) {

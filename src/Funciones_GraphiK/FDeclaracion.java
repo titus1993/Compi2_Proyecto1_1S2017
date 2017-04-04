@@ -36,20 +36,23 @@ public class FDeclaracion {
         this.TipoDecla = tipodecla;
         this.Fila = fila;
         this.Columna = columna;
-        
-        if(this.TipoDecla.equals(Constante.TVariable)){
-            this.Valor = (FNodoExpresion)valor;
-        }else{
-            this.Arreglo = (FArreglo)valor;
+
+        if (this.TipoDecla.equals(Constante.TVariable)) {
+            this.Valor = (FNodoExpresion) valor;
+        } else {
+            this.Arreglo = (FArreglo) valor;
         }
     }
-        
-    public void EjecutarDeclaracion(Objeto Tabla, Simbolo instruccion, Objeto padre){
+
+    public void EjecutarDeclaracion(Objeto Tabla, Simbolo instruccion, Objeto padre) {
         if (TipoDecla.equals(Constante.TVariable)) {
             Variable nuevavariable;
             if (Valor != null) {
                 FNodoExpresion exp = (FNodoExpresion) Valor;
                 exp = exp.ResolverExpresion(padre);
+                if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                exp = exp.PosArreglo;
+            }
                 //comprobamos si hay errores
                 if (TitusNotificaciones.ContarErrores()) {
                     //comprobar si es un nuevo objeto
@@ -81,6 +84,9 @@ public class FDeclaracion {
                             TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe el als " + exp.Nombre, instruccion.Fila, instruccion.Columna);
                         }
                     } else {//sino es cualquier otro valor
+                        if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                            exp = exp.PosArreglo;
+                        }
                         if (exp.Tipo.equals(instruccion.Tipo) || (exp.Tipo.equals(Constante.TObjeto) && exp.Nombre.equals(instruccion.Tipo))) {
                             //creamora el alss la variable para el als
 
@@ -98,16 +104,16 @@ public class FDeclaracion {
             }
 
         } else if (TipoDecla.equals(Constante.TVariableArreglo)) {
-            if(Tipo.equals(Constante.TEntero) || Tipo.equals(Constante.TDecimal) || Tipo.equals(Constante.TCaracter) || Tipo.equals(Constante.TCadena) || Tipo.equals(Constante.TBool)){
+            if (Tipo.equals(Constante.TEntero) || Tipo.equals(Constante.TDecimal) || Tipo.equals(Constante.TCaracter) || Tipo.equals(Constante.TCadena) || Tipo.equals(Constante.TBool)) {
                 Arreglo arreglo = new Arreglo(Visibilidad, Tipo, Nombre, Arreglo.Dimensiones, Fila, Columna, Tabla);
-                if(Arreglo.Arreglo != null){
+                if (Arreglo.Arreglo != null) {
                     arreglo.InsertarDatos(this.Arreglo.Arreglo, Tabla);
-                }                
+                }
                 FNodoExpresion exp = new FNodoExpresion(null, null, TipoDecla, Nombre, Fila, Columna, arreglo);
                 Variable nuevavariable = new Variable(Constante.Graphik, Visibilidad, Tipo, Nombre, Constante.TVariableArreglo, Fila, Columna, instruccion.Ambito, exp, Tabla);
-                Tabla.TablaVariables.InsertarVariable(nuevavariable);                
-            }else{
-                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede declarar un arreglo del tipo "+ Tipo, Fila, Columna);
+                Tabla.TablaVariables.InsertarVariable(nuevavariable);
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede declarar un arreglo del tipo " + Tipo, Fila, Columna);
             }
         }
     }

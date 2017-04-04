@@ -19,6 +19,7 @@ import java.util.ArrayList;
 public class FImprimir {
     public Ambito Ambito;
     public FNodoExpresion Valor;
+    public int Fila, Columna;
     
     public FImprimir(FNodoExpresion valor){
         this.Ambito = new Ambito(Constante.TImprimir, new ArrayList<Simbolo>());
@@ -27,6 +28,12 @@ public class FImprimir {
     
     public void Imprimir(Objeto tabla, Objeto padre){
         FNodoExpresion solucion = Valor.ResolverExpresion(padre);
+        if(solucion.Tipo.equals(Constante.TVariableArreglo)){
+            solucion = solucion.PosArreglo;
+        }
+        if(solucion == null){
+            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede imprimir un valor nulo", Fila, Columna);
+        }
         if(TitusNotificaciones.ContarErrores()){
             if(solucion.Tipo.equals(Constante.TCadena)){
                 TitusNotificaciones.ImprimirConsola(solucion.Cadena);

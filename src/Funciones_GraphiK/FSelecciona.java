@@ -30,6 +30,9 @@ public class FSelecciona {
 
     public void EjecutarSelecciona(Objeto Tabla, Simbolo instruccion, Objeto padre) {
         FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+            condicion = condicion.PosArreglo;
+        }
         if (TitusNotificaciones.ContarErrores()) {
             int cont = 0;
             int posencontrado = -1;

@@ -14,6 +14,7 @@ import Interface.TitusNotificaciones;
  * @author Titus
  */
 public class Objeto {
+
     public TablaGraphik TablaVariables = new TablaGraphik();
     public String Nombre;
     public Objeto Herencia;
@@ -41,11 +42,11 @@ public class Objeto {
                     FDeclaracion decla = (FDeclaracion) sim.Valor;
                     //ejecutamos la declaracion
                     decla.EjecutarDeclaracion(this, sim, this);
-                    
+
                 } else if (sim.Rol.equals(Constante.TMetodo)) {
                     if (sim.Nombre.equals(Constante.TInicio)) {
                         Variable inicio = new Variable(Constante.Graphik, sim.Visibilidad, sim.Tipo, sim.Nombre, sim.Rol, sim.Fila, sim.Columna, sim.Ambito, sim.Valor, this);
-                        if ((TablaVariables.Tabla.size() > 0 && !TablaVariables.Tabla.get(0).Nombre.equals(Constante.TInicio))|| TablaVariables.Tabla.size() == 0) {
+                        if ((TablaVariables.Tabla.size() > 0 && !TablaVariables.Tabla.get(0).Nombre.equals(Constante.TInicio)) || TablaVariables.Tabla.size() == 0) {
                             TablaVariables.Tabla.add(0, inicio);
                         } else {
                             TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "Hay mas de un metodo inicio", sim.Fila, sim.Columna);
@@ -91,23 +92,34 @@ public class Objeto {
     }
 
     public FAls BuscarAls(String nombreals, Archivo archivo) {
+        FAls a = null;
+        boolean encontrado = false;
         if (archivo != null) {
             for (Simbolo nuevoals : archivo.Als) {
                 FAls als = (FAls) nuevoals.Valor;
                 if (als.Nombre.equals(nombreals)) {
-                    return als;
+                    a = als;
+                    encontrado = true;
+                    break;
                 }
             }
-            for (String nombrearchivo2 : archivo.Graphik) {
-                Archivo nuevoarchivo2 = ControlArchivo.ObtenerArchivo(nombrearchivo2 + ".gk");
-
-                if (nuevoarchivo2 != null) {
-                    return BuscarAls(nombreals, nuevoarchivo2);
+            if (!encontrado) {
+                for (String nombrearchivo2 : archivo.Graphik) {
+                    Archivo nuevoarchivo2 = ControlArchivo.ObtenerArchivo(nombrearchivo2 + ".gk");
+                    FAls als;
+                    if (nuevoarchivo2 != null) {
+                        als = BuscarAls(nombreals, nuevoarchivo2);
+                        if(als != null){
+                            a = als;
+                            encontrado =true;
+                            break;
+                        }
+                    }
                 }
             }
         }
 
-        return null;
+        return a;
     }
 
 }

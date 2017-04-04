@@ -43,19 +43,22 @@ public class TablaGraphik {
         while (i < Tabla.size() && !encontrado) {
             Variable funcion = Tabla.get(i);
             if (funcion.Nombre.equals(metodo.Nombre) && funcion.Rol.equals(Constante.TMetodo)) {
-                FMetodo m =(FMetodo)funcion.Valor;
-                
-                if(m.Parametros.size() == parametros.size()){
-                    int j=0;
+                FMetodo m = (FMetodo) funcion.Valor;
+
+                if (m.Parametros.size() == parametros.size()) {
+                    int j = 0;
                     boolean estado = true;
-                    while(j < m.Parametros.size() && estado){
+                    while (j < m.Parametros.size() && estado) {
                         FNodoExpresion exp = parametros.get(j);
-                        if(!(exp.Tipo.equals(m.Parametros.get(j).Tipo) || (exp.Tipo.equals(Constante.TObjeto) && exp.Nombre.equals(m.Parametros.get(j).Tipo)))){
+                        if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                            exp = exp.PosArreglo;
+                        }
+                        if (!(exp.Tipo.equals(m.Parametros.get(j).Tipo) || (exp.Tipo.equals(Constante.TObjeto) && exp.Nombre.equals(m.Parametros.get(j).Tipo)))) {
                             estado = false;
                         }
                         j++;
                     }
-                    if(estado){
+                    if (estado) {
                         encontrado = !encontrado;
                         return funcion;
                     }
@@ -67,14 +70,14 @@ public class TablaGraphik {
         //si no existe en la tabla actual buscamos en los heredas
         if (!encontrado) {
             Objeto herencia = BuscarHerencia();
-            if(herencia != null){
+            if (herencia != null) {
                 aux = BuscarFuncionHerencia(metodo, herencia, parametros);
             }
         }
 
         return aux;
     }
-    
+
     public Variable BuscarFuncionHerencia(FLlamadaMetodo metodo, Objeto herencia, ArrayList<FNodoExpresion> parametros) {
         int i = 0;
         boolean encontrado = false;
@@ -82,19 +85,22 @@ public class TablaGraphik {
         while (i < herencia.TablaVariables.Tabla.size() && !encontrado) {
             Variable funcion = herencia.TablaVariables.Tabla.get(i);
             if (funcion.Nombre.equals(metodo.Nombre) && funcion.Rol.equals(Constante.TMetodo) && (funcion.Visibilidad.equals(Constante.TPublico) || funcion.Visibilidad.equals(Constante.TProtegido))) {
-                FMetodo m =(FMetodo)funcion.Valor;
-                
-                if(m.Parametros.size() == parametros.size()){
-                    int j=0;
+                FMetodo m = (FMetodo) funcion.Valor;
+
+                if (m.Parametros.size() == parametros.size()) {
+                    int j = 0;
                     boolean estado = true;
-                    while(j < m.Parametros.size() && estado){
+                    while (j < m.Parametros.size() && estado) {
                         FNodoExpresion exp = parametros.get(j);
-                        if(!(exp.Tipo.equals(m.Parametros.get(j).Tipo) || (exp.Tipo.equals(Constante.TObjeto) && exp.Nombre.equals(m.Parametros.get(j).Tipo)))){
+                        if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                            exp = exp.PosArreglo;
+                        }
+                        if (!(exp.Tipo.equals(m.Parametros.get(j).Tipo) || (exp.Tipo.equals(Constante.TObjeto) && exp.Nombre.equals(m.Parametros.get(j).Tipo)))) {
                             estado = false;
                         }
                         j++;
                     }
-                    if(estado){
+                    if (estado) {
                         encontrado = !encontrado;
                         return funcion;
                     }
@@ -106,7 +112,7 @@ public class TablaGraphik {
         //si no existe en la tabla actual buscamos en los heredas
         if (!encontrado) {
             Objeto h = herencia.TablaVariables.BuscarHerencia();
-            if(h != null){
+            if (h != null) {
                 aux = h.TablaVariables.BuscarFuncionHerencia(metodo, h, parametros);
             }
         }
@@ -128,7 +134,7 @@ public class TablaGraphik {
         }
         if (!encontrado) {
             Objeto herencia = BuscarHerencia();
-            if(herencia != null){
+            if (herencia != null) {
                 variable = BuscarVariableHerencia(herencia, nombre);
             }
         }
@@ -149,10 +155,10 @@ public class TablaGraphik {
             }
             cont--;
         }
-        
+
         if (!encontrado) {
             Objeto her = herencia.TablaVariables.BuscarHerencia();
-            if(her != null){
+            if (her != null) {
                 variable = BuscarVariableHerencia(her, nombre);
             }
         }

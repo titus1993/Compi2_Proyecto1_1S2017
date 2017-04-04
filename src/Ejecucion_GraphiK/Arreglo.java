@@ -52,13 +52,13 @@ public class Arreglo {
             }
         }
     }
-    
-    public Arreglo(FNodoExpresion exp, Objeto Tabla){
+
+    public Arreglo(FNodoExpresion exp, Objeto Tabla) {
         FNodoExpresion nuevo = exp.ResolverExpresion(Tabla);
-        if(nuevo.Tipo.equals(Constante.TArreglo)){
-            CrearDimensiones(nuevo);            
+        if (nuevo.Tipo.equals(Constante.TArreglo)) {
+            CrearDimensiones(nuevo);
         }
-        
+
         //calculamos el total de posiciones
         for (FNodoExpresion i : this.Dimensiones) {
             FNodoExpresion ex = i.ResolverExpresion(Tabla);
@@ -82,7 +82,7 @@ public class Arreglo {
             }
         }
     }
-    
+
     public void InsertarDatos(FNodoExpresion datosarreglo, Objeto Tabla) {
         posllenado = 0;
         FNodoExpresion datos = datosarreglo.ResolverExpresion(Tabla);
@@ -114,8 +114,8 @@ public class Arreglo {
 
             if (estado && this.Tipo.equals(nuevo.Tipo)) {
                 this.Posiciones = nuevo.Posiciones;
-            }else{
-                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un arrelgo de tipo "+nuevo.Tipo + " a uno de tipo "+this.Tipo, Fila, Columna);
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un arrelgo de tipo " + nuevo.Tipo + " a uno de tipo " + this.Tipo, Fila, Columna);
             }
         } else {
             TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar el arreglo porque tienen diferentes dimensiones", Fila, Columna);
@@ -139,28 +139,213 @@ public class Arreglo {
     }
 
     public boolean ComprobarDimensiones(FNodoExpresion datosarreglo, int nivel) {
-        boolean estado = true;
+        boolean estado = false;
 
         if (datosarreglo.Tipo.equals(Constante.TArreglo)) {
-            if (datosarreglo.Arreglo.Dimensiones == this.Dimensiones.get(nivel).Entero) {
+
+            if (nivel < this.Dimensiones.size() && datosarreglo.Arreglo.Dimensiones == this.Dimensiones.get(nivel).Entero && nivel < this.Dimensiones.size()) {
                 estado = ComprobarDimensiones(datosarreglo.Arreglo.Arreglo.get(0), nivel + 1);
+
             } else {
                 estado = false;
                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo no tiene las mismas dimensiones que el valor que se le quiere asignar", Fila, Columna);
             }
+        } else {
+            if (nivel == this.Dimensiones.size()) {
+                estado = true;
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo no tiene las mismas diensiones que el valor que se le quiere asignar", Fila, Columna);
+            }
         }
         return estado;
     }
-    
-    public void CrearDimensiones(FNodoExpresion arreglo){
+
+    public void CrearDimensiones(FNodoExpresion arreglo) {
         if (arreglo.Tipo.equals(Constante.TArreglo)) {
             FNodoExpresion dim = new FNodoExpresion(null, null, Constante.TEntero, Constante.TEntero, 0, 0, String.valueOf(arreglo.Arreglo.Arreglo.size()));
             this.Dimensiones.add(dim);
             if (arreglo.Arreglo.Arreglo.get(0).Tipo.equals(Constante.TArreglo)) {
                 CrearDimensiones(arreglo.Arreglo.Arreglo.get(0));
-            }else{
+            } else {
                 this.Tipo = arreglo.Arreglo.Arreglo.get(0).Tipo;
             }
         }
+    }
+
+    public void InsertarValor(FLlamadaArreglo llamada, Objeto Tabla, FNodoExpresion valor) {
+        if (llamada.Nombre.equals(this.Nombre)) {
+            //comprobamos que tengan las mismas dimensiones
+            if (llamada.Dimensiones.size() == this.Dimensiones.size()) {
+                //comprobamos que la llamada este dentro del rango si no reportamos error
+
+                FNodoExpresion nuevovalor = valor.ResolverExpresion(Tabla);
+                int posicion = 0;
+                int residuo = this.Tamanio;
+                for (int i = 0; i < this.Dimensiones.size(); i++) {
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    if (d.Tipo.equals(Constante.TEntero)) {
+                        if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
+
+                            if (!nuevovalor.Tipo.equals(this.Tipo)) {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asinar un tipo " + nuevovalor.Tipo + " a un arreglo de tipo " + this.Tipo, Fila, Columna);
+                            } else {
+                                residuo = residuo / this.Dimensiones.get(i).Entero;
+                                posicion += residuo * d.Entero;
+                            }
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "Dimensiones fuera de rango", Fila, Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El acceso al arreglo tiene que ser de tipo entero, no " + d.Tipo, Fila, Columna);
+                    }
+                }
+                //si no hay errores hacer la asignacion
+                if (TitusNotificaciones.ContarErrores()) {
+                    this.Posiciones.remove(posicion);
+                    this.Posiciones.add(posicion, nuevovalor);
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo tiene " + Dimensiones.size() + " dimensiones no " + llamada.Dimensiones.size(), Fila, Columna);
+            }
+        } else {
+            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar el arreglo no existe", Fila, Columna);
+        }
+    }
+
+    public void InsertarValorAumento(FLlamadaArreglo llamada, Objeto Tabla) {
+        if (llamada.Nombre.equals(this.Nombre)) {
+            //comprobamos que tengan las mismas dimensiones
+            if (llamada.Dimensiones.size() == this.Dimensiones.size()) {
+                //comprobamos que la llamada este dentro del rango si no reportamos error
+
+                int posicion = 0;
+                int residuo = this.Tamanio;
+                for (int i = 0; i < this.Dimensiones.size(); i++) {
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    if (d.Tipo.equals(Constante.TEntero)) {
+                        if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
+                            residuo = residuo / this.Dimensiones.get(i).Entero;
+                            posicion += residuo * d.Entero;
+
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "Dimensiones fuera de rango", Fila, Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El acceso al arreglo tiene que ser de tipo entero, no " + d.Tipo, Fila, Columna);
+                    }
+                }
+                //si no hay errores hacer la asignacion
+                if (TitusNotificaciones.ContarErrores()) {
+                    FNodoExpresion pos = Posiciones.get(posicion);
+                    if (pos != null) {
+                        if (pos.Tipo.equals(Constante.TEntero)) {
+                            pos.Entero += 1;
+                        } else if (pos.Tipo.equals(Constante.TDecimal)) {
+                            pos.Decimal += 1;
+                        } else if (pos.Tipo.equals(Constante.TCaracter)) {
+                            pos.Caracter += 1;
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede ++ a un tipo " + this.Tipo, Fila, Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede ++ poscion nula", Fila, Columna);
+                    }
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo tiene " + Dimensiones.size() + " dimensiones no " + llamada.Dimensiones.size(), Fila, Columna);
+            }
+        } else {
+            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar el arreglo no existe", Fila, Columna);
+        }
+    }
+
+    public void InsertarValorDecremento(FLlamadaArreglo llamada, Objeto Tabla) {
+        if (llamada.Nombre.equals(this.Nombre)) {
+            //comprobamos que tengan las mismas dimensiones
+            if (llamada.Dimensiones.size() == this.Dimensiones.size()) {
+                //comprobamos que la llamada este dentro del rango si no reportamos error
+
+                int posicion = 0;
+                int residuo = this.Tamanio;
+                for (int i = 0; i < this.Dimensiones.size(); i++) {
+                    FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                    if (d.Tipo.equals(Constante.TEntero)) {
+                        if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
+                            residuo = residuo / this.Dimensiones.get(i).Entero;
+                            posicion += residuo * d.Entero;
+
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "Dimensiones fuera de rango", Fila, Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El acceso al arreglo tiene que ser de tipo entero, no " + d.Tipo, Fila, Columna);
+                    }
+                }
+                //si no hay errores hacer la asignacion
+                if (TitusNotificaciones.ContarErrores()) {
+                    FNodoExpresion pos = Posiciones.get(posicion);
+                    if (pos != null) {
+                        if (pos.Tipo.equals(Constante.TEntero)) {
+                            pos.Entero -= 1;
+                        } else if (pos.Tipo.equals(Constante.TDecimal)) {
+                            pos.Decimal -= 1;
+                        } else if (pos.Tipo.equals(Constante.TCaracter)) {
+                            pos.Caracter -= 1;
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede +-- a un tipo " + this.Tipo, Fila, Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede -- poscion nula", Fila, Columna);
+                    }
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo tiene " + Dimensiones.size() + " dimensiones no " + llamada.Dimensiones.size(), Fila, Columna);
+            }
+        } else {
+            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar el arreglo no existe", Fila, Columna);
+        }
+    }
+
+    public FNodoExpresion ObtenerValor(FLlamadaArreglo llamada, Objeto Tabla) {
+        if (llamada != null) {
+            if (llamada.Nombre.equals(this.Nombre)) {
+                //comprobamos que tengan las mismas dimensiones
+                if (llamada.Dimensiones.size() == this.Dimensiones.size()) {
+                    //comprobamos que la llamada este dentro del rango si no reportamos error
+
+                    int posicion = 0;
+                    int residuo = this.Tamanio;
+                    for (int i = 0; i < this.Dimensiones.size(); i++) {
+                        FNodoExpresion d = llamada.Dimensiones.get(i).ResolverExpresion(Tabla);
+                        if (d.Tipo.equals(Constante.TEntero)) {
+                            if (d.Entero >= 0 && d.Entero < Dimensiones.get(i).Entero) {
+                                residuo = residuo / this.Dimensiones.get(i).Entero;
+                                posicion += residuo * d.Entero;
+
+                            } else {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "Dimensiones fuera de rango", Fila, Columna);
+                            }
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El acceso al arreglo tiene que ser de tipo entero, no " + d.Tipo, Fila, Columna);
+                        }
+                    }
+                    //si no hay errores hacer la asignacion
+                    if (TitusNotificaciones.ContarErrores()) {
+                        FNodoExpresion pos = Posiciones.get(posicion);
+                        if (pos != null) {
+                            return pos;
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se obtener, poscion nula", Fila, Columna);
+                        }
+                    }
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El arreglo tiene " + Dimensiones.size() + " dimensiones no " + llamada.Dimensiones.size(), Fila, Columna);
+                }
+            } else {
+                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar el arreglo no existe", Fila, Columna);
+            }
+        }
+
+        return null;
     }
 }

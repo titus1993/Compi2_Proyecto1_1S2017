@@ -33,6 +33,7 @@ public class FNodoExpresion {
     //public FLlamadaMetodo Metodo;
     public FNodoArreglo Arreglo;
     public Arreglo ArregloResuelto;
+    public FNodoExpresion PosArreglo;
 
     public FNodoExpresion(FNodoExpresion nodo) {
         this.Izquierda = nodo.Izquierda;
@@ -102,7 +103,7 @@ public class FNodoExpresion {
             case Constante.TArreglo:
                 this.Arreglo = (FNodoArreglo) valor;
                 break;
-                
+
             case Constante.TVariableArreglo:
                 this.ArregloResuelto = (Arreglo) valor;
                 break;
@@ -115,77 +116,91 @@ public class FNodoExpresion {
 
     private FNodoExpresion ResolverExpresion(FNodoExpresion nodo, Objeto tabla) {
         FNodoExpresion aux = new FNodoExpresion(null, null, Constante.TError, Constante.TError, nodo.Fila, nodo.Columna, null);
+        FNodoExpresion izq = nodo.Izquierda;
+        FNodoExpresion der = nodo.Derecha;
+        if (nodo.Izquierda != null) {
+            izq = nodo.Izquierda.ResolverExpresion(tabla);
+            if (izq.Tipo.equals(Constante.TVariableArreglo)) {
+                izq = izq.PosArreglo;
+            }
+        }
+        if (nodo.Derecha != null) {
+            der = nodo.Derecha.ResolverExpresion(tabla);
+            if (der.Tipo.equals(Constante.TVariableArreglo)) {
+                der = der.PosArreglo;
+            }
+        }
         switch (nodo.Tipo) {
             case Constante.TMas:
-                aux = Suma(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Suma(izq, der);
                 break;
 
             case Constante.TMenos:
                 if (nodo.Izquierda != null) {
-                    aux = Resta(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                    aux = Resta(izq, der);
                 } else {
-                    aux = Resta(nodo.Derecha.ResolverExpresion(tabla));
+                    aux = Resta(der);
                 }
                 break;
 
             case Constante.TPor:
-                aux = Multiplicacion(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Multiplicacion(izq, der);
                 break;
 
             case Constante.TDivision:
-                aux = Division(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Division(izq, der);
                 break;
 
             case Constante.TPotenciaG:
-                aux = Potencia(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Potencia(izq, der);
                 break;
 
             case Constante.TAumento:
-                aux = Aumento(nodo.Izquierda.ResolverExpresion(tabla));
+                aux = Aumento(izq);
                 break;
 
             case Constante.TDisminucion:
-                aux = Disminucion(nodo.Izquierda.ResolverExpresion(tabla));
+                aux = Disminucion(izq);
                 break;
 
             case Constante.TMayor:
-                aux = Mayor(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Mayor(izq, der);
                 break;
 
             case Constante.TMenor:
-                aux = Menor(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Menor(izq, der);
                 break;
 
             case Constante.TMayorIgual:
-                aux = MayorIgual(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = MayorIgual(izq, der);
                 break;
 
             case Constante.TMenorIgual:
-                aux = MenorIgual(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = MenorIgual(izq, der);
                 break;
 
             case Constante.TIgualacion:
-                aux = Igual(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Igual(izq, der);
                 break;
 
             case Constante.TDiferenciacion:
-                aux = Diferente(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Diferente(izq, der);
                 break;
 
             case Constante.TOr:
-                aux = Or(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Or(izq, der);
                 break;
 
             case Constante.TXor:
-                aux = Xor(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = Xor(izq, der);
                 break;
 
             case Constante.TAnd:
-                aux = And(nodo.Izquierda.ResolverExpresion(tabla), nodo.Derecha.ResolverExpresion(tabla));
+                aux = And(izq, der);
                 break;
 
             case Constante.TNot:
-                aux = Not(nodo.Derecha.ResolverExpresion(tabla));
+                aux = Not(der);
                 break;
 
             case Constante.TEntero:
@@ -211,7 +226,11 @@ public class FNodoExpresion {
             case Constante.TArreglo:
                 FNodoExpresion nuevo = new FNodoExpresion(null, null, Constante.TArreglo, Constante.TArreglo, Fila, Columna, new FNodoArreglo(new ArrayList<>()));
                 for (FNodoExpresion exp : this.Arreglo.Arreglo) {
-                    nuevo.Arreglo.Arreglo.add(exp.ResolverExpresion(tabla));
+                    FNodoExpresion a = exp.ResolverExpresion(tabla);
+                    if (a.Tipo.equals(Constante.TVariableArreglo)) {
+                        a = a.PosArreglo;
+                    }
+                    nuevo.Arreglo.Arreglo.add(a.ResolverExpresion(tabla));
                 }
                 int dimension = 0;
                 if (nuevo.Arreglo.Arreglo.get(0).Tipo.equals(Constante.TArreglo)) {
@@ -228,7 +247,7 @@ public class FNodoExpresion {
                                 estado = false;
                             }
                         }
-                    }else{
+                    } else {
                         TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un valor null a un arreglo", Fila, Columna);
                     }
                 }
@@ -246,6 +265,9 @@ public class FNodoExpresion {
                 Variable valor = llamada.Ejecutar(tabla, tabla);
                 if (valor != null) {
                     aux = (FNodoExpresion) valor.Valor;
+                    if (valor.Rol.equals(Constante.TVariableArreglo)) {
+                        aux.PosArreglo = aux.ArregloResuelto.ObtenerValor(llamada.LlamadaArreglo, tabla);
+                    }
                 }
                 break;
 

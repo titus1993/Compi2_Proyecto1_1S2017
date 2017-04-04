@@ -17,32 +17,38 @@ import java.util.ArrayList;
  * @author Titus
  */
 public class FHacerMientras {
+
     public Ambito Ambito;
     public FNodoExpresion Condicion;
-   
-    public FHacerMientras(FNodoExpresion condicion, Ambito ambito){
+
+    public FHacerMientras(FNodoExpresion condicion, Ambito ambito) {
         this.Ambito = ambito;
         this.Condicion = condicion;
     }
-    
+
     public void EjecutarHacerMientras(Objeto Tabla, Simbolo instruccion, Objeto padre) {
         FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+            condicion = condicion.PosArreglo;
+        }
         if (TitusNotificaciones.ContarErrores()) {
             if (condicion.Tipo.equals(Constante.TBool)) {
-                do{
+                do {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TSi);
                     metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre);
-                    
-                    if(Tabla.TablaVariables.IsContinuar()){
+
+                    if (Tabla.TablaVariables.IsContinuar()) {
                         Tabla.TablaVariables.SacarVariable();
                     }
-                    
+
                     condicion = this.Condicion.ResolverExpresion(padre);
-                    
+                    if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+                        condicion = condicion.PosArreglo;
+                    }
                     metodo.SacarAmbito(Ambito.TablaSimbolo, Tabla);
-                }while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar());
-                 
-                if(Tabla.TablaVariables.IsTerminar()){
+                } while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar());
+
+                if (Tabla.TablaVariables.IsTerminar()) {
                     Tabla.TablaVariables.SacarVariable();
                 }
 

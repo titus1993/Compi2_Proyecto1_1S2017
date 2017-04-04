@@ -40,11 +40,17 @@ public class FPara {
         }
 
         FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+            condicion = condicion.PosArreglo;
+        }
 
         if (TitusNotificaciones.ContarErrores()) {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar()) {
                     condicion = Condicion.ResolverExpresion(padre);
+                    if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+                        condicion = condicion.PosArreglo;
+                    }
                     FMetodo metodo1 = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TPara);
 
                     if (condicion.Bool) {
@@ -56,7 +62,9 @@ public class FPara {
                         Tabla.TablaVariables.SacarVariable();
                     }
                     condicion = Condicion.ResolverExpresion(padre);
-
+                    if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+                        condicion = condicion.PosArreglo;
+                    }
                     //sacamos el ambito del para
                     metodo1.SacarAmbito(this.Ambito.TablaSimbolo, Tabla);
                     //realizamos la operacion posterior

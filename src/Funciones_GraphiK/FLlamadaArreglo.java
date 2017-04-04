@@ -12,8 +12,8 @@ import java.util.ArrayList;
  * @author Titus
  */
 public class FLlamadaArreglo {
-    String Nombre;
-    ArrayList<FNodoExpresion> Dimensiones;
+    public String Nombre;
+    public ArrayList<FNodoExpresion> Dimensiones;
     
     public FLlamadaArreglo(String nombre, ArrayList<FNodoExpresion> dimensiones){
         this.Nombre = nombre;

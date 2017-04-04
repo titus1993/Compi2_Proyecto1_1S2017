@@ -30,11 +30,13 @@ public class FAsignacion {
         this.Nombre = nombre;
         this.Tipo = tipo;
 
-        if (this.TipoAsigna.equals(Constante.TVariable)) {
-            this.Valor = (FNodoExpresion) valor;
+        //if (this.TipoAsigna.equals(Constante.TVariable)) {
+        this.Valor = (FNodoExpresion) valor;
+        /*} else if (Tipo.equals(Constante.TAsignacion)) {
+            
         } else {
             this.Arreglo = (FArreglo) valor;
-        }
+        }*/
     }
 
     public void EjecutarAsignacion(Objeto Tabla, Simbolo instruccion, Objeto padre) {
@@ -43,6 +45,9 @@ public class FAsignacion {
             if (Valor != null) {
                 FNodoExpresion exp = (FNodoExpresion) Valor;
                 exp = exp.ResolverExpresion(padre);
+                if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                    exp = exp.PosArreglo;
+                }
                 //comprobamos si hay errores
                 if (TitusNotificaciones.ContarErrores()) {
                     //comprobar si es un nuevo objeto
@@ -85,11 +90,14 @@ public class FAsignacion {
 
                         if (nuevavariable != null) {
                             if (nuevavariable.Rol.equals(Constante.TVariableArreglo)) {
-                                Arreglo arr = ((FNodoExpresion)nuevavariable.Valor).ArregloResuelto;
+                                Arreglo arr = ((FNodoExpresion) nuevavariable.Valor).ArregloResuelto;
                                 arr.InsertarDatos(exp, padre);
                             } else {
+                                if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+                                    exp = exp.PosArreglo;
+                                }
                                 if (nuevavariable.Tipo.equals(exp.Tipo) || exp.Tipo.equals(Constante.TObjeto) && nuevavariable.Tipo.equals(exp.Nombre)) {
-                                    nuevavariable.Valor = exp;
+                                    nuevavariable.Valor = exp;//--------------------------------------hacer casteo
                                 } else {
                                     if (exp.Tipo.equals(Constante.TObjeto) && nuevavariable.Tipo.equals(exp.Nombre)) {
                                         TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un tipo " + exp.Nombre + " a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
@@ -113,7 +121,12 @@ public class FAsignacion {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
                         if (nuevavariable.Valor != null) {
                             FNodoExpresion val = (FNodoExpresion) nuevavariable.Valor;
-
+                            if (val.Tipo.equals(Constante.TVariableArreglo)) {
+                                val = val.PosArreglo;
+                            }
+                            if (val.Tipo.equals(Constante.TVariableArreglo)) {
+                                val = val.PosArreglo;
+                            }
                             if (nuevavariable.Tipo.equals(Constante.TEntero)) {
                                 val.Entero += 1;
                             } else if (nuevavariable.Tipo.equals(Constante.TDecimal)) {
@@ -137,7 +150,12 @@ public class FAsignacion {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
                         if (nuevavariable.Valor != null) {
                             FNodoExpresion val = (FNodoExpresion) nuevavariable.Valor;
-
+                            if (val.Tipo.equals(Constante.TVariableArreglo)) {
+                                val = val.PosArreglo;
+                            }
+                            if (val.Tipo.equals(Constante.TVariableArreglo)) {
+                                val = val.PosArreglo;
+                            }
                             if (nuevavariable.Tipo.equals(Constante.TEntero)) {
                                 val.Entero -= 1;
                             } else if (nuevavariable.Tipo.equals(Constante.TDecimal)) {
@@ -156,8 +174,71 @@ public class FAsignacion {
                 }
             }
 
-        } else if (instruccion.Rol.equals(Constante.TVariableArreglo)) {
+        } else if (TipoAsigna.equals(Constante.TVariableArreglo)) {
+            Variable nuevavariable;
+            if (Valor != null) {
+                FNodoExpresion exp = (FNodoExpresion) Valor;
+                exp = exp.ResolverExpresion(padre);
+                //comprobamos si hay errores
+                if (TitusNotificaciones.ContarErrores()) {
+                    //comprobar si es un nuevo objeto
+                    if (exp.Tipo.equals(Constante.TNuevo)) {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede crear als en un arreglo", instruccion.Fila, instruccion.Columna);
+                    } else {//sino es cualquier otro valor
+                        nuevavariable = Nombre.Ejecutar(Tabla, padre);
 
+                        if (nuevavariable != null) {
+                            if (nuevavariable.Rol.equals(Constante.TVariableArreglo)) {
+                                Arreglo arr = ((FNodoExpresion) nuevavariable.Valor).ArregloResuelto;
+                                arr.InsertarValor(this.Nombre.LlamadaArreglo, padre, exp);
+
+                            } else {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "La variable no es un arreglo", instruccion.Fila, instruccion.Columna);
+                            }
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
+                        }
+
+                    }
+
+                }
+            } else if (this.Tipo.equals(Constante.TAumento)) {
+                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+
+                if (nuevavariable != null) {
+                    if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
+                        if (nuevavariable.Valor != null) {
+                            FNodoExpresion val = (FNodoExpresion) nuevavariable.Valor;
+                            val.ArregloResuelto.InsertarValorAumento(this.Nombre.LlamadaArreglo, Tabla);
+
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "La variable no esta inicializada", instruccion.Fila, instruccion.Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede ++ a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                    }
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
+                }
+            } else if (this.Tipo.equals(Constante.TDisminucion)) {
+                nuevavariable = Nombre.Ejecutar(Tabla, padre);
+
+                if (nuevavariable != null) {
+                    if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
+                        if (nuevavariable.Valor != null) {
+                            FNodoExpresion val = (FNodoExpresion) nuevavariable.Valor;
+                            val.ArregloResuelto.InsertarValorDecremento(this.Nombre.LlamadaArreglo, Tabla);
+
+                        } else {
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "La variable no esta inicializada", instruccion.Fila, instruccion.Columna);
+                        }
+                    } else {
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede -- a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                    }
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
+                }
+            }
         }
     }
 }

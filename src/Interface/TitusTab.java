@@ -17,14 +17,32 @@ import javax.swing.JOptionPane;
 import Analisis.Haskell.Haskell_Sintactico;
 import Analisis.Haskell.Haskell_Lexico;
 import Analisis.Graphik.*;
+import Constante.Constante;
 import Ejecucion_GraphiK.*;
 import Funciones_GraphiK.Archivo;
 import Funciones_Haskell.FNodoExpresion;
 import java.awt.Color;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -36,6 +54,8 @@ public class TitusTab extends JPanel {
     public String Nombre = "";
     public String Ruta = "";
     public String Tipo = "";
+    public boolean Modificado = false;
+    public JFileChooser jFileChooser1 = new JFileChooser();
 
     public TitusTab(String nombre, String tipo, String texto, String ruta) {
         Nombre = nombre;
@@ -44,6 +64,30 @@ public class TitusTab extends JPanel {
         this.setName(nombre);
         IniciarComponentes();
         TextBox.setText(texto);
+        this.TextBox.getDocument().addDocumentListener(new DocumentListener() {
+            public void changedUpdate(DocumentEvent e) {
+                Modificado = true;
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                Modificado = true;
+            }
+
+            public void insertUpdate(DocumentEvent e) {
+                Modificado = true;
+            }
+
+        });
+
+        jFileChooser1.setAcceptAllFileFilterUsed(false);
+        FileNameExtensionFilter filter;
+        jFileChooser1.setDialogTitle("Guardar Como");
+        if (tipo.equals(Constante.Haskell)) {
+            filter = new FileNameExtensionFilter("Haskell++", "hk");
+        } else {
+            filter = new FileNameExtensionFilter("GraphiK", "gk");
+        }
+        jFileChooser1.setFileFilter(filter);
     }
 
     private void IniciarComponentes() {
@@ -54,7 +98,7 @@ public class TitusTab extends JPanel {
         TextBox.setCodeFoldingEnabled(true);
         RTextScrollPane pane = new RTextScrollPane(TextBox);
 
-        if (Tipo.equals(Constante.Constante.Graphik)) {
+        if (Tipo.equals(Constante.Graphik)) {
             AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
             atmf.putMapping("text/Graphik", "Interface.GraphikSyntax");
 
@@ -82,11 +126,24 @@ public class TitusTab extends JPanel {
     }
 
     public void Analizar() {
-        if (Tipo.equals(Constante.Constante.Graphik)) {
-            AnalizarGraphik();
-        } else {
-            AnalizarHaskell();
+        try {
+            if (guardarArchivo()) {
+                if (Tipo.equals(Constante.Graphik)) {
+                    AnalizarGraphik();
+                } else {
+                    AnalizarHaskell();
+                    TitusNotificaciones.InsertarHijoArbol();
+                }
+                if(TitusNotificaciones.ContarErrores()){
+                    JOptionPane.showMessageDialog(this, "Analisis Finalizado ;)", "Exito", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TitusTab.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(TitusTab.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
     public void AnalizarHaskell() {
@@ -110,17 +167,70 @@ public class TitusTab extends JPanel {
         }
     }
 
-    public void prueba() {
-        for (FNodoExpresion i = new FNodoExpresion(null); i.Numero < 10; i.Numero++) {
+    public boolean guardarArchivo() throws FileNotFoundException, UnsupportedEncodingException, IOException {
+        boolean estado = false;
+        if (this.Ruta.isEmpty()) {
+            if (jFileChooser1.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                String ruta = jFileChooser1.getSelectedFile().toString();
+                if (Tipo.equals(Constante.Graphik)) {
+                    if (!ruta.endsWith(".gk")) {
+                        ruta += ".gk";
+                    }
+                } else {
+                    if (!ruta.endsWith(".hk")) {
+                        ruta += ".hk";
+                    }
+                }
+                Writer w = new BufferedWriter(new FileWriter(ruta));
+                w.write(this.TextBox.getText());
+                w.close();
+                estado = true;
+                Modificado = false;
+                Ruta = ruta;
+                Path p = Paths.get(ruta);
+                Nombre = p.getFileName().toString();
+                this.setName(Nombre);
+                this.repaint();
+            }
+        } else {
+            Writer w = new BufferedWriter(new FileWriter(Ruta));
+            w.write(this.TextBox.getText());
+            w.close();
+            estado = true;
+            Modificado = false;
+        }
 
+        return estado;
+    }
+
+    public void guardarComoArchivo() throws IOException {
+        if (jFileChooser1.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String ruta = jFileChooser1.getSelectedFile().toString();
+            if (Tipo.equals(Constante.Graphik)) {
+                if (!ruta.endsWith(".gk")) {
+                    ruta += ".gk";
+                }
+            } else {
+                if (!ruta.endsWith(".hk")) {
+                    ruta += ".hk";
+                }
+            }
+            Writer w = new BufferedWriter(new FileWriter(ruta));
+            w.write(this.TextBox.getText());
+            w.close();
+            Modificado = false;
+            Ruta = ruta;
+            Path p = Paths.get(ruta);
+            Nombre = p.getFileName().toString();
+            this.setName(Nombre);
+            this.repaint();            
         }
     }
 
     public void AnalizarGraphik() {
         try {
-            TitusNotificaciones.LimpiarTabla();
-            ControlArchivo.LimpiarTabla();
-            
+            TitusNotificaciones.Limpiar();
+
             Graphik_Lexico scan = new Graphik_Lexico(new BufferedReader(new StringReader(TextBox.getText())));
             Graphik_Sintactico parser = new Graphik_Sintactico(scan);
             parser.archivonombre = Nombre;
@@ -130,11 +240,11 @@ public class TitusTab extends JPanel {
                 Archivo archivo = parser.Ejecucion;
                 TitusNotificaciones.LimpiarConsola();
                 Graphik_Ejecucion ejecucion = new Graphik_Ejecucion(archivo, Ruta);
-                
-                ejecucion.PrimerPasada();                
-                
+
+                ejecucion.PrimerPasada();
+
                 ejecucion.Ejecutar();
-                if(!TitusNotificaciones.ContarErrores()){
+                if (!TitusNotificaciones.ContarErrores()) {
                     JOptionPane.showMessageDialog(this, "Se encontraron errores.", "Error Graphik", JOptionPane.ERROR_MESSAGE);
                 }
             } else {

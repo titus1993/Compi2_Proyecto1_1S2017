@@ -25,7 +25,7 @@ public class FMetodo {
     public int Fila, Columna;
     public String Tipo, Nombre;
     public String Visibilidad;
-    
+
     public FMetodo(String visibilidad, ArrayList<Simbolo> parametro, Ambito ambito, int fila, int columna, String tipo, String nombre) {
         this.Visibilidad = visibilidad;
         this.Ambito = ambito;
@@ -79,12 +79,21 @@ public class FMetodo {
                             EjecutarHacerMientras(instruccion, Tabla, Padre);
                             break;
 
+                        case Constante.TGraficarFuncion:
+                            EjecutarGraficarFuncion(instruccion, Tabla, Padre);
+                            break;
+                            
                         default:
                             break;
                     }
                 }
             }
         }
+    }
+
+     public void EjecutarGraficarFuncion(Simbolo sim, Objeto Tabla, Objeto Padre) {
+        FGraphikar graficar = (FGraphikar) sim.Valor;
+        graficar.Ejecutar(Tabla, sim, Padre);
     }
 
     public void EjecutarHacerMientras(Simbolo sim, Objeto Tabla, Objeto Padre) {
@@ -113,8 +122,11 @@ public class FMetodo {
     }
 
     public void EjecutarRetorno(Objeto Tabla, Simbolo instruccion) {
-        FNodoExpresion exp = (FNodoExpresion) instruccion.Valor;
+        FNodoExpresion exp = (FNodoExpresion) instruccion.Valor;        
         exp = exp.ResolverExpresion(Tabla);
+        if (exp.Tipo.equals(Constante.TVariableArreglo)) {
+            exp = exp.PosArreglo;
+        }
         Tabla.TablaVariables.InsertarVariable(new Variable(Constante.Graphik, instruccion.Visibilidad, exp.Nombre, instruccion.Nombre, instruccion.Nombre, instruccion.Fila, instruccion.Columna, instruccion.Ambito, exp, Tabla));
     }
 
@@ -134,6 +146,9 @@ public class FMetodo {
             while (cont < this.Parametros.size() && TitusNotificaciones.ContarErrores()) {
                 //aqui le enviamos al padre
                 FNodoExpresion resultadoparametro = llamada.Parametros.get(cont).ResolverExpresion(Padre);
+                if (resultadoparametro.Tipo.equals(Constante.TVariableArreglo)) {
+                    resultadoparametro = resultadoparametro.PosArreglo;
+                }
                 if (TitusNotificaciones.ContarErrores()) {
                     if (this.Parametros.get(cont).Tipo.equals(resultadoparametro.Tipo) || (resultadoparametro.Tipo.equals(Constante.TObjeto) && this.Parametros.get(cont).Tipo.equals(resultadoparametro.Nombre))) {
                         ///////////////////////

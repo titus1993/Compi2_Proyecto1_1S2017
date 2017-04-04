@@ -26,21 +26,26 @@ public class FMientras {
 
     public void EjecutarMientras(Objeto Tabla, Simbolo instruccion, Objeto padre) {
         FNodoExpresion condicion = this.Condicion.ResolverExpresion(padre);
+        if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+            condicion = condicion.PosArreglo;
+        }
         if (TitusNotificaciones.ContarErrores()) {
             if (condicion.Tipo.equals(Constante.TBool)) {
                 while (TitusNotificaciones.ContarErrores() && condicion.Bool && !Tabla.TablaVariables.IsRertorno() && !Tabla.TablaVariables.IsTerminar()) {
                     FMetodo metodo = new FMetodo(Constante.TPublico, new ArrayList<Simbolo>(), this.Ambito, 0, 0, Constante.TVacio, Constante.TSi);
                     metodo.EjecutarInstrucciones(Ambito.TablaSimbolo, Tabla, padre);
-                    
-                    if(Tabla.TablaVariables.IsContinuar()){
+
+                    if (Tabla.TablaVariables.IsContinuar()) {
                         Tabla.TablaVariables.SacarVariable();
                     }
-                    
+
                     condicion = this.Condicion.ResolverExpresion(padre);
-                    
+                    if (condicion.Tipo.equals(Constante.TVariableArreglo)) {
+                        condicion = condicion.PosArreglo;
+                    }
                     metodo.SacarAmbito(Ambito.TablaSimbolo, Tabla);
                 }
-                if(Tabla.TablaVariables.IsTerminar()){
+                if (Tabla.TablaVariables.IsTerminar()) {
                     Tabla.TablaVariables.SacarVariable();
                 }
 
