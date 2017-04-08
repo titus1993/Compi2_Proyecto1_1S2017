@@ -1,0 +1,109 @@
+importar PruevaFinal1.gk?
+
+Als Base_Datos{
+	var Base_Datos Siguiente?
+	var Datos_Puros Nodo1?
+	var Datos_Puros Nodo2?
+	var Datos_Puros Nodo3?
+	var Datos_Puros Nodo4?
+	var Datos_Puros Nodo5?
+	var Entero LugarActual = 1?
+	var Bool SiguienteInstanciado = falso?
+	
+	vacio inicio()
+	{
+		var Base_Datos base = nuevo Base_Datos()? 	#* no te interesa
+		llamar base.inicializar()?					#* no te interesa
+		llamar base.ingresar(11.6)?					#* ingresa un decimal DECIMAL no otro dato, puedes repetir la instruccion muchas veces para llenar mas
+		imprimir(llamar base.existe(11.5))?				#* imprime true si existe el dato decimal false si no
+		
+	
+	}
+	
+	
+	vacio inicializar()
+	{
+		Nodo1 = nuevo Datos_Puros()?
+		Nodo2 = nuevo Datos_Puros()?
+		Nodo3 = nuevo Datos_Puros()?
+		Nodo4 = nuevo Datos_Puros()?
+		Nodo5 = nuevo Datos_Puros()?
+		llamar valorizar()?
+	}
+	
+	vacio valorizar()
+	{
+		Nodo1.Dato_Decimal = 1.0?
+		Nodo2.Dato_Decimal = 2.0?
+		Nodo3.Dato_Decimal = 3.0?
+		Nodo4.Dato_Decimal = 4.0?
+		Nodo5.Dato_Decimal = 5.0?		
+	}
+	
+	
+	
+	Datos_Puros DatoSeleccionado(Entero Dato){
+		Seleccion(Dato)
+		{
+			caso 1:
+				retornar Nodo1?
+			caso 2:
+				retornar Nodo2?
+			caso 3:
+				retornar Nodo3?
+			caso 4:
+				retornar Nodo4?
+			caso 5:
+				retornar Nodo5?
+		}
+	}
+	
+	bool Existe(Decimal Dato)
+	{
+		var bool existencia = falso?
+		para(var entero i = 1: i < 6 && !existencia  : i++)
+		{
+			var Datos_Puros  DatoSelect = llamar DatoSeleccionado(i)?
+			existencia = existencia || llamar DatoSelect.Existe(Dato)?
+			si(existencia)
+			{
+				retornar true?
+			}
+		}
+		
+		si(!existencia && SiguienteInstanciado)
+		{
+			retornar llamar Siguiente.Existe(Dato)?
+		}
+		sino
+		{
+			retornar falso?
+		}
+	}
+	
+	vacio Ingresar(Decimal Dato)
+	{
+		si(LugarActual > 5)
+		{
+			si(SiguienteInstanciado)
+			{
+				llamar Siguiente.Ingresar(Dato)?
+			}
+			sino
+			{
+				Siguiente = nuevo Base_Datos()?
+				llamar Siguiente.inicializar()?
+				llamar Siguiente.Ingresar(Dato)?
+				SiguienteInstanciado = true?
+			}
+		}
+		sino
+		{
+			var Datos_Puros DatoSeleccionado =  llamar DatoSeleccionado(LugarActual)?
+			llamar DatoSeleccionado.ingresar(Dato)?
+			LugarActual = LugarActual++?
+		}
+	}
+	
+	
+}

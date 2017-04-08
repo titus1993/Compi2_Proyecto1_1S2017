@@ -76,54 +76,73 @@ public class FLlamadaObjeto {
                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro la variable " + this.Nombre, this.Fila, this.Columna);
             }
         } else if (this.Tipo.equals(Constante.TMetodo)) {
-            ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
-            for (FNodoExpresion par : LlamadaMetodo.Parametros) {
-                FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
-                if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
-                    nuevopar = nuevopar.PosArreglo;
+            if (LlamadaMetodo.Tipo.equals(Constante.Graphik)) {
+                ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
+                for (FNodoExpresion par : LlamadaMetodo.Parametros) {
+                    FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
+                    if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
+                        nuevopar = nuevopar.PosArreglo;
+                    }
+                    listaparametros.add(nuevopar);
                 }
-                listaparametros.add(nuevopar);
-            }
-            Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
-            if (actual != null) {
-                //primero ejecutamos el metodo
-                FMetodo metodo = (FMetodo) actual.Valor;
-                //obtenemos el return
-                Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
 
-                //metodo.Ejecutar(objeto)
-                //exite el metodo en el ambito actual ahora verificamos si tiene hijos
-                if (this.Hijo != null) {
-                    //comprobamos si es null para notificar error
-                    if (retorno != null && !actual.Tipo.equals(Constante.TVacio)) {
-                        if (!actual.Tipo.equals(Constante.TCadena) && !actual.Tipo.equals(Constante.TCaracter) && !actual.Tipo.equals(Constante.TEntero) && !actual.Tipo.equals(Constante.TDecimal) && !actual.Tipo.equals(Constante.TBool)) {
+                Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
+                if (actual != null) {
+                    //primero ejecutamos el metodo
+                    FMetodo metodo = (FMetodo) actual.Valor;
+                    //obtenemos el return
+                    Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
 
-                            Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
-                            if (nuevo != null) {
-                                return Hijo.EjecutarHijo(nuevo, objeto, pos);
-                            } else {
-                                if (this.Hijo.Hijo == null) {
-                                    return retorno;
+                    //metodo.Ejecutar(objeto)
+                    //exite el metodo en el ambito actual ahora verificamos si tiene hijos
+                    if (this.Hijo != null) {
+                        //comprobamos si es null para notificar error
+                        if (retorno != null && !actual.Tipo.equals(Constante.TVacio)) {
+                            if (!actual.Tipo.equals(Constante.TCadena) && !actual.Tipo.equals(Constante.TCaracter) && !actual.Tipo.equals(Constante.TEntero) && !actual.Tipo.equals(Constante.TDecimal) && !actual.Tipo.equals(Constante.TBool)) {
+
+                                Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
+                                if (nuevo != null) {
+                                    return Hijo.EjecutarHijo(nuevo, objeto, pos);
                                 } else {
-                                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + this.Hijo.Nombre + " esta nula", this.Hijo.Fila, this.Hijo.Columna);
+                                    if (this.Hijo.Hijo == null) {
+                                        return retorno;
+                                    } else {
+                                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + this.Hijo.Nombre + " esta nula", this.Hijo.Fila, this.Hijo.Columna);
+                                    }
                                 }
+                            } else {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retonra un Als, retorna un tipo " + actual.Tipo, Fila, Columna);
                             }
                         } else {
-                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retonra un Als, retorna un tipo " + actual.Tipo, Fila, Columna);
+                            if (actual.Tipo.equals(Constante.TVacio)) {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " es de tipo vacio ", Fila, Columna);
+                            } else {
+                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retorno ningun valor ", Fila, Columna);
+                            }
                         }
-                    } else {
-                        if (actual.Tipo.equals(Constante.TVacio)) {
-                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " es de tipo vacio ", Fila, Columna);
-                        } else {
-                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retorno ningun valor ", Fila, Columna);
-                        }
-                    }
 
+                    } else {
+                        return retorno;
+                    }
                 } else {
-                    return retorno;
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
                 }
             } else {
-                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
+                //resolvemos los parametros
+                ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
+                for (FNodoExpresion par : LlamadaMetodo.Parametros) {
+                    FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
+                    if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
+                        if (nuevopar.PosArreglo != null) {
+                            nuevopar = nuevopar.PosArreglo;
+                        }
+                    }
+                    listaparametros.add(nuevopar);
+                }
+
+                EjecutarHaskell ex = new EjecutarHaskell();
+                return ex.Ejecutar(listaparametros, LlamadaMetodo.Nombre, LlamadaMetodo);
+
             }
         } else if (this.Tipo.equals(Constante.TVariableArreglo)) {
             Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);
@@ -176,63 +195,65 @@ public class FLlamadaObjeto {
                 TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro la variable " + this.Nombre, this.Fila, this.Columna);
             }
         } else if (this.Tipo.equals(Constante.TMetodo)) {
-            ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
-            for (FNodoExpresion par : LlamadaMetodo.Parametros) {
-                FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
-                if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
-                    nuevopar = nuevopar.PosArreglo;
+            if (LlamadaMetodo.Tipo.equals(Constante.Graphik) || LlamadaMetodo.Tipo.equals(Constante.Haskell)) {
+                ArrayList<FNodoExpresion> listaparametros = new ArrayList<>();
+                for (FNodoExpresion par : LlamadaMetodo.Parametros) {
+                    FNodoExpresion nuevopar = par.ResolverExpresion(padre, pos);
+                    if (nuevopar.Tipo.equals(Constante.TVariableArreglo)) {
+                        nuevopar = nuevopar.PosArreglo;
+                    }
+                    listaparametros.add(nuevopar);
                 }
-                listaparametros.add(nuevopar);
-            }
-            Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
-            if (actual != null) {
-                //primero ejecutamos el metodo
-                FMetodo metodo = (FMetodo) actual.Valor;
+                Variable actual = objeto.TablaVariables.BuscarFuncion(LlamadaMetodo, listaparametros);
+                if (actual != null) {
+                    //primero ejecutamos el metodo
+                    FMetodo metodo = (FMetodo) actual.Valor;
 
-                if (metodo.Visibilidad.equals(Constante.TPublico) || metodo.Visibilidad.equals(Constante.TProtegido)) {
-                    //obtenemos el return
-                    Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
+                    if (metodo.Visibilidad.equals(Constante.TPublico) || metodo.Visibilidad.equals(Constante.TProtegido)) {
+                        //obtenemos el return
+                        Variable retorno = metodo.EjecutarMetodo(LlamadaMetodo, objeto, actual, padre, pos);
 
-                    //metodo.Ejecutar(objeto)
-                    //exite el metodo en el ambito actual ahora verificamos si tiene hijos
-                    if (this.Hijo != null) {
-                        //comprobamos si es null para notificar error
-                        if (retorno != null && !actual.Tipo.equals(Constante.TVacio)) {
-                            if (!actual.Tipo.equals(Constante.TCadena) && !actual.Tipo.equals(Constante.TCaracter) && !actual.Tipo.equals(Constante.TEntero) && !actual.Tipo.equals(Constante.TDecimal) && !actual.Tipo.equals(Constante.TBool)) {
+                        //metodo.Ejecutar(objeto)
+                        //exite el metodo en el ambito actual ahora verificamos si tiene hijos
+                        if (this.Hijo != null) {
+                            //comprobamos si es null para notificar error
+                            if (retorno != null && !actual.Tipo.equals(Constante.TVacio)) {
+                                if (!actual.Tipo.equals(Constante.TCadena) && !actual.Tipo.equals(Constante.TCaracter) && !actual.Tipo.equals(Constante.TEntero) && !actual.Tipo.equals(Constante.TDecimal) && !actual.Tipo.equals(Constante.TBool)) {
 
-                                Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
-                                if (nuevo != null) {
-                                    return Hijo.EjecutarHijo(nuevo, objeto, pos);
-                                } else {
-                                    if (this.Hijo.Hijo == null) {
-                                        return retorno;
-
+                                    Objeto nuevo = ((FNodoExpresion) retorno.Valor).Obj;
+                                    if (nuevo != null) {
+                                        return Hijo.EjecutarHijo(nuevo, objeto, pos);
                                     } else {
-                                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + this.Hijo.Nombre + " esta nula", this.Hijo.Fila, this.Hijo.Columna);
+                                        if (this.Hijo.Hijo == null) {
+                                            return retorno;
+
+                                        } else {
+                                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + this.Hijo.Nombre + " esta nula", this.Hijo.Fila, this.Hijo.Columna);
+                                        }
                                     }
+                                } else {
+                                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retonra un Als, retorna un tipo " + actual.Tipo, Fila, Columna);
                                 }
                             } else {
-                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retonra un Als, retorna un tipo " + actual.Tipo, Fila, Columna);
+                                if (actual.Tipo.equals(Constante.TVacio)) {
+                                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " es de tipo vacio ", Fila, Columna);
+                                } else {
+                                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retorno ningun valor ", Fila, Columna);
+                                }
                             }
+
                         } else {
-                            if (actual.Tipo.equals(Constante.TVacio)) {
-                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " es de tipo vacio ", Fila, Columna);
-                            } else {
-                                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "El metodo " + actual.Nombre + " no retorno ningun valor ", Fila, Columna);
-                            }
+                            return retorno;
+
                         }
-
                     } else {
-                        return retorno;
-
+                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede acceder al metodo " + metodo.Visibilidad + " " + metodo.Nombre, Fila, Columna);
+                        return null;
                     }
-                } else {
-                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede acceder al metodo " + metodo.Visibilidad + " " + metodo.Nombre, Fila, Columna);
-                    return null;
-                }
 
-            } else {
-                TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
+                } else {
+                    TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se encontro el metodo " + this.Nombre, this.Fila, this.Columna);
+                }
             }
         } else if (this.Tipo.equals(Constante.TVariableArreglo)) {
             Variable actual = objeto.TablaVariables.BuscarVariable(this.Nombre);

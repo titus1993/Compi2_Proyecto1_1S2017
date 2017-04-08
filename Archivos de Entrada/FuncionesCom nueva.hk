@@ -1,0 +1,16 @@
+Factorial n = 
+    If n==$Calcular 0$ Then
+        $Calcular 1$
+    Else    
+        $Calcular n * $Factorial{$Calcular n-1$}$$
+  	End
+End
+
+
+Fibonacci n =
+    If n==$Calcular 0$ || n==$Calcular 1$ Then
+        $Calcular 1$
+    Else
+        $Calcular $Fibonacci{$Calcular n-1$}$ + $Fibonacci {$Calcular n-2$}$$
+    End
+End

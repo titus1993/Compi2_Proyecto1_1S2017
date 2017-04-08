@@ -1,0 +1,44 @@
+
+ALS titus:publico{
+   var entero a[2][3]= {{5,8,6},{7,8,9}}?
+    vacio inicio(){
+        var nodo padre = nuevo nodo()?
+        llamar padre.setNombre("papito")?
+        var nodo hijoizq = nuevo nodo()?
+        var nodo hijoder = nuevo nodo()?
+        llamar hijoizq.setNombre("izq")?
+        llamar hijoder.setNombre("der")?
+        llamar padre.setHijos(hijoizq, hijoder)?
+        imprimir(llamar padre.getIzq().getNombre())?
+        imprimir(llamar padre.getDer().getNombre())?
+        imprimir(llamar padre.getNombre())?
+    }
+
+}
+
+ALS nodo:publico{
+	var nodo izq?
+	var nodo der?
+	var cadena nombre?
+
+	vacio setNombre(Cadena n){
+		nombre = n?
+	}
+
+	cadena getNombre(){
+		retornar nombre?
+	}
+	vacio setHijos(nodo i, nodo d){
+		izq = i?
+		der = d?
+	}
+
+	nodo getIzq(){
+		retornar izq?
+	}
+
+	nodo getDer(){
+		retornar der?
+	}
+	
+}

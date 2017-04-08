@@ -1,0 +1,27 @@
+
+ALS titus:publico{
+    var cadena direccion:publico?
+    var cadena telefono:publico?
+    var cadena dpi:publico?
+    var info a = nuevo info()?
+
+    vacio inicio(){
+    direccion = "15 callse"?
+    	llamar a.impr("hola", "titus", "adios")?
+    	a.nombre = "jaja"?
+    	llamar a.impr(" "," "," ")?
+    	}
+
+}
+
+ALS info:publico{
+	var cadena nombre:publico = "juan"?
+	var cadena edad:publico = "6"?
+
+	vacio impr(cadena h, cadena n, cadena a){
+		
+		imprimir(nombre)?
+	}
+}
+
+

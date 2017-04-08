@@ -9,6 +9,7 @@ import Analisis.Consola.Consola_Lexico;
 import Analisis.Consola.Consola_Sintactico;
 import Constante.Constante;
 import Ejecucion_GraphiK.ControlArchivo;
+import Ejecucion_GraphiK.Simbolo;
 import Ejecucion_Haskell.Haskell_Ejecucion;
 import Ejecucion_Haskell.TablaHaskell;
 import Ejecucion_Haskell.Variable;
@@ -67,6 +68,9 @@ public class TitusNotificaciones {
     public static DefaultTableModel ModeloDatos;
     public static JTable Datos;
     public static JScrollPane DatosPanel = new JScrollPane();
+    public static DefaultTableModel ModeloSimbolo;
+    public static JTable TablaSimbolo;
+    public static JScrollPane SimboloPanel = new JScrollPane();
 
     public TitusNotificaciones() {
 
@@ -92,6 +96,10 @@ public class TitusNotificaciones {
         DatosPanel.setName("Datos");
     }
 
+    public static void CargarSimbolo(ArrayList<Simbolo> lista){
+        
+    }
+    
     public static void CargarDatos(String archivo, JPanel contenedor) {
 
         String[] cadena = archivo.split("\n");

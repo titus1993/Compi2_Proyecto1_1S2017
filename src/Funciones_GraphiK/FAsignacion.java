@@ -66,7 +66,7 @@ public class FAsignacion {
                             o = new Objeto(als);
                             if (o != null) {
                                 FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TObjeto, o.Nombre, instruccion.Fila, instruccion.Columna, o);
-                                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo
+                                nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo
                                 if (o.Nombre.equals(nuevavariable.Tipo)) {
 
                                     if (nuevavariable != null) {
@@ -96,26 +96,139 @@ public class FAsignacion {
                                 if (exp.Tipo.equals(Constante.TVariableArreglo)) {
                                     exp = exp.PosArreglo;
                                 }
-                                if (nuevavariable.Tipo.equals(exp.Tipo) || exp.Tipo.equals(Constante.TObjeto) && nuevavariable.Tipo.equals(exp.Nombre)) {
-                                    nuevavariable.Valor = exp;//--------------------------------------hacer casteo
-                                } else {
-                                    if (exp.Tipo.equals(Constante.TObjeto) && nuevavariable.Tipo.equals(exp.Nombre)) {
-                                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un tipo " + exp.Nombre + " a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
-                                    } else {
-                                        TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un tipo " + exp.Tipo + " a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
 
-                                    }
+                                //hacemos el casteo implicito
+                                switch (nuevavariable.Tipo) {
+                                    case Constante.TEntero:
+                                        switch (exp.Tipo) {
+                                            case Constante.TEntero:
+                                                break;
+
+                                            case Constante.TBool:
+                                                exp.Entero = exp.Entero;
+                                                exp.Tipo = Constante.TEntero;
+                                                break;
+
+                                            case Constante.TCaracter:
+                                                exp.Entero = exp.Caracter;
+                                                exp.Tipo = Constante.TEntero;
+                                                break;
+
+                                            default:
+                                                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No se puede asignar un tipo " + exp.Tipo + " a " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                                                break;
+                                        }
+                                        break;
+
+                                    case Constante.TDecimal:
+                                        switch (exp.Tipo) {
+                                            case Constante.TDecimal:
+                                                break;
+
+                                            case Constante.TEntero:
+                                                exp.Decimal = exp.Entero;
+                                                exp.Tipo = Constante.TDecimal;
+                                                break;
+
+                                            case Constante.TBool:
+                                                exp.Decimal = exp.Entero;
+                                                exp.Tipo = Constante.TDecimal;
+                                                break;
+
+                                            case Constante.TCaracter:
+                                                exp.Decimal = exp.Caracter;
+                                                exp.Tipo = Constante.TDecimal;
+                                                break;
+
+                                            default:
+                                                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No se puede asignar un tipo " + exp.Tipo + " a " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                                                break;
+                                        }
+                                        break;
+
+                                    case Constante.TCadena:
+                                        switch (exp.Tipo) {
+                                            case Constante.TEntero:
+                                                exp.Cadena = String.valueOf(exp.Entero);
+                                                exp.Tipo = Constante.TCadena;
+                                                break;
+
+                                            case Constante.TBool:
+                                                exp.Cadena = String.valueOf(exp.Entero);
+                                                exp.Tipo = Constante.TCadena;
+                                                break;
+
+                                            case Constante.TCaracter:
+                                                exp.Cadena = String.valueOf(exp.Caracter);
+                                                exp.Tipo = Constante.TCadena;
+                                                break;
+
+                                            case Constante.TDecimal:
+                                                exp.Cadena = String.valueOf(exp.Decimal);
+                                                exp.Tipo = Constante.TCadena;
+                                                break;
+
+                                            case Constante.TCadena:
+                                                break;
+
+                                            default:
+                                                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No se puede asignar un tipo " + exp.Tipo + " a " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                                                break;
+                                        }
+                                        break;
+
+                                    case Constante.TCaracter:
+                                        switch (exp.Tipo) {
+                                            case Constante.TEntero:
+                                                exp.Caracter = (char) exp.Entero;
+                                                exp.Tipo = Constante.TCaracter;
+                                                break;
+
+                                            case Constante.TCaracter:
+                                                break;
+
+                                            default:
+                                                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No se puede asignar un tipo " + exp.Tipo + " a " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                                                break;
+                                        }
+                                        break;
+
+                                    case Constante.TBool:
+                                        switch (exp.Tipo) {
+                                            case Constante.TBool:
+                                                break;
+
+                                            default:
+                                                TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No se puede asignar un tipo " + exp.Tipo + " a " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+                                                break;
+
+                                        }
+                                        break;
+
+                                    default:
+                                        if (exp.Tipo.equals(Constante.TObjeto) && nuevavariable.Tipo.equals(exp.Nombre)) {
+                                            
+                                        } else {
+                                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede asignar un tipo " + exp.Tipo + " a un tipo " + nuevavariable.Tipo, instruccion.Fila, instruccion.Columna);
+
+                                        }
+
+                                        break;
+
                                 }
+
+                                nuevavariable.Valor = exp;//--------------------------------------hacer casteo
+
                             }
                         } else {
-                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
+                            TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + nuevavariable.Nombre, instruccion.Fila, instruccion.Columna);
                         }
 
                     }
 
                 }
             } else if (this.Tipo.equals(Constante.TAumento)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -144,7 +257,7 @@ public class FAsignacion {
                     TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
                 }
             } else if (this.Tipo.equals(Constante.TDisminucion)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -185,7 +298,7 @@ public class FAsignacion {
                     if (exp.Tipo.equals(Constante.TNuevo)) {
                         TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No se puede crear als en un arreglo", instruccion.Fila, instruccion.Columna);
                     } else {//sino es cualquier otro valor
-                        nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
+                        nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo);
 
                         if (nuevavariable != null) {
                             if (nuevavariable.Rol.equals(Constante.TVariableArreglo)) {
@@ -203,7 +316,7 @@ public class FAsignacion {
 
                 }
             } else if (this.Tipo.equals(Constante.TAumento)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {
@@ -221,7 +334,7 @@ public class FAsignacion {
                     TitusNotificaciones.InsertarError(Constante.TErrorSemantico, "No existe la variable " + instruccion.Nombre, instruccion.Fila, instruccion.Columna);
                 }
             } else if (this.Tipo.equals(Constante.TDisminucion)) {
-                nuevavariable = Nombre.Ejecutar(Tabla, padre,1);///////////////////--->casteo);
+                nuevavariable = Nombre.Ejecutar(Tabla, padre, 1);///////////////////--->casteo);
 
                 if (nuevavariable != null) {
                     if (nuevavariable.Tipo.equals(Constante.TEntero) || nuevavariable.Tipo.equals(Constante.TDecimal) || nuevavariable.Tipo.equals(Constante.TCaracter)) {

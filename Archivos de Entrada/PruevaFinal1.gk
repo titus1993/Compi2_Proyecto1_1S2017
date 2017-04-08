@@ -1,0 +1,59 @@
+#*Importar Archivo2.gk?
+
+Als Datos_Puros{
+	var Entero Dato_Entero?
+	var Decimal Dato_Decimal?
+	var Cadena Dato_Cadena?
+	var Caracter Dato_Caracter?
+	
+	vacio incializar(){
+		Dato_Entero = 1?
+		Dato_Decimal = 1.0?
+		Dato_Cadena = "cadena1"?
+		Dato_Caracter = '@'?
+	}
+
+	
+	Bool Existe(Cadena Dato){
+		retornar Dato_Cadena == Dato?
+	}
+	
+	Bool Existe(Entero Dato){
+		retornar Dato_Entero == Dato?
+	}	
+	
+	Bool Existe(Decimal Dato){
+		retornar Dato_Decimal == Dato?
+	}	
+
+
+	Bool Existe(Bool Dato){
+		retornar Dato_Bool == Dato?
+	}
+	
+	Bool Existe(Caracter Dato){
+		retornar Dato_Caracter == Dato?
+	}	
+
+
+	vacio ingresar(Cadena Dato){
+		Dato_Cadena = Dato?
+	}
+	
+	vacio ingresar(Entero Dato){
+		Dato_Entero = Dato?
+	}
+	
+	vacio ingresar(Decimal Dato){
+		Dato_Decimal = Dato?
+	}
+	
+	vacio ingresar(Caracter Dato){
+		Dato_Caracter = Dato?
+	}
+	
+	vacio ingresar(Bool Dato){
+		Dato_Bool = Dato?
+	}		
+}
+

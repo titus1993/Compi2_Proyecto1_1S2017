@@ -1,0 +1,10 @@
+importar detalle1.gk?
+ALS det:publico {
+	var detalle1 que = nuevo detalle1()?
+	vacio Inicio(){
+		var entero num = que.semestre().ganaremos.compi?
+		imprimir("Primer Semestre "+num)?
+		var cadena cad = llamar que.Decimos("VAMOS ")?
+		imprimir("SI "+cad)?
+	}
+}

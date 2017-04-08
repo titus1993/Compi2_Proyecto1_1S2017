@@ -28,6 +28,10 @@ public class FNodoExpresion {
     public FLlamadaMetodo Metodo;
     public FArreglo Arreglo;
 
+    public FNodoExpresion(){
+        
+    }
+    
     public FNodoExpresion(FNodoExpresion izq, FNodoExpresion der, String tipo, String nombre, int fila, int columna, Object valor) {
         this.Izquierda = izq;
         this.Derecha = der;
@@ -286,7 +290,7 @@ public class FNodoExpresion {
         return nodo;
     }
 
-    private FNodoExpresion EjecutarFuncion(FLlamadaMetodo llamadametodo) {
+    public FNodoExpresion EjecutarFuncion(FLlamadaMetodo llamadametodo) {
         FNodoExpresion nodo = new FNodoExpresion(null, null, Constante.TError, Constante.TError, 0, 0, null);
 
         Variable variable = TablaHaskell.BuscarFuncion(llamadametodo.Nombre);

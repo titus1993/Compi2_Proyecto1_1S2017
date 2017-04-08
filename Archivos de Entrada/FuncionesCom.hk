@@ -1,0 +1,26 @@
+IncrementaSegunN n,Val = 
+	if n<=1 then
+		$Succ $calcular 1$$
+	else
+		$Succ $IncrementaSegunN {$Calcular n-1 $,Val}$$
+	end
+end
+
+ConjuntoFuncPolinomial i,x = 
+	CASE i
+		$Calcular 1$: $Polinomial1 {x}$;
+		$Calcular 1$: $Polinomial2 {x}$;
+		$Calcular 1$: $Polinomial3 {x}$;
+		'a': $Polinomial4 {x}$;
+	end
+end
+
+Polinomial1 x = $Calcular 3 * x'pot'5 - x 'pot'2 + 7 * x -1$ end
+Polinomial2 x = $Calcular 5 * x'pot'2 - x + 8 * x 'pot'(-1) -1$ end
+Polinomial3 x = $Calcular x'pot'4 + x 'pot'2 + (9*3) * x +80$ end
+Polinomial4 x = $Calcular x'pot'3 + x 'pot'2 - 4 * x -4 $ end
+
+ObtenerModa LIST = $Max LIST$ end
+
+ObtenerPromedio LIST = 
+	$Calcular $sum LIST$ / $length LIST$ $ end

@@ -1,0 +1,30 @@
+
+importar UltimaRef.gk?
+ALS Ref{
+	
+	var entero arreglo[2][2][1] = {{{5},{6}},{{9},{2}}}?
+    var cadena direccion1 = "A GANAR!!"?
+    var cadena telefono1:protegido?
+    var cadena dpi1:publico?
+	var UltimaRef c=nuevo UltimaRef()?
+
+     UltimaRef semestre(){
+		 #var detalle2 c = nuevo detalle2()?
+
+		retornar c?
+    }
+    
+     UltimaRef mas(){
+		 #var detalle2 c = nuevo detalle2()?
+
+		retornar c?
+    }
+
+
+    cadena Decimos(cadena cad){
+		 #var detalle2 c = nuevo detalle2()?
+		direccion1 = cad+direccion1?
+		retornar direccion1?
+    }
+
+}

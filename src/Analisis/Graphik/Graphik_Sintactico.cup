@@ -760,13 +760,7 @@ LLAMADA_FUNCION ::= TLlamar OBJETO:o Id:t TParentesis_Abre LISTA_EXP_FUNCION:l T
                                                                                                         FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString().toLowerCase(), tleft, tright, lm);
                                                                                                         RESULT = lo; 
                                                                                                     :}
-                    | TLlamarHk OBJETO:o Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra   {:
-                                                                                                        FLlamadaMetodo lm = new FLlamadaMetodo(t.toString().toLowerCase(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Haskell);
-                                                                                                        FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString().toLowerCase(), tleft, tright, lm);
-                                                                                                        FLlamadaObjeto flo = (FLlamadaObjeto)o;
-                                                                                                        flo.InsertarHijo(lo);
-                                                                                                        RESULT = flo; 
-                                                                                                    :}
+
                     | TLlamarHk Id:t TParentesis_Abre LISTA_EXP_FUNCION:l TParentesis_Cierra    {:
                                                                                                         FLlamadaMetodo lm = new FLlamadaMetodo(t.toString().toLowerCase(), (ArrayList<FNodoExpresion>)l, tleft, tright, Constante.Haskell);
                                                                                                         FLlamadaObjeto lo = new FLlamadaObjeto(Constante.TMetodo, t.toString().toLowerCase(), tleft, tright, lm);

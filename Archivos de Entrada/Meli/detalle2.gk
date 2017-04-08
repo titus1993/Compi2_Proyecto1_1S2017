@@ -1,0 +1,10 @@
+
+importar detalle3.gk?
+ALS detalle2{
+    var entero direccion2 = 25?
+    var detalle3 ganaremos = nuevo detalle3()?
+
+    var entero arreglo[2][2][1] = {{{5},{6}},{{9},{2}}}?
+    var cadena telefono2?
+    var cadena dpi2?
+}

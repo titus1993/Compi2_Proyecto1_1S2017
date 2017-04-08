@@ -62,6 +62,8 @@ public class Graphik_Ejecucion {
                 FMetodo Start = (FMetodo)inicio.Valor;
                 FLlamadaMetodo m = new FLlamadaMetodo(Constante.TInicio, new ArrayList<FNodoExpresion>(), 0, 0, Constante.TInicio);
                 Start.EjecutarMetodo(m, Inicio, inicio, Inicio, 1);
+                Start.Ambito = Start.Ambito;
+                Start.Ambito = Start.Ambito;
             } else {
                 TitusNotificaciones.InsertarError(Constante.TErrorSintactico, "No existe un metodo inicio", 0, 0);
             }

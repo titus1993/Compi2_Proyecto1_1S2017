@@ -1,0 +1,38 @@
+importar aritmetica.gk?
+importar salon.gk?
+
+
+
+ALS Ejemplo_entrada:publico {
+
+
+    vacio inicio(){
+        
+        var aritmetica a = nuevo aritmetica()?
+                
+        llamar a.aritmetica1()?
+        llamar a.aritmetica2()?
+        llamar a.aritmetica3()?
+        imprimir("fibo-------")?
+        imprimir(llamarhk fibonacci(5))?
+        var entero i = llamar a.operacion(1,2,3)?
+        imprimir("Resultado de operacion: " + i)?
+        
+        var entero j = llamar a.ciclo1(i)?
+        imprimir("Resultado de ciclo 1: " + j)?
+
+        var cadena o = verdadero?
+        imprimir("esto si es vida " + o)?
+        
+        var bool bandera = llamar a.ciclo2()?
+        imprimir(bandera)?
+        
+        
+        llamar a.arreglo()?
+        
+        var salon s = nuevo salon()?
+        llamar s.cargar_estudiantes()?
+        
+    }   
+    
+}

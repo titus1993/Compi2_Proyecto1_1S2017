@@ -1,0 +1,6 @@
+
+ALS detalle3:publico{
+    var entero compi=2017?
+    var cadena telefono3?
+    var cadena dpi3?
+}

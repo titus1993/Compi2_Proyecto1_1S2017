@@ -1,0 +1,20 @@
+
+ALS titus:publico{
+    
+
+    vacio inicio(){
+	    llamar Datos()?
+    	}
+
+    entero sumar(entero a, entero b){
+    		retornar a+b?
+    }
+
+    vacio Datos(){
+    		procesar = llamar sumar (columna(4)+columna(4), columna(4))?
+    		dondetodo(1)?
+    }
+
+}
+
+

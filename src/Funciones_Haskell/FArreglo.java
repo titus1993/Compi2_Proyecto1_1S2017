@@ -15,9 +15,9 @@ import Interface.TitusNotificaciones;
  */
 public class FArreglo {
 
-    ArrayList<FNodoExpresion> Arreglo = null;
-    int Dimensiones;
-    String Tipo;
+    public ArrayList<FNodoExpresion> Arreglo = null;
+    public int Dimensiones;
+    public String Tipo;
 
     public FArreglo(ArrayList<FNodoExpresion> arreglo) {
         this.Arreglo = arreglo;

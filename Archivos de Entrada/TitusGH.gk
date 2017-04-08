@@ -1,0 +1,8 @@
+
+ALS titus:publico{
+   var entero a[2][3]= {{5,8,6},{7,8,9}}?
+    vacio inicio(){
+        imprimir(llamarhk fibonacci(a[0][0]))?
+    }
+
+}

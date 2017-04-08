@@ -1,0 +1,63 @@
+importar Nodo.gk?
+incluir_HK FormCuadraticaPositiva?
+incluir_HK FormCuadraticaNegativa?
+incluir_HK Permutacion?
+incluir_HK FuncionPolinomial1?
+
+ALS nodo : publico {
+var entero a:publico?
+vacio inicio(){
+a = 4?
+imprimir(llamar FormCuadraticaPositiva())?
+imprimir(llamar FormCuadraticaNegativa())?
+imprimir("permutación: " + llamar Permutacion_gk((10*2 - 14), a))?
+a = 3?
+var decimal x = ((18/2)^2) - (15 - a)?
+llamar FuncionPolinomial1(x)?
+llamar creacion_nodos()?
+}
+cadena FormCuadraticaPositiva(){
+a = (5*2)^2 - 4?
+var entero b = 3?
+var entero c = 8?
+imprimir(llamarHK FormCuadraticaPositiva(a, b, c))?
+retornar "Primer función ejecutada con éxito"?
+}
+cadena FormCuadraticaNegativa():privado{
+var decimal arreglo[3] = {96, 3, 8}?
+imprimir(llamarHK FormCuadraticaNegativa(arreglo[0], arreglo[1],
+arreglo[2]))?
+retornar "Segunda función ejecutada con éxito"?
+}
+vacio FuncionPolinomial1(entero valor_entrada){
+var entero arreglo[5]?
+var int i?
+Para(i=0: i<5: i++){
+arreglo[i] = llamarHK FuncionPolinomial1(valor_entrada * i)?
+imprimir("polinomial: " + arreglo[i])?
+}
+}
+entero Permutacion_gk(entero n, entero r){
+Mientras(r>0){
+imprimir("Factorial: " + llamarHK Permuctacion(n,r))?
+r --?
+}
+}
+void creacion_nodos(){
+var Nodo nod1 = nuevo Nodo()?
+nod1.nombre = "primero"?
+nod1numero = 1?
+llamar nod1.cambiar_bandera()?
+var Nodo nod2 = nuevo Nodo()?
+nod2.nombre = "segundo"?
+nod2.numero = 2?
+Si(nod1.bandera == nod2.bandera){
+imprimir("las banderas son iguales para los nodos " + nod1.nombre
++ " " + nod2.nombre)?
+}Sino{
+imprimir("las banderas son diferentes para los nodos " +
+nod1.nombre + " " + nod2.nombre)?
+}
+imprimir("Se creó un nodo con éxito")?
+}
+}

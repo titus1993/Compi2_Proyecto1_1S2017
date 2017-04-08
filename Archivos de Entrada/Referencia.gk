@@ -1,0 +1,19 @@
+importar Ref.gk?
+ALS Referencia:publico {
+    var Ref jair= nuevo Ref()?
+    var Ref meli= nuevo Ref()?
+    vacio inicio(){
+    jair.direccion1="15"?
+    meli.direccion1="20"?
+    imprimir("jair "+jair.direccion1)?
+    imprimir("meli "+meli.direccion1)?
+    jair.mas().direccion2=251011?
+        imprimir("Nueva "+jair.mas().direccion2)?
+        imprimir("Anterior "+meli.mas().direccion2)?
+    }
+
+    vacio mel(){
+		imprimir("se quedo?"+num)?
+    }
+
+}

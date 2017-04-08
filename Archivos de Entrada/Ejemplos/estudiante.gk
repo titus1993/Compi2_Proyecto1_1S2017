@@ -1,0 +1,30 @@
+importar detalle.gk?
+
+ALS estudiante:publico {
+    var cadena nombre:publico?
+    var entero edad:publico?
+    var entero carnet:publico?
+    var detalle d:publico?
+    
+	vacio estudiante():publico{
+        d = nuevo detalle()?
+    }
+    
+    
+    vacio ingresar_datos(cadena n, entero e, entero c):publico{
+        nombre = n?
+        edad = e?
+        carnet = c?
+    }
+    
+    
+    vacio siguiente_semestre():publico{
+        edad = edad + 1?
+    }
+    
+    vacio ingresar_detalle(cadena dir, cadena tel, cadena dpi):publico{
+        d.direccion = dir?
+        d.telefono = tel?
+        d.dpi = dpi?
+    }
+}
